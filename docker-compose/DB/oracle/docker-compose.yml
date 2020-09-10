@@ -1,0 +1,20 @@
+oracle:
+    image: sd-docker-registry2.naumen.ru/library/oracle-database:12.2.0.1
+    environment:
+      DB_SID: 'NAUMEN'
+      DB_DOMAIN: 'PORTAL'
+      ORACLE_USER: '123'
+      ORACLE_PASSWORD: '123'
+      NLS_LANG: 'RUSSIAN_RUSSIA.AL32UTF8'
+      DUMP_URL: ${DUMP_URL}
+      TZ: "Europe/Moscow"
+    volumes:
+      - dbdata:/ORCL
+      - ./oracle:/oracle
+    ports:
+      - "${DB_PORT:-15210}:1521"
+    entrypoint: /oracle/startup.sh
+    healthcheck:
+      test: ls /tmp/ready
+      start_period: 5m
+    stop_grace_period: 15s

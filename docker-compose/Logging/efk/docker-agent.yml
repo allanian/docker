@@ -1,0 +1,20 @@
+version: '3.6'
+services:
+  fluentd:
+    image: registry.docker.test.org:5001/test/test-serverside/fluent:${branch}
+    restart: always
+    env_file:
+      - test-variables-${env}.env
+    user: root
+    volumes:
+      - /u01/data/fluentd_client:/data
+      - /u01/data/docker/containers/:/logs/docker_logs:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: test_net_${branch}
+    external: true
+

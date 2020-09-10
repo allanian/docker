@@ -1,0 +1,22 @@
+
+postgres:
+    image: postgres:11.2
+    environment:
+      POSTGRES_DB: '123'
+      POSTGRES_USER: '123'
+      POSTGRES_PASSWORD: '123'
+      TZ: "Europe/Moscow"
+    volumes:
+      - dbdata:/var/lib/postgresql/data/
+      - ./postgresql:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT:-54320}:5432"
+    healthcheck:
+      test: pgrep postgres | grep -w 1 && psql $${POSTGRES_DB} $${POSTGRES_USER} -c "SELECT 1"
+      start_period: 5m
+    stop_grace_period: 15s
+
+volumes:
+  database_data:
+    driver: local
+

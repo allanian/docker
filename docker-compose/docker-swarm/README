@@ -1,0 +1,25 @@
+first
+inject vars from env.file to CI/CD process
+build your docker image
+docker built -t registry.test.com/${bamboo.inj.app_name}/${bamboo.inj.app_name}_${bamboo.inj.env}:${bamboo.inj.version}
+push it to your registry
+docker push registry.test.com/${bamboo.inj.app_name}/${bamboo.inj.app_name}_${bamboo.inj.env}:${bamboo.inj.version}
+pull your image
+docker pull registry.test.com/${bamboo.inj.app_name}/${bamboo.inj.app_name}_${bamboo.inj.env}:${bamboo.inj.version}
+deploy your container in docker-swarm
+
+export that variables, if need
+export host_port=8012
+export ENV=${bamboo.inj.env}
+export env=${bamboo.inj.env}
+export app_name=${bamboo.inj.app_name}
+export version=${bamboo.inj.version}
+
+# Deploy
+${bamboo.docker_login}
+${bamboo.docker_stack_deploy}
+
+
+# GLOBAL VARS
+echo ${bamboo.docker_pwd} | docker login --username=registry --password-stdin https://registry.test.com
+docker stack deploy --compose-file docker-stack.yml ${ENV} --with-registry-auth
