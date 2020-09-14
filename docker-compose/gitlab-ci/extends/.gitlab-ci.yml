@@ -1,0 +1,81 @@
+variables:
+    #  GIT_SUBMODULE_STRATEGY: recursive
+      SSH_CONFIG: "-o StrictHostKeyChecking=no"
+      BASE_DIR: /data/deploy # folder on server for deploy
+      DOCKER_LOGIN: "docker login -u gitlab-ci-token -p $token registry.docker.test.org:5001"
+      DOCKER_REGISTRY: "${REGISTRY}/${CI_PROJECT_NAMESPACE}//${CI_PROJECT_NAME}"
+      DOCKER_IMAGE_NAME: ${REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${CI_JOB_NAME}:${CI_COMMIT_REF_NAME}
+      branch: ${CI_COMMIT_REF_NAME}
+    
+    stages:
+    - build
+    - deploy
+    
+before_script:
+  - git submodule sync --recursive
+  - git submodule update --init --recursive --remote
+    
+# extends for build
+.build:
+    stage: build
+    image: docker:stable-git
+    script:
+    - $DOCKER_LOGIN
+    - docker build -t ${DOCKER_IMAGE_NAME} -f ./$CI_JOB_NAME/Dockerfile .
+    - docker push ${DOCKER_IMAGE_NAME}
+    tags:
+      - docker
+  
+# extends for deploy
+.deploy:
+    stage: deploy
+    image: docker:stable-git
+    script:
+      - export env=dev
+      - $DOCKER_LOGIN
+      - docker network create --driver=bridge --attachable icapital_net_${branch} || true
+      - docker-compose pull
+      - docker-compose down
+      - docker-compose up -d
+    cache: {}
+    tags:
+      - icapital_shell_dev
+    only:
+      - develop
+
+fluent:
+  extends: .build
+  script:
+  - $DOCKER_LOGIN
+  - cd ./efk/fluent && docker build -t ${DOCKER_IMAGE_NAME} .
+  - docker push ${DOCKER_IMAGE_NAME}
+  when: manual
+
+pdf-creator:
+  extends: .build
+  rules:
+  - if: '$TRIGGER_JOB == $CI_JOB_NAME'
+
+
+dev_deploy:
+  extends: .deploy
+  tags:
+    - icapital_shell_dev
+  only:
+    - develop
+
+test_deploy:
+  extends: .deploy
+  tags:
+    - icapital_shell_test
+  only:
+    - master
+  when: manual
+
+external_deploy:
+  extends: .deploy
+  tags:
+    - icapital_sh_external
+  only:
+    - master
+  when: manual
