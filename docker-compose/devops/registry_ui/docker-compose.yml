@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  registry:
+    image: registry:2
+    container_name: registry
+    restart: always
+    ports:
+      - 5000:5000
+    volumes:
+      - ./config/config.yml:/etc/docker/registry/config.yml
+      - ./config/htpasswd:/etc/docker/registry/htpasswd
+      - /data/docker_store/:/var/lib/registry
+    networks:
+      - registry_net
+#password - c*P74y]!
+# for htpasswd docker run --rm --entrypoint htpasswd registry:2 -Bbn registry c*P74y]! > /data/registry_config/auth/htpasswd
+
+  ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - REGISTRY_TITLE=My Private Docker Registry
+      - REGISTRY_URL=http://registry:5000
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry
+    networks:
+      - registry_net
+
+networks:
+  registry_net:
+    driver: bridge
