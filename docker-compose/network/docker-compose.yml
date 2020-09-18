@@ -5,10 +5,12 @@ services:
     image: ldapaccountmanager/lam:stable
     container_name: lam
     networks:
-      - iam_net
+      - backend
     ports:
       - 8080:80
 
 networks:
-  iam_net:
+  backend:
+    name: test_net_${branch}
     external: true
+      
