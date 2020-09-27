@@ -10,16 +10,29 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - "/data/efk_storage/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml" 
-      - /data/efk_storage/elasticsearch:/usr/share/elasticsearch/data
+      - "/data/efk_storage/es1/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml" 
+      - efk_data1:/usr/share/elasticsearch/data
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - "127.0.0.1:9200:9200"
+    expose:
+      - 9200
     networks:
       - efk_stack
 
+# logstash:
+#   image: docker.elastic.co/logstash/logstash:7.8.1
+#   container_name: logstash
+#   environment:
+#     LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+#   ports:
+#     - "5000:5000"
+#     - "9600:9600"
+#   volumes:
+#     - "/data/efk_storage/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:rw"
+#   networks:
+#     - efk_stack
+
   fluentd:
-    image: registry.docker.test.org:5001/test/test-serverside/fluent:remaster
+    image: registry.shakticoin.com/fluent/fluent:1
     container_name: fluentd
     ports:
       - 24224:24224
@@ -37,8 +50,8 @@ services:
     volumes:
       - "/data/efk_storage/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - /etc/localtime:/etc/localtime:ro
-#    ports:
-#      - "5601:5601"
+    expose:
+      - 5601
     networks:
       - efk_stack
 
@@ -55,7 +68,22 @@ services:
       - 8080:8080
     networks:
       - efk_stack
+      
+volumes:
+  efk_data1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/data/efk_storage/es1'
 
 networks:
   efk_stack:
     external: true
+#    driver: bridge
+#env
+#VERSION=7.8.1
+#nano /etc/sysctl.conf
+#vm.max_map_count = 262144
+#sudo sysctl -p
+# curl -X GET "localhost:9200/_cat/nodes?v&pretty"

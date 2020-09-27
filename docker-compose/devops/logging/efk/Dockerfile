@@ -18,6 +18,7 @@ RUN buildDeps="sudo make gcc g++ libc-dev" \
              fluent-plugin-filter_typecast \
              fluent-plugin-filter_empty_keys \
              fluent-plugin-route \
+             fluent-plugin-concat \
  && sudo gem sources --clear-all \
  && SUDO_FORCE_REMOVE=yes \
     apt-get purge -y --auto-remove \

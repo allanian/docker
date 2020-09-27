@@ -1,0 +1,17 @@
+FROM node:alpine AS builder
+COPY ./ /tmp/build
+WORKDIR /tmp/build
+RUN npm set progress=false && npm i -g @angular/cli --unsafe-perm && npm i
+RUN npm run build:prod
+
+
+FROM node:alpine
+RUN mkdir -p /var/www
+RUN npm i -g pm2 --unsafe-perm
+COPY --from=builder /tmp/build/dist /var/www/html
+COPY --from=builder /tmp/build/processes.json /var/www/html
+COPY --from=builder /tmp/build/node_modules /var/www/html/node_modules
+WORKDIR /var/www/html
+EXPOSE 4000
+CMD ["pm2", "start", "--no-daemon", "processes.json"]
+

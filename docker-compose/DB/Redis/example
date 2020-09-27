@@ -1,0 +1,11 @@
+docker run -d \
+  -p 6379:6379 \
+  --restart=always \
+  --name ag_redis_instance_test \
+  --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  --env=REDIS_VERSION=5.0.3 \
+  --env=REDIS_DOWNLOAD_URL=http://download.redis.io/releases/redis-5.0.3.tar.gz \
+  --env=REDIS_DOWNLOAD_SHA=e290b4ddf817b26254a74d5d564095b11f9cd20d8f165459efa53eb63cd93e02 \
+  --volume=/data/redis-ag/data:/data:rw \
+  --volume=/data \
+  redis:latest redis-server

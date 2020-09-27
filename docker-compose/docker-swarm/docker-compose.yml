@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  onboarshaktiservice:
+  testservice:
     image: registry.test.com/${app_name}/${app_name}_${env}:${version}
     deploy:
       placement:

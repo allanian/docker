@@ -1,0 +1,82 @@
+version: '3.5'
+services:
+  iweb:
+    image: 'gitlab/gitlab-ce:13.0.10-ce.0'
+    restart: always
+    hostname: 'git'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.company.ru'
+        # NGINX
+        nginx['redirect_http_to_https'] = false
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['proxy_set_headers'] = {
+          "X-Forwarded-Proto" => "https",
+          "X-Forwarded-Ssl" => "on"
+        }
+        nginx['client_max_body_size'] = '2G'
+        letsencrypt['enable'] = false
+        # REGISTRY
+        registry['enable'] = true
+        registry_external_url 'https://registry.company.ru'
+        registry_nginx['listen_port'] = 5001
+        registry_nginx['listen_https'] = false
+        registry_nginx['redirect_http_to_https'] = false
+        registry_nginx['proxy_set_headers'] = {"X-Forwarded-Proto" => "https","X-Forwarded-Ssl" => "on", "Host" => "registry.vko-simvol.ru"}
+        # GITLAB
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['registry_issuer'] = "omnibus-gitlab-issuer"
+        gitlab_rails['registry_path'] = "/mnt/registry"
+        #gitlab_rails['gitlab_shell_ssh_port'] = 1022
+        # Prometheus
+        prometheus['enable'] = true
+        alertmanager['enable'] = true
+        prometheus['listen_address'] = '0.0.0.0:9090'
+        # MAIL
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = "smtp.mail.ru"
+        gitlab_rails['smtp_port'] = 25
+        gitlab_rails['smtp_user_name'] = "gitlab@company.ru"
+        gitlab_rails['smtp_password'] = "xcK3GzaWDAszEDb2YEhNQq7N8P"
+        #gitlab_rails['smtp_domain'] = "company.ru"
+        gitlab_rails['smtp_authentication'] = "login"
+        #gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
+        gitlab_rails['gitlab_email_from'] = 'gitlab@company.ru'
+        # LDAP
+        gitlab_rails['ldap_enabled'] = true
+        gitlab_rails['ldap_servers'] = {
+        'main' => {
+          'label' => 'COMPANY',
+          'host' =>  '192.168.1.187',
+          'port' => 636,
+          'uid' => 'sAMAccountName',
+          'encryption' => 'simple_tls',
+          'verify_certificates' => false,
+          'bind_dn' => 'CN=gitlab,OU=Users,OU=COMPANY,DC=company,DC=lan',
+          'password' => 'QWE123qwe',
+          'active_directory' => true,
+          'allow_username_or_email_login' => true,
+          'base' => 'OU=COMPANY,DC=company,DC=lan',
+          'group_base' => 'OU=Global Groups,OU=GitLab INT,DC=GitLab,DC=org',
+          'block_auto_created_users' => false,
+          'admin_group' => 'Global Admins'
+          }
+        }
+        # backup
+        gitlab_rails['manage_backup_path'] = true
+        gitlab_rails['backup_path'] = "/mnt/backups"
+    ports:
+    - '5001:5001'
+    - '80:80'
+    - '443:443'
+    - '1022:22'
+    - '4567:4567'
+    - '9090:9090'
+    volumes:
+    - '/srv/gitlab11/config:/etc/gitlab'
+    - '/srv/gitlab11/logs:/var/log/gitlab'
+    - '/srv/gitlab11/data:/var/opt/gitlab'
+    - '/data/backups:/mnt/backups'
+    - '/data/registry:/mnt/registry'

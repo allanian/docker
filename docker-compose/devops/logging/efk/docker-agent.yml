@@ -1,20 +1,29 @@
-version: '3.6'
+version: '3.8'
 services:
   fluentd:
-    image: registry.docker.test.org:5001/test/test-serverside/fluent:${branch}
-    restart: always
-    env_file:
-      - test-variables-${env}.env
+    image: registry.shakticoin.com/fluent/fluent:1
+    ports:
+      - 8020:8020
+    environment:
+      - env=${env}
+      - collector_ip=${collector_ip}
     user: root
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
     volumes:
-      - /u01/data/fluentd_client:/data
-      - /u01/data/docker/containers/:/logs/docker_logs:ro
+      - /data/fluentd_client:/data 
+      - /data/docker/containers:/logs/docker_logs:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - backend
+      - app_network
 
 networks:
-  backend:
-    name: test_net_${branch}
+  app_network:
     external: true
-

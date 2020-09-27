@@ -1,0 +1,77 @@
+Отключаем SELinux
+в
+/etc/selinux/config
+SELINUX=disabled
+
+reboot
+
+yum -y install python-devel cairo-devel libffi-devel gcc python2-pip.noarch httpd mod_wsgi.x86_64
+
+export PYTHONPATH="/opt/graphite/lib/:/opt/graphite/webapp/"
+pip install --upgrade pip
+pip install https://github.com/graphite-project/whisper/tarball/master
+pip install https://github.com/graphite-project/carbon/tarball/master
+pip install https://github.com/graphite-project/graphite-web/tarball/master
+pip install https://github.com/graphite-project/ceres/tarball/master
+
+cp /opt/graphite/examples/init.d/carbon-cache /etc/init.d/
+chmod +x /etc/init.d/carbon-cache
+cp /opt/graphite/conf/carbon.conf.example /opt/graphite/conf/carbon.conf
+cp /opt/graphite/conf/dashboard.conf.example /opt/graphite/conf/dashboard.conf
+cp /opt/graphite/conf/graphite.wsgi.example /opt/graphite/conf/graphite.wsgi
+cp /opt/graphite/conf/storage-schemas.conf.example /opt/graphite/conf/storage-schemas.conf
+cp /opt/graphite/webapp/graphite/local_settings.py.example /opt/graphite/webapp/graphite/local_settings.py
+cp /opt/graphite/examples/example-graphite-vhost.conf /etc/httpd/conf.d/graphite-vhost.conf
+
+Изменить NameServer на имя сервера или адрес доступный в /etc/httpd/conf.d/graphite-vhost.conf
+и добавить локейшн для static
+<Directory /opt/graphite/static>
+       Require all granted
+</Directory>
+
+Например
+ServerName "172.29.150.70"
+
+Настраиваем подключение к БД
+
+для SQLite
+DATABASES = {
+    'default': {
+        'NAME': '/opt/graphite/storage/graphite.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': ''
+    }
+}
+
+Открываем если закрыты порт
+firewall-cmd --permanent --add-port=80/tcp
+firewall-cmd --reload
+
+
+/etc/init.d/carbon-cache start
+
+systemctl enable carbon-cache httpd
+systemctl start carbon-cache httpd
+
+
+Запускаем создание таблиц в БД
+
+PYTHONPATH=/opt/graphite/webapp django-admin.py migrate --settings=graphite.settings --run-syncdb
+
+Создаем пользователя
+
+PYTHONPATH=/opt/graphite/webapp django-admin.py createsuperuser --settings=graphite.settings
+
+создаем папку для статического контента:
+
+PYTHONPATH=/opt/graphite/webapp django-admin.py collectstatic --noinput --settings=graphite.settings
+
+systemctl restart carbon-cache httpd
+
+Даем права на запись apache
+
+chown -R apache:apache /opt/graphite/
+
