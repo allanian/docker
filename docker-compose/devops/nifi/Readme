@@ -1,0 +1,10 @@
+если рестартовали контейнер с NIFI, он упадет после рестартовали
+нужно зайти в контейнер и выполнить следующее
+docker exec -it nifi_1 bash
+apt-get update
+apt-get install nano
+# нужно закомментить текущий ID и вернуть ID из ошибки в NIFI - http://192.168.1.208:9001/nifi/
+# java.net.UnknownHostException: b9dc39a63700: Name or service not known nifi docker
+nano /etc/hosts
+#192.168.48.3	776818b2e715
+192.168.48.3   b9dc39a63700

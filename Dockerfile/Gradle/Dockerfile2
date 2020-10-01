@@ -1,0 +1,15 @@
+FROM gradle:5.3 as build
+WORKDIR /opt/app
+USER root
+ARG APP
+ADD ./build.gradle .
+ADD ./settings.gradle .
+ADD ./$APP ./$APP    # copy folder of microservice for build
+ADD ./commons ./commons   # copy common folder for microservice
+RUN gradle clean $APP:assemble   # build
+RUN echo $APP && ls -la ./$APP/build/libs
+
+FROM bellsoft/liberica-openjdk-alpine:8u265-1
+ARG APP
+COPY --from=build /opt/app/$APP/build/libs/*.jar app.jar
+ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar
