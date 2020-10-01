@@ -1,0 +1,44 @@
+version: "3.6"
+services:
+  webdjango:
+    image: registry.company_name.com/${app_name}/${app_name}_${env}:${version}
+    container_name: django
+    restart: always
+    build: .
+    #command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn shakti.wsgi:application --bind 0.0.0.0:8000
+    logging:
+      driver: "json-file"
+      options:
+        labels: "service_name"
+        tag: container_name:{{.Name}}
+    labels:
+      service_name: ${app_name}
+    env_file:
+      - ${app_name}-variables-${env}.env
+    expose:
+      - 8000
+    volumes:
+      - /data/django/static:/opt/app/static
+      - /data/django/media:/opt/app/media
+    networks:
+      - backend
+
+  nginx:
+    image: nginx
+    restart: always
+    depends_on:
+      - webdjango
+    volumes:
+      - /data/django/static:/opt/app/static
+      - /data/django/media:/opt/app/media
+      - /data/django/nginx.conf:/etc/nginx/conf.d/default.conf:rw
+    ports:
+      - ${host_port}:80
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: app_network
+    external: true
