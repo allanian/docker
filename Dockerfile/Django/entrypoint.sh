@@ -1,4 +1,3 @@
-# check Database is started
 #!/bin/sh
 if [ "$DATABASE" = "postgres" ]
 then
@@ -8,4 +7,7 @@ then
     done
     echo "PostgreSQL started"
 fi
+python manage.py  collectstatic --noinput --settings=shakti.settings
+python manage.py makemigrations
+python manage.py migrate --noinput
 exec "$@"

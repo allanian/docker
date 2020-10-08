@@ -1,0 +1,42 @@
+version: "3.7"
+services:
+  discovery-service:
+    image: registry.docker.company.com:5001/service/service-services/service-discovery-service:$BRANCH
+    restart: always
+    ports:
+      - "8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${PROFILES}
+      #      SERVER_PORT: "8761"
+      JAVA_OPTS: -Xmx256m -XX:+UseG1GC
+      LOG_PATH: ./logs
+    volumes:
+      - $LOG_DIR:/logs
+    networks:
+      - alt-parking-network
+
+  alt-parking-config-service:
+    depends_on:
+      - discovery-service
+    image: registry.docker.company.com:5001/service/service-services/service-config-service:$BRANCH
+    restart: always
+    ports:
+      - "8888"
+    environment:
+      LOG_PATH: ./logs
+    volumes:
+      - $LOG_DIR:/logs
+      - parking_configs:/etc/nginx
+    networks:
+      - alt-parking-network
+
+networks:
+  alt-parking-network:
+# store data from container to host
+volumes:
+  parking_configs:
+    driver: local
+    driver_opts:
+      type: none
+      device: $parking_configs
+      o: bind

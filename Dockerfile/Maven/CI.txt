@@ -1,0 +1,97 @@
+variables:
+  GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${CI_CONCURRENT_ID}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}
+  REGISTRY: "registry.docker.com:5001"
+  DOCKER_LOGIN: "docker login -u gitlab-ci-token -p ${token} ${REGISTRY}"
+  DOCKER_LOGOUT: docker logout ${REGISTRY}
+  DOCKER_REGISTRY: "${REGISTRY}/${CI_PROJECT_NAMESPACE}//${CI_PROJECT_NAME}"
+  DOCKER_IMAGE_NAME: ${REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${CI_JOB_NAME}:${CI_COMMIT_REF_NAME}
+  ENV: "${CI_COMMIT_REF_SLUG}"
+  MAVEN_OPTS: -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
+  
+stages:
+  - common
+  - build
+  - build_app
+  - deploy
+
+# CACHE MAVEN
+cache:
+  paths:
+    - .m2/
+
+.build:
+  stage: build
+  image: maven:3-jdk-8
+  script:
+  # build each mvn package and push it to gitlab-registry
+    - mvn deploy -s ../ci_settings.xml  -P $ENV -Ddockerfile.skip
+  tags:
+    - docker
+  when: manual
+  
+.build_app:
+  stage: build_app
+  image: docker:stable-git
+  before_script:
+   # download package from gitlab package registry
+    - 'wget --header "PRIVATE-TOKEN: $token" https://git2.company.org/api/v4/projects/$CI_PROJECT_ID/packages/maven/ru/company/$CI_JOB_NAME/1.0.0/$CI_JOB_NAME-1.0.0.jar'
+  script:
+    - $DOCKER_LOGIN
+    - docker build -t ${DOCKER_IMAGE_NAME} -f ./deploy/Dockerfile --build-arg APP=${CI_JOB_NAME} .
+    - docker push ${DOCKER_IMAGE_NAME}
+  tags:
+    - docker
+
+.deploy:
+  stage: deploy
+  image: docker:stable-git
+  before_script:
+    - export BRANCH=$CI_COMMIT_REF_NAME
+    - export BASE_DIR=/opt/deploy
+    - export LOG_DIR=${BASE_DIR}/logs
+    - export parking_configs=${BASE_DIR}/parking-configs
+  script:
+    - $DOCKER_LOGIN
+    - mkdir -p ${BASE_DIR}/{logs,parking-configs} && chmod -R ${BASE_DIR}/{logs,parking-configs} && cp ./docker-compose-dev.yml $BASE_DIR/ && cd $BASE_DIR
+    - docker-compose -f docker-compose-dev.yml config
+    - docker-compose -f docker-compose-dev.yml pull
+    #- docker-compose -f docker-compose-dev.yml down
+    - docker-compose -f docker-compose-dev.yml up -d
+  cache: {}
+
+# SHARED LIBS store to gitlab package registry
+common:
+  stage: common
+  image: maven:3-jdk-8
+  script:
+    - echo $CI_PROJECT_ID
+    - mvn deploy -s ci_settings.xml  -P$ENV -Ddockerfile.skip
+  tags:
+    - docker
+  when: manual
+  
+parking-discovery-service-build:
+  extends: .build
+  before_script:
+    - cd parking-discovery-service
+  only:
+    refs:
+      - dev
+    changes:
+      - parking-discovery-service/**/*
+
+parking-discovery-service:
+  extends: .build_app
+  only:
+    refs:
+      - dev
+    changes:
+      - parking-discovery-service/**/*
+
+# DEPLOY
+deploy_dev:
+  extends: .deploy
+  only: 
+    - dev
+  tags:
+    - shell_parking
