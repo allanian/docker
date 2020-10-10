@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   fluentd:
-    image: registry.shakticoin.com/fluent/fluent:1
+    image: registry.company.com/fluent/fluent:1
     ports:
       - 8020:8020
     environment:

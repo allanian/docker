@@ -32,7 +32,7 @@ services:
 #     - efk_stack
 
   fluentd:
-    image: registry.shakticoin.com/fluent/fluent:1
+    image: registry.company.com/fluent/fluent:1
     container_name: fluentd
     ports:
       - 24224:24224
