@@ -1,0 +1,72 @@
+version: '3.7'
+services:
+  consul-bootstrap:
+    image: consul:latest
+    container_name: consul
+    command: "agent -config-dir=/consul/config/bootstrap"
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+    volumes:
+      - ./consul/config:/consul/config
+      - ./consul/data:/consul/data
+    networks:
+      - app_network
+
+  consul-server:
+    image: consul:latest
+    command: "agent -config-dir=/config/server -retry-join=consul-bootstrap"
+    scale: 3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}'
+    volumes:
+    - ./consul/config:/config
+    networks:
+      - app_network
+    depends_on:
+      - consul-bootstrap
+
+  consul-client:
+    image: consul:latest
+    command: "agent -config-dir=/config/agent -retry-join=consul-bootstrap"
+    scale: 3
+    environment:
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    volumes:
+    - ./consul/config:/config
+    networks:
+      - app_network
+    depends_on:
+      - consul-bootstrap 
+
+  vault:
+    image: vault:latest
+    container_name: vault
+    restart: on-failure:10
+    command: "vault server -config /vault/config/vault.hcl"
+    ports:
+    - 8200:8200
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault/config:/vault/config
+      - ./vault/policies:/vault/policies
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+    networks:
+      - app_network
+    depends_on:
+      - consul-bootstrap
+
+networks:
+  app_network:
+    external: true
