@@ -1,0 +1,1 @@
+proxy from reversy proxy nginx to nginx in nomad proxy
