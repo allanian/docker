@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:latest
+WORKDIR app
+ARG APP
+ARG CI_PROJECT_ID
+ARG CI_SERVER_URL
+ARG CI_JOB_TOKEN
+COPY ./src .
+RUN cat ./NuGet.config
+RUN mkdir packages && ls -la
+RUN dotnet pack ./$APP -c Release -o ./packages/
+RUN dotnet nuget add source "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+RUN dotnet nuget push "./packages/*.nupkg" --source gitlab
