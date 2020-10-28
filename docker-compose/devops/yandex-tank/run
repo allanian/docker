@@ -1,0 +1,11 @@
+docker run  \
+  --entrypoint /bin/bash    \
+  -v $HOME/.ssh:/root/.ssh  \
+  -v $(pwd):/var/loadtest   \
+  -v $SSH_AUTH_SOCK:/ssh-agent \
+  -e SSH_AUTH_SOCK=/ssh-agent \
+  --net host \
+  -it rockmagicnet/yandex-tank-jmeter:latest
+
+on target host install it
+sudo apt install python2

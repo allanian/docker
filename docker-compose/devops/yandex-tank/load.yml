@@ -1,0 +1,32 @@
+phantom:
+    address: login.shakticoin.com
+    ssl: true
+    uris: # don't use it with ammofile
+    - "/"
+    - /oxauth/login.htm
+    load_profile:
+      load_type: rps
+      schedule: line(1000, 100000, 30s)
+  #  ammofile: ammo.txt
+  #  ammo_type: uripost
+  
+  # stop if timeout more then 5%
+  autostop:
+    autostop:
+      - time(50, 30s)
+      - net(110, 5%, 10s)
+  
+  # connect with ssh key to server and get system info
+  telegraf:
+    enabled: true
+    config: monitoring.xml
+    kill_old: false
+    package: yandextank.plugins.Telegraf
+    ssh_timeout: 30s
+  
+  # send screen to site
+  overload:
+    enabled: true
+    token_file: token.txt
+    job_name: test
+    job_dsc: test description

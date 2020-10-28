@@ -1,0 +1,5 @@
+<Monitoring>
+  <Host address="ip_target" port="5634" interval="1" username="ruslan">
+    <CPU/> <Kernel/> <Net/> <System/> <Memory/> <Disk/> <Netstat /> <Nstat/>
+  </Host>
+</Monitoring>
