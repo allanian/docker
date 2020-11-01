@@ -1,0 +1,88 @@
+---
+- name: Copy config service for replica
+  template:
+    src: "{{ line7_item.src }}"
+    dest: "{{ line7_item.dest }}"
+  with_items:
+    - { src: "postgresql-10.service.j2",dest: "/etc/systemd/system/postgresql.service" }
+    - { src: "postgres.sh.j2",dest: "/etc/profile.d/postgres.sh" }
+  loop_control: 
+    loop_var: line7_item
+    
+- name: Stop service, if started
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: stopped
+    
+- name: clear PGDATA on slave
+  file:
+    state: "{{ line_item }}"
+    path: "{{ PGDATA10 }}/"
+    owner: postgres
+    group: postgres
+    mode: '0700'
+  with_items:
+    - absent
+    - directory
+  loop_control: 
+    loop_var: line_item
+
+- name: Execute pg_basebackup on slave
+  command: "pg_basebackup -h {{ line_item }} -D {{ PGDATA10 }} -P -U {{ replic_user_name }} --wal-method=stream"
+  become: yes
+  become_user: postgres
+  with_items:
+    - "{{ master_ip }}"
+  loop_control: 
+    loop_var: line_item
+
+- name: Copy config for slave
+  template:
+    src: "{{ line8_item.src }}"
+    dest: "{{ line8_item.dest }}"
+  with_items:
+    - { src: "recovery.conf.j2",dest: "{{ PGDATA10 }}/recovery.conf" }
+  loop_control: 
+    loop_var: line8_item
+
+- name: Add in recovery.conf
+  replace:
+    path: "{{ PGDATA10 }}/recovery.conf"
+    regexp: 'walreceiver'
+    replace: '{{application_name1}}'
+    backup: yes
+  notify: restart postgresql
+  when: (ansible_default_ipv4.address == hostvars[line1_item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ slave_ip[0] }}"
+  loop_control: 
+    loop_var: line1_item
+
+- name: Add in recovery.conf
+  replace:
+    path: "{{ PGDATA10 }}/recovery.conf"
+    regexp: 'walreceiver'
+    replace: '{{application_name2}}'
+    backup: yes
+  notify: restart postgresql
+  when: (ansible_default_ipv4.address == hostvars[line2_item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ slave_ip[1] }}"
+  loop_control: 
+    loop_var: line2_item
+
+- name: Configure postgresql.conf on slave - hot standby
+  lineinfile:
+    dest: "{{ PGDATA10 }}/postgresql.conf"
+    state: present
+    regexp: "{{ line_item.regexp }}"
+    line: "{{ line_item.replace }}"
+  with_items: "{{postgresql_conf_slave}}"
+  notify: restart postgresql
+  loop_control: 
+    loop_var: line_item
+
+- name: Ensure PostgreSQL is started on slave
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: "{{ postgresql_restarted_state }}"

@@ -1,0 +1,4 @@
+---
+postgresql_version: "10"
+postgresql_packages:
+  - "postgresql{{ postgresql_version }}"

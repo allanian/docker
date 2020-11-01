@@ -1,0 +1,96 @@
+---
+## EDIT CONFIG
+bind_zone_master_server_ip: "192.168.1.75" # master dns ip
+bind_zone_slave_server_ip: "192.168.1.77"
+bind_recursion: true
+bind_allow_recursion:
+  - "acl_list"
+
+bind_acls:
+  - name: acl_list
+    match_list:
+    - "localhost"
+    - "localnets"
+    - "{{ansible_default_ipv4.network}}/24"
+
+
+
+bind_zone_domains:
+  - name: "test.com"
+    networks:
+      - '192.168.1'
+    name_servers:
+      - ns1.test.com.
+      - ns2.test.com.
+    hostmaster_email: admin
+    hosts:
+      - name: ns1
+        ip: "{{bind_zone_master_server_ip}}"
+        aliases:
+        - www
+      - name: ns2
+        ip: "{{bind_zone_slave_server_ip}}"
+
+
+
+
+
+
+
+
+
+
+
+
+## NETWORK
+bind_listen_ipv4: # List of IPv4 address of the network interface(s) to listen on. Set to "any" to listen on all interfaces
+  - "127.0.0.1"
+  - "localhost"
+  - "any"
+bind_listen_ipv6: # List of IPv6 address of the network interface(s) to listen on.
+  - "none" #::1
+bind_allow_query:  # List of hosts that are allowed to query this DNS server.
+  - "localhost"
+  - "{{ansible_default_ipv4.network}}"
+bind_forward_only: false # Allows BIND to be set up as a caching name server
+bind_forwarders: # List of name servers to forward DNS requests to. here you can use NS from provider
+  - '8.8.8.8'
+  - '8.8.4.4'
+
+
+
+
+
+## DEFAULT CONFIG
+bind_log: "data/named.run"
+bind_dns_keys: [] # Key binding for slaves
+#  - name: master_key
+#    algorithm: hmac-sha256
+#    secret: "azertyAZERTY123456"
+
+
+
+bind_rrset_order: "random" # DNS round robin order (random or cyclic)
+bind_statistics_channels: false # statistics channels configuration
+bind_statistics_port: 8053
+bind_statistics_host: 127.0.0.1
+bind_statistics_allow:
+  - "127.0.0.1"
+
+# DNSSEC configuration
+bind_dnssec_enable: true
+bind_dnssec_validation: true
+
+bind_extra_include_files: []
+
+# SOA information
+bind_zone_ttl: "1W"
+bind_zone_time_to_refresh: "1D"
+bind_zone_time_to_retry: "1H"
+bind_zone_time_to_expire: "1W"
+bind_zone_minimum_ttl: "1D"
+
+# Custom location for master zone files
+bind_zone_dir: "{{ bind_dir }}"
+# File mode for master zone files (needs to be something like 0660 for dynamic updates)
+bind_zone_file_mode: "0640"

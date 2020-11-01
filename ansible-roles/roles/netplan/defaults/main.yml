@@ -1,0 +1,28 @@
+---
+# NETPLAN
+netplan_enabled: no
+
+netplan_config_file: /etc/netplan/config.yaml
+netplan_apply: True
+netplan_renderer: networkd
+
+
+netplan_pri_domain: test.com
+
+
+netplan_configuration:
+  network:
+    version: 2
+    ethernets:
+      enp0s3:
+        addresses:
+          - "{{ansible_default_ipv4.address}}/24"
+        gateway4: "{{ansible_default_ipv4.gateway}}"
+        nameservers:
+          addresses:
+          - "{{ bind_zone_master_server_ip }}"
+          - "{{ bind_zone_slave_server_ip }}"			
+          - 8.8.8.8
+          - 8.8.4.4
+          search:
+          - "{{ netplan_pri_domain }}"

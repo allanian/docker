@@ -1,0 +1,4 @@
+---
+#MongoDB
+#===============
+dir_for_mongo_data: "/usr/share/mongo_data"

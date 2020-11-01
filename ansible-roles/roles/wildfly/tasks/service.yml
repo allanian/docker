@@ -1,0 +1,8 @@
+---
+
+- name: WildFly | Manage service
+  systemd:
+    name: wildfly
+    state: "{{ wildfly_service_state }}"
+    enabled: "{{ wildfly_service_enabled }}"
+    daemon_reload: yes

@@ -1,0 +1,29 @@
+---
+group_user: "jenkins"
+users:
+  - username: "jenkins"
+    password: "$6$saltsalt$hLg.8CK6pr0roiSAoHNsSDJ5hIS5RjvnVVIB.BexAsQIzrtAPyuXMOV.ktv.BLx2UEk.fVlkwpY0204NajgC0." #jenkins
+    groups: "wheel, {{ group_user }}"
+    pub_key: [jenkins_id_rsa.pub]
+
+
+#SERVICE
+name_server: "DIT-slave-TSOO-APP5P-cloud"
+secret: "7d097fad717e377b0f2853f7a408b0603ee4a1cc2ce80ec19f4555507087b64d"
+
+#EXAMPLE
+#users:
+#WITH SSH_KEY
+#  - username: "jenkins"
+#    password: "$6$saltsalt$Qxsvuz/Vnge9rMj0Mcpu80YZzwe0GCa8Pk0YzGFG5C/"
+#    groups: "wheel, {{ group_user }}"
+#    pub_key: [jenkins_id_rsa.pub]
+#WITHOUT SSH_KEY
+#  - username: "vika"
+#    password: ""
+#    groups: ""
+#    pub_key: []
+
+
+
+

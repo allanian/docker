@@ -1,0 +1,11 @@
+---
+- name: copy Repo on remote server
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/"
+    mode: u+rw,g-wx,o-rwx
+  with_items:
+  - altarix-centos7.repo
+  - altarix-epel7.repo
+  - altarix-nginx.repo
+  register: nginx_repo

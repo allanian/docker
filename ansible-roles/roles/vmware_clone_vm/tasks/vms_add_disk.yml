@@ -1,0 +1,21 @@
+---
+- name: Add disks to virtual machine
+  delegate_to: localhost
+  register: disk_facts
+  vmware_guest_disk:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    validate_certs: no
+    name: "{{ inventory_hostname }}"
+    disk:
+      - size_gb: "{{ item.size_gb }}"
+        type: thin
+        datastore: "{{ item.guest_datastore_disk | default('HQ-Datastore') }}"
+        state: present
+        scsi_controller: "{{ item.scsci | default('no') }}"
+        unit_number: "{{ item.unit }}"
+        scsi_type: "paravirtual"
+  with_items:
+  - "{{ entries_disk }}"

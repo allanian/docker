@@ -1,0 +1,9 @@
+---
+- name: install
+  include: install.yml
+
+- name: firewall
+  include: firewall.yml
+
+- name: configure
+  include: configure.yml

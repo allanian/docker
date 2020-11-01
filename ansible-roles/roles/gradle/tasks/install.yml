@@ -1,0 +1,60 @@
+---
+- name: Install package and etc.
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - java-1.8.0-openjdk.x86_64
+    - java-1.8.0-openjdk-devel.x86_64
+    - wget
+    - nano
+    - git
+    - unzip
+  when: gradle_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+- name: "Check gradle version is present"
+  stat:
+    path: "{{ gradle_home_dir }}"
+  register: gradle_present
+      
+- block:
+
+    - name: Download gradle binaries
+      get_url:
+        url: "{{ gradle_url }}"
+        dest: "/tmp/{{ gradle_zipfile }}"
+      environment: "{{item}}"
+      with_items: "{{proxy_env}}"
+
+    - name: Extract gradle in the install directory
+      unarchive:
+        copy: no
+        src: "/tmp/{{gradle_zipfile}}"
+        dest: "{{ gradle_install_dir }}"
+
+    - name: Move gradle
+      command: "mv {{ gradle_install_dir }}/{{ gradle_package_name }} {{ gradle_home_dir }}"
+
+    - name: Copy config
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: "gradle.sh.j2", dest: "/etc/profile.d/gradle.sh" }
+
+    - name: source profile.d
+      shell: "source /etc/profile.d/gradle.sh"
+
+  when: not gradle_present.stat.exists
+  
+- name: "Validate Gradle version"
+  shell: "{{ gradle_home_dir }}/bin/gradle -v | grep {{ gradle_version }}"
+  changed_when: false
+  register: gradle_ver
+
+- debug:
+    msg: "Gradle {{ gradle_version }} is installed"
+  when: gradle_ver.rc == 0

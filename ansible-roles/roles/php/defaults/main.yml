@@ -1,0 +1,18 @@
+---
+php_packages:
+  - "php"
+  - "php-cli"
+  - "php-common"
+  - "php-bcmath"
+  - "php-fpm"
+  - "php-gd"
+  - "php-json"
+#  - "php-mbstring"
+  - "php-pdo"
+  - "php-soap"
+  - "php-xml"
+  - "php-process"
+  - "php-pgsql"
+  - "php-zip"
+  - "java-1.8.0-openjdk.x86_64"
+  - "java-1.8.0-openjdk-devel.x86_64"

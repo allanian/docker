@@ -1,0 +1,24 @@
+- debug:
+    msg: "{{ hostvars[line1_item]['manager_token']['stdout'] }}"
+  with_items: 
+  - "{{ groups['manager_first'][0] }}"
+  loop_control:
+    loop_var: line1_item
+
+- debug:
+    msg: "{{ hostvars[line2_item]['ansible_default_ipv4']['address'] }}:2377"
+  with_items: 
+  - "{{ groups['manager_first'][0] }}"
+  loop_control:
+    loop_var: line2_item
+
+- name: "join as a manager"
+  shell: "docker swarm join --token {{ hostvars[line3_item]['manager_token']['stdout'] }} {{ hostvars[line3_item]['ansible_default_ipv4']['address'] }}:2377"
+  when: "docker_info.stdout.find('Swarm: inactive') != -1"
+  retries: 3
+  delay: 20
+  with_items: 
+  - "{{ groups['manager_first'][0] }}"
+  loop_control:
+    loop_var: line3_item
+

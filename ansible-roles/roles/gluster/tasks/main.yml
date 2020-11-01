@@ -1,0 +1,13 @@
+---
+- name: Add Repository
+  include: add-repo.yml
+
+- name: Install Gluster-server
+  include: install.yml
+
+- name: Config FireWall
+  include: firewall.yml
+
+- name: Config Gluster-server
+  include: config.yml
+

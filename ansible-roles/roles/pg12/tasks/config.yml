@@ -1,0 +1,31 @@
+---
+- name: Verify postgresql 12 is installed
+  stat:
+    path: "{{PGDATA12 }}/PG_VERSION"
+  register: pg_version
+
+- name: Init database
+  command: "{{ postgresql_bin_path }}/postgresql-12-setup initdb"
+  when: not pg_version.stat.exists
+  notify: restart postgresql
+
+- name: Ensure PostgreSQL database is initialized.
+  command: "{{ postgresql_bin_path }}/initdb -D {{ PGDATA12 }}"
+  when: not pg_version.stat.exists
+  become: true
+  become_user: "postgres"
+  # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+ # vars:
+ #   ansible_ssh_pipelining: true
+  notify: restart postgresql
+
+- name: Copy config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "postgresql-12.service.j2",dest: "/etc/systemd/system/postgresql.service" }
+    - { src: "postgres.sh.j2",dest: "/etc/profile.d/postgres.sh" }
+    - { src: "postgresql.conf.j2",dest: "{{ PGDATA12 }}/postgresql.conf" }
+    - { src: "pg_hba.conf.j2",dest: "{{ PGDATA12 }}/pg_hba.conf" }
+  notify: restart postgresql

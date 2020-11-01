@@ -1,0 +1,44 @@
+---
+# Delete Kubernetes
+remove: true
+
+#Config
+version: 17
+kube_version: "1.{{version}}.2"
+kubeadm_version: "v1.{{version}}.2"
+kubelet_environment_file_path: /etc/sysconfig/kubelet
+kube_kubelet_extra_args: "--fail-swap-on=false"
+
+# User
+kube_user: "root"
+kube_pass: "$6$saltsalt$Zk/AvOkNE54QxeRO8z1qiAkO15DWJnlkyfITbBci5m54miJ99OKGLWNsAfyJrxaSUczy0AHtUgIiJme1ro/o91" #kubernetes
+kube_home: "{{ ansible_env.HOME }}"
+create_user: false
+
+# Network
+entries:
+  - {name: master, ip: 10.250.88.200}
+  - {name: slave1, ip: 10.250.88.201}
+  - {name: slave2, ip: 10.250.88.202}
+
+# FOR INIT
+apiserver_advertise_address: "{{ entries.0.ip }}"
+service_cidr: "10.96.0.0/12" # don't change if you don't know about this
+pod_network_cidr: "10.244.0.0/16"   # network flannel. check this here kubeadm http://kubernetes.io/docs/admin/addons/.
+kubernetes_allow_pods_on_master: true # By default, your cluster will not schedule pods on the control-plane node for security reasons. If you want to be able to schedule pods on the control-plane node - SET TRUE
+# Any other additional opts you want to add..
+kubeadm_opts: "--ignore-preflight-errors=all"  #For example: kbeadm_opts: '--apiserver-cert-extra-sans "k8s.domain.com,kubernetes.domain.com"'
+
+# Flannel config files.
+kubernetes_flannel_manifest_file: "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+kubernetes_flannel_manifest_file_rbac: "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml"
+
+
+# DASHBOARD
+kubernetes_enable_dashboard: true # enable dashboard
+kubernetes_dashboard: "https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml"
+
+
+
+
+

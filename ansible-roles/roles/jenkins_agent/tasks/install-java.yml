@@ -1,0 +1,39 @@
+---
+- name: Install package
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages: 
+      - yum-utils
+      - bash-completion
+      - bash-completion-extras
+      - java-1.8.0-openjdk.x86_64
+      - java-1.8.0-openjdk-devel.x86_64
+      - policycoreutils-python
+      - wget
+      - nano
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+- name: Creates directory
+  file:
+    path: "/u01/jenkins/slave/"
+    state: directory
+    owner: "jenkins"
+    group: "jenkins"
+    mode: 0700
+
+- name: Download gradle binaries
+  get_url:
+    url: "https://jenkins.altarix.ru/jnlpJars/agent.jar"
+    dest: "/u01/jenkins/slave/"
+    owner: "jenkins"
+ 
+- name: Copy config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "jenkins_slave.service.j2",dest: "/etc/systemd/system/jenkins_slave.service" }
+  notify: restart jenkins_slave

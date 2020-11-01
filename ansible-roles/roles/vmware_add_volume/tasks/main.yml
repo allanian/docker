@@ -1,0 +1,17 @@
+---
+- name: INCLUDE | Debian family
+  include: debian.yml
+  when: "(distribution |lower == 'debian' or distribution |lower == 'ubuntu')"
+  
+- name: INCLUDE | RedHat family
+  include: centos.yml
+  when: "(distribution |lower == 'redhat' or distribution |lower == 'centos')"
+  
+- name: LVM
+  include: lvm.yml
+
+- name: FILESYSTEM
+  include: filesystem.yml
+
+- name: MOUNT
+  include: mount_vol.yml

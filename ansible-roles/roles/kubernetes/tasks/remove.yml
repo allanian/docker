@@ -1,0 +1,28 @@
+---
+- name: REMOVE | Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  register: reset_cluster
+  notify:
+    - stop kubelet
+    - stop docker
+
+- name: REMOVE | flush_handlers
+  meta: flush_handlers
+
+- name: REMOVE | Recursively remove directory
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /var/lib/cni/
+    - /var/lib/kubelet/
+    - /etc/cni/
+
+- name: REMOVE | Stop ifconfig cni0
+  shell: "ifconfig cni0 down && ifconfig flanne.1 down && ifconfig docker0 down"
+  ignore_errors: true
+
+- name: REMOVE | Clean /var/lib/etcd
+  file:
+    state: absent
+    path: "/var/lib/etcd"

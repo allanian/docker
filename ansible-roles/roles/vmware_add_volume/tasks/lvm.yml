@@ -1,0 +1,21 @@
+---    
+- name: Get partition list
+  command: "lsblk -lno NAME"
+  register: results
+
+- name: Create a volume group
+  lvg:
+    vg: "{{ item.vg_name }}"
+    pvs: "/dev/{{ item.pv_name}}"
+    pesize: "4"
+  when: (item.pv_name in results.stdout )   # item exist in list
+  with_items: "{{ disk_lvm }}"
+
+- name: Create logical volume
+  lvol:
+    vg: "{{ item.vg_name }}"
+    lv: "{{ item.lv_name }}"
+    size: "{{ item.lv_size | default('100%VG') }}"
+    state: present
+  when: (item.pv_name in results.stdout )
+  with_items: "{{ disk_lvm }}"

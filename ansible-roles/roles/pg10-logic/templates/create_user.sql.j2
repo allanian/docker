@@ -1,0 +1,8 @@
+--/////CREATE-USER////----
+-- User: replication
+-- DROP USER replication;
+
+CREATE USER {{ replic_user_name }} WITH
+  LOGIN
+  REPLICATION
+  PASSWORD '{{ replic_user_pass }}';

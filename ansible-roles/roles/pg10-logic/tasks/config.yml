@@ -1,0 +1,94 @@
+---
+- name: Verify postgresql 10 is installed
+  stat:
+    path: "{{PGDATA10 }}/PG_VERSION"
+  register: pg_version
+
+- block:
+    - name: Ensure PostgreSQL database is initialized.
+      command: "{{ postgresql_bin_path }}/initdb -D {{ PGDATA10 }}"
+      when: 
+        - not pg_version.stat.exists
+      become: true
+      become_user: "postgres"
+    #  See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+    #  vars:
+    #    ansible_ssh_pipelining: true
+    #  notify: restart postgresql
+
+    - name: Copy config - MASTER
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: "postgresql-10.service.j2",dest: "/etc/systemd/system/postgresql.service" }
+        - { src: "postgres.sh.j2",dest: "/etc/profile.d/postgres.sh" }
+        - { src: "postgresql_master.conf.j2",dest: "{{ PGDATA10 }}/postgresql.conf" }
+        - { src: "pg_hba.conf.j2",dest: "{{ PGDATA10 }}/pg_hba.conf" }
+      notify: restart postgresql
+
+    - name: Ensure PostgreSQL is started and enabled on boot.
+      service:
+        name: "{{ postgresql_daemon }}"
+        state: "started"
+        enabled: true
+
+    - name: Create replication user account
+      postgresql_user:
+        name: "{{ replic_user_name }}"
+        password: "{{ replic_user_pass }}"
+        role_attr_flags: replication
+      become: True
+      become_user: postgres
+
+  when: (ansible_default_ipv4.address == master_ip)
+  
+- name: clear PGDATA on slave
+  file:
+    state: "{{ item }}"
+    path: "{{ PGDATA10 }}/"
+    owner: postgres
+    group: postgres
+    mode: '0700'
+  with_items:
+    - absent
+    - directory
+  when: (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][0]) or
+        (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][1])
+
+- name: Execute pg_basebackup on slave
+  command: "pg_basebackup -h {{ master_ip }} -D {{ PGDATA10 }} -P -U {{ replic_user_name }} --wal-method=stream"
+  become: true
+  become_user: postgres
+  when: (ansible_default_ipv4.address == item)
+  with_items:
+    - "{{ slave_ip }}"
+
+- name: Copy config for slave
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "postgresql-10.service.j2",dest: "/etc/systemd/system/postgresql.service" }
+    - { src: "postgres.sh.j2",dest: "/etc/profile.d/postgres.sh" }
+    - { src: "recovery.conf.j2",dest: "{{ PGDATA10 }}/recovery.conf" }
+  when: (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][0]) or
+        (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][1])
+
+- name: Configure postgresql.conf on slave
+  lineinfile:
+    dest: "{{ PGDATA10 }}/postgresql.conf"
+    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.replace }}"
+  with_items: "{{postgresql_conf_slave}}"
+  notify: restart postgresql
+  when: (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][0]) or
+        (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][1])
+
+- name: Ensure PostgreSQL is started on slave
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: "{{ postgresql_restarted_state }}"
+  when: (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][0]) or
+        (ansible_default_ipv4.address == groups['PG_CLUSTER_SLAVE'][1])

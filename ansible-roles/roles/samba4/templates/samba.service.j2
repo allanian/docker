@@ -1,0 +1,12 @@
+[Unit]
+Description= Samba 4 AD Daemon
+After=syslog.target
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/samba/samba.pid
+ExecStart=/usr/sbin/samba
+
+[Install]
+WantedBy=multi-user.target

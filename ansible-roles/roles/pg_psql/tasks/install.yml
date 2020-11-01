@@ -1,0 +1,21 @@
+---
+- name: Install package
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages: 
+      - yum-utils
+      - bash-completion
+      - bash-completion-extras
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+- name: Install package postgres
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars: 
+    packages: "{{ postgresql_packages }}"
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"

@@ -1,0 +1,6 @@
+---
+- name: Config group
+  include: group.yml
+
+- name: Config user
+  include: user.yml

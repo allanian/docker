@@ -1,0 +1,37 @@
+---
+group_user: "dev"
+users:
+#  - username: "polyanskayami"
+#    password: "$6$saltsalt$hLg.8CK6pr0roiSAoHNsSDJ5hIS5RjvnVVIB.BexAsQIzrtAPyuXMOV.ktv.BLx2UEk.fVlkwpY0204NajgC0." #jenkins
+#    groups: "wheel, {{ group_user }}"
+#    pub_key: [ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAiv8qVQaxllRYj53ZZs25EMQcAiDobyj5n0aNktSz3RdvBzcFCRDhoEHraxI34IEdPKeZGnUkKRBb5TTSKEeFDCkVGhh4dbchxpIlG768UiQIz8bO8rcw6RQDjrNNTbwqVM21ambm3rXbkcGqQ7ek8B9DGMMpj1XX7/miK60CBoWhlmZnWkf9uPQYrLOQ6UtCHwFZ3Y5gXcr4ye2b7dH1KIPYNNX3FuDJmScE3juLtEVNM5Z2oFzhuAbMaDa4SK+LupM6YRQU+iLa/K4t1N2i3dxVI3b/bOs4xYtldprTHH0msh27ofzbE6kh3jZgHrd9Ovj1ZwntHkilS+G4RAewHw==]
+#  - username: "ravil.shamenov"
+#    password: "$6$saltsalt$hLg.8CK6pr0roiSAoHNsSDJ5hIS5RjvnVVIB.BexAsQIzrtAPyuXMOV.ktv.BLx2UEk.fVlkwpY0204NajgC0." #jenkins
+#    groups: "wheel, {{ group_user }}"
+#    pub_key: [ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXw4sY0PyjZ6xqIv3XaszN9D5HJi0VGJxBLu6eiZ/3N4Rj3KYZgRS3BSZhoYOUVzdjphEQW3XcFq45Cg21/QKs3YfEttUcDtNkQSjmsoIxE/L7VvCYcMHmpzqb3C/PBi8Pv3+eWJ4aBhKPLSQc0t75hz1eLFSiWoI2sQZNxv+svOEf4Ni43t/iVE++0GqVUzslVgmPqMyUmRdBqdJqk363HsNqrOYJOtjWLEbP33/HVxyPT6CO75udOIHiPGjTWki1tSPTX/wb5SMzgUeIBcLXc7fQhBrAeIGzOGzFEXz16W2LD+AJNeV2Lm9nkUoenJzwisZjrag4vxmhtkNLGrE1 ravil@shamenov]
+  - username: "shvydkiyvg"
+    password: "$6$saltsalt$hLg.8CK6pr0roiSAoHNsSDJ5hIS5RjvnVVIB.BexAsQIzrtAPyuXMOV.ktv.BLx2UEk.fVlkwpY0204NajgC0." #jenkins
+    groups: "wheel, {{ group_user }}"
+    pub_key: [ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNo3Ojs0RIU65IOcAvIlJ72PLqwoxOh/7LUSnJ4DWI5ta8EkGzvdJTQrwsTxGLWqdjaNsCWa03lbHTZPeIMsY5tTSRkmotQ84AoY0QJ9a2kIrm6wLuwoXRMOiFIhhSnk5Zxno1nbXM7CQlP/hohMtZVicDGE8rCCgGm6e6NZ0bzOgY7rH3N/J8909rnCR8GjoV3Eq2BfB8paXCSpt46cQcQLxI7U1jjD63WYghPpoAUfgvedJ6HxIqAPOL0U25r0E0zMVF90nOIvVprdniaCcxijTezH0H/JQeqegXSg7LQIzu/DJvAkr2c7MnIUPb0ntDTkMOh77EGYEtcaGv3ZpD gluk@harmony]
+
+
+
+
+
+#  - username: "testuser1"
+#    password: "$1$SomeSalt$SCmTHfSyHZcgUdO4HRCNL1" #jenkins
+#    groups: "wheel, {{ group_user }}"
+#    pub_key: []
+ 
+#EXAMPLE
+#users:
+#WITH SSH_KEY
+#  - username: "jenkins"
+#    password: "$6$saltsalt$Qxsvuz/Vnge9rMj0Mcpu80YZzwe0GCa8Pk0YzGFG5C/"
+#    groups: "wheel, {{ group_user }}"
+#    pub_key: [jenkins_id_rsa.pub]
+#WITHOUT SSH_KEY
+#  - username: "vika"
+#    password: ""
+#    groups: ""
+#    pub_key: []

@@ -1,0 +1,16 @@
+---
+- name: CENTOS | Create a filesystem
+  filesystem:
+    fstype: "{{ item.filesystem | default ('xfs') }}"
+    dev: "/dev/{{ item.vg_name }}/{{ item.lv_name }}"
+  when: 
+    - (item.pv_name in results.stdout )
+    - "(distribution |lower == 'redhat' or distribution |lower == 'centos')"
+  with_items: "{{ disk_lvm }}"
+  
+- name: DEBIAN | Create a filesystem
+  command: "mkfs.{{item.filesystem}} /dev/{{ item.vg_name }}/{{ item.lv_name }}"
+  when: 
+    - (item.pv_name in results.stdout )
+    - "(distribution |lower == 'debian' or distribution |lower == 'ubuntu')"
+  with_items: "{{ disk_lvm }}"

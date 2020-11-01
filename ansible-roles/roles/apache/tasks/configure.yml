@@ -1,0 +1,8 @@
+---
+- name: Copy config httpd.conf
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "httpd.conf.j2",dest: "{{ httpd_config }}" }
+  notify: restart apache

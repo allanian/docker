@@ -1,0 +1,16 @@
+---
+
+
+- name: copy Repo on remote server
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/"
+    mode: u+rw,g-wx,o-rwx
+  with_items:
+  - altarix-centos7.repo
+  - altarix-centos7-updates.repo
+  - altarix-epel7.repo
+  - altarix-docker.repo
+  - kubernetes.repo
+  register: kubernetes_repo
+

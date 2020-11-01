@@ -1,0 +1,1 @@
+Create group in hosts - GLUSTER_SERVER

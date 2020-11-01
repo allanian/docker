@@ -1,0 +1,23 @@
+[Unit]
+Description=PostgreSQL {{ major_ver }} database server
+Documentation=https://www.postgresql.org/docs/{{ major_ver }}/static/
+After=syslog.target
+After=network.target
+
+[Service]
+Type=notify
+User=postgres
+Group=postgres
+Environment=PGDATA={{ PGDATA }}
+OOMScoreAdjust=-1000
+Environment=PG_OOM_ADJUST_FILE=/proc/self/oom_score_adj
+Environment=PG_OOM_ADJUST_VALUE=0
+ExecStartPre=/usr/pgsql-{{ major_ver }}/bin/postgresql-{{ major_ver }}-check-db-dir ${PGDATA}
+ExecStart=/usr/pgsql-{{ major_ver }}/bin/postgres -D ${PGDATA}
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target

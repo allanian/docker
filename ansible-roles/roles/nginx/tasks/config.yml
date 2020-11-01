@@ -1,0 +1,17 @@
+---
+- name: Creates directory for nginx
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+  - "/var/www/"
+  - "/etc/nginx/sites-enabled/"
+
+- name: copy config
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: 'nginx.conf', dest: '/etc/nginx/nginx.conf' }
+  notify: restart nginx
+
+
+

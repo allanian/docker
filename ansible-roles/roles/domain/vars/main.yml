@@ -1,0 +1,50 @@
+---
+ntpd_packages:
+- ntp
+- ntpdate
+ntpd_servers:
+- alt.altarix.ru
+- smr-dc01.alt.altarix.ru
+- smr-dc02.alt.altarix.ru
+- smr-dc03.alt.altarix.ru
+
+
+ldap_packages_centos:
+- sssd
+- realmd
+- oddjob
+- oddjob-mkhomedir
+- samba-common-tools
+- adcli
+- python-pip
+- sudo
+ldap_packages_ubuntu:
+- sssd
+- realmd
+- oddjob
+- oddjob-mkhomedir
+- samba-common-bin
+- adcli
+- python-pip
+- sudo
+- sssd-tools  
+- libnss-sss 
+- libpam-sss
+
+domain: "alt.altarix.ru"
+domain_base: "dc=alt,dc=altarix,dc=ru"
+domain_project_base: "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+domain_user_bases:
+- "ou=altarix.ru,ou=HQ,dc=alt,dc=altarix,dc=ru"
+- "ou=Outsource,ou=HQ,dc=alt,dc=altarix,dc=ru"
+- "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+domain_group_bases:
+- "ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+- "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+- "ou=Группы_распространения,ou=HQ,dc=alt,dc=altarix,dc=ru"
+- "cn=Domain Users,cn=Users,dc=alt,dc=altarix,dc=ru"
+admin_access_group: "admin-access"
+admin_sudoers_group: "admin-sudoers"
+realmd_cache_path: "/var/cache/realmd"
+
+

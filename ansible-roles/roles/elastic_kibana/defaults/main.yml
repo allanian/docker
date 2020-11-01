@@ -1,0 +1,18 @@
+---
+#Elasticsearch
+#===============
+cluster_name: elastic
+dir_for_es_data: "/data/elasticsearch"
+path_data: "/data/elasticsearch/data"
+path_logs: "/var/log/elasticsearch"
+http_port_elastic: "9200"
+network_host: "{{ ansible_default_ipv4.address }}"
+java_memory: 512m
+
+#KIBANA
+#===============
+kibana_version: "6.x"
+#kibana_host: "0.0.0.0"
+kibana_host: "{{ ansible_default_ipv4.address }}"
+kibana_port: "5601"
+elasticsearch_url: "http://{{ network_host }}:{{ http_port_elastic }}"

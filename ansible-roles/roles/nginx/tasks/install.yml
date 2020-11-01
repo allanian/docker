@@ -1,0 +1,11 @@
+---
+- name: Install package
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - nginx
+  when: nginx_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"

@@ -1,0 +1,40 @@
+---
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+    enabled: yes
+
+- name: restart sssd
+  service:
+    name: sssd
+    state: restarted
+    enabled: yes
+
+- name: restart realmd
+  service:
+    name: realmd
+    state: restarted
+    enabled: yes
+    
+- name: restart dbus
+  service:
+    name: dbus
+    state: restarted
+    enabled: yes
+    
+- name: restart systemd-logind
+  service:
+    name: systemd-logind
+    state: restarted
+    enabled: yes
+
+- name: restart ntpd
+  service:
+    name: ntpd
+    state: restarted
+
+- name: restart ntp
+  service:
+    name: ntp
+    state: restarted

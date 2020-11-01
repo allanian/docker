@@ -1,0 +1,19 @@
+---
+# dir for data-root for docker
+data_dir: "/data/docker"
+
+docker_packages:
+  EL7:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - python-pip
+#    - python36
+#    - python36-pip
+#    - policycoreutils-python3
+    - policycoreutils-python
+    - docker-ce
+    
+docker_compose_install: "yes"
+docker_compose_v: "1.23.2"
+

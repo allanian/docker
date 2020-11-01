@@ -1,0 +1,31 @@
+---
+- name: copy local pkg
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp/docker_i"
+    mode: 0775
+  with_fileglob:
+    - "files/container-selinux*el7*.rpm"
+    - "containerd*el7*.rpm"
+    - "docker-ce*el7*.rpm"
+    - "docker-ce-cli*el7*.rpm"
+    - "libseccomp*el7*.rpm"
+
+- name: Finding RPM files
+  find:
+    paths: "/tmp/docker_i"
+    patterns: "*.rpm"
+  register: rpm_result
+
+- name: Install RPM
+  yum:
+    name: "{{ item.path }}"
+    state: present
+  with_items: "{{ rpm_result.files }}"
+
+- name: start docker
+  systemd:
+    state: "start"
+    name: "docker"
+    daemon_reload: yes
+    enabled: yes

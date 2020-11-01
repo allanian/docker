@@ -1,0 +1,20 @@
+---
+- name: Add Repository
+  include: add-repo.yml
+
+- name: Install
+  include: install.yml
+
+- name: Configuring service
+  systemd:
+    name: tomcat
+    state: "{{ tomcat_service_state }}"
+    enabled: "{{ tomcat_service_enabled }}"
+    daemon_reload: yes
+
+- name: Config FireWall
+  include: firewall.yml
+
+- name: Config
+  include: config.yml
+

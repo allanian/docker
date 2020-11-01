@@ -1,0 +1,3 @@
+---
+- name: netbox.yml
+  include: netbox.yml

@@ -1,0 +1,35 @@
+---
+- name: FIREWALL | status service firewalld
+  service:
+    name: firewalld
+  register: services_state
+
+- name: FIREWALL | Open port in firewalld
+  firewalld: 
+    port: "{{item}}"
+    permanent: true 
+    state: enabled 
+    immediate: yes
+  ignore_errors: yes
+  when: services_state.status.ActiveState == 'running' or services_state.status.ActiveState == 'active'
+  with_items:
+  - "6443/tcp"
+  - "8001/tcp"
+  - "8080/tcp"
+  - "2379-2380/tcp"
+  - "10250-10252/tcp"
+  - "10255/tcp"
+  - "8285/udp"
+  - "8472/udp"
+
+- name: FIREWALL | disable SELinux
+  command: setenforce 0
+  ignore_errors: yes
+  when: ansible_selinux.status == 'enabled'
+
+- name: FIREWALL | disable SELinux on reboot
+  selinux:
+    state: disabled
+  when: ansible_selinux.status == 'enabled'
+  ignore_errors: yes
+

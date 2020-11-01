@@ -1,0 +1,51 @@
+---
+- name: Creates directory
+  file:
+    path: "{{ dest_rpm }}"
+    state: directory
+  with_items:
+  - absent
+  - directory
+
+- name: copy local pkg zabbix-agent
+  copy:
+    src: "{{ item }}"
+    dest: "{{ dest_rpm }}"
+    mode: 0775
+  with_fileglob:
+    - "files/*el6*"
+
+- name: Finding RPM files
+  find:
+    paths: "{{ dest_rpm }}"
+    patterns: "*.rpm"
+  register: rpm_result
+
+- name: Install RPM
+  yum:
+    name: "{{ item.path }}"
+    state: present
+  with_items: "{{ rpm_result.files }}"
+
+- name: "zabbix-agent should be configured"
+  template:
+    src: "zabbix_agentd.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify: restart zabbix-agent el6
+  
+#- name: replace ip on name
+#  replace:
+#    path: "/etc/zabbix/zabbix_agentd.conf"
+#    regexp: '10.89.70.155'
+#    replace: 'monitor-gkh.passport.local'
+#    backup: yes
+#  notify: restart zabbix-agent
+
+- name: Start service
+  service:
+    name: zabbix-agent
+    state: started
+    enabled: yes

@@ -1,0 +1,24 @@
+[Unit]
+Description=PostgreSQL {{ postgresql_version_nodots }} database server
+Documentation=https://www.postgresql.org/docs/{{ postgresql_version_nodots }}/static/
+After=syslog.target
+After=network.target
+
+[Service]
+Type=forking
+User=postgres
+Group=postgres
+Environment=PGDATA={{ PGDATA93 }}
+OOMScoreAdjust=-1000
+Environment=PG_OOM_ADJUST_FILE=/proc/self/oom_score_adj
+Environment=PG_OOM_ADJUST_VALUE=0
+ExecStartPre=/usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version_nodots }}-check-db-dir ${PGDATA}
+ExecStart=/usr/pgsql-{{ postgresql_version }}/bin/pg_ctl start -D ${PGDATA} -s -w -t 300
+ExecStop=/usr/pgsql-{{ postgresql_version }}/bin/pg_ctl stop -D ${PGDATA} -s -m fast
+ExecReload=/usr/pgsql-{{ postgresql_version }}/bin/pg_ctl reload -D ${PGDATA} -s
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,55 @@
+---
+
+- name: "get docker info"
+  shell: docker info
+  register: docker_info
+  changed_when: false
+
+- name: firewall
+  include: firewall.yml
+
+- name: manager_first
+  include: manager_first.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ manager_first }}"
+
+
+- name: managers
+  include: managers.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ managers }}"
+
+- name: workers
+  include: workers.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{workers}}"
+
+#- name: managers_api
+#  include: managers_api.yml
+#  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+#  with_items: 
+#  - "{{ managers_api }}"
+
+- name: list networks
+  shell: docker network ls
+  register: docker_networks
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ manager_first }}"
+
+- name: Create a custom swarm network
+  docker_network:
+    name: docker_swarm_nw
+    driver_options:
+      com.docker.network.bridge.enable_icc: "false"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.name: docker_swarm_nw
+    ipam_options:
+      subnet: "{{ docker_swarm_network }}"
+      gateway: "{{ docker_swarm_network | ipaddr('net') | ipaddr('1') | ipaddr('ip') }}"
+  when: docker_swarm_network is defined and docker_networks.stdout.find( item.name ) == -1
+
+

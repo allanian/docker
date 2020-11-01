@@ -1,0 +1,13 @@
+---
+- name: CENTOS | Install necessary packages
+  package:
+    name: "{{ lvm_packages['EL'] }}"
+    state: present
+
+- name: CENTOS | Recheck for scsi devices
+  command: sg_scan
+  changed_when: false
+
+- name: CENTOS | Rescan for new disks
+  command: /usr/bin/rescan-scsi-bus.sh -a
+  changed_when: false

@@ -1,0 +1,27 @@
+---
+- name: SLAVE | Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  register: reset_cluster
+
+- name:  SLAVE | delete old file
+  file:
+    state: absent
+    path: "{{old_item}}"
+  with_items:
+  - "/tmp/.join-command.sh"
+  - "/etc/kubernetes"
+  loop_control:
+    loop_var: old_item
+
+- name: SLAVE | Copy the join command to server location
+  copy: 
+    src: ".join-command"
+    dest: "/tmp/.join-command.sh"
+    mode: 0777
+  notify: restart docker
+
+- meta: flush_handlers
+
+- name: SLAVE | Join the node to cluster
+  command: "sh /tmp/.join-command.sh"
+

@@ -1,0 +1,57 @@
+[kube]
+10.250.88.200 ansible_ssh_pass='RR8989ok'
+10.250.88.201 ansible_ssh_pass='RR8989ok'
+10.250.88.202 ansible_ssh_pass='RR8989ok'
+
+
+[test1]
+grr_test2  ansible_host='172.29.150.155' guest_ram_mb='2048' guest_add_disk='yes' guest_disk_gb='15' guest_num_cpus='1' guest_num_cpu_cores='2'
+# with num_cpu=2 and num_cores=2 you'll get a VM that is one socket and two cores. 
+[test1:vars]
+prefix='24'                                     # Prefix for NETBOX
+guest_network='VLAN_83'                         # VLAN ID                         
+guest_netmask='255.255.255.0'
+guest_gateway='172.29.27.254'
+guest_template='centos7_template_nic_removed'   # ubuntu18_template_nic_removed centos7_template_nic_removed
+parent_folder='labs-admins'                     # parent folder  
+#sub_folder='gilmullinrr'                        # if exist
+join_domain='yes'                               # JOIN OR NO to domain                            
+ad_ou='labs-admins'                             # AD OU
+distribution='CentOS'                           # UBUNTU or CentOS
+
+
+[npatezis]
+npa-app01d ansible_host='172.29.27.64' guest_ram_mb='1024' guest_add_disk='yes' guest_disk_gb='20' guest_num_cpus='1' guest_num_cpu_cores='1'
+npa-app02d ansible_host='172.29.27.65' guest_ram_mb='1024' guest_add_disk='yes' guest_disk_gb='20' guest_num_cpus='1' guest_num_cpu_cores='1'
+npa-app03p ansible_host='172.29.27.66' guest_ram_mb='1024' guest_add_disk='yes' guest_disk_gb='20' guest_num_cpus='1' guest_num_cpu_cores='1'
+npa-app04p ansible_host='172.29.27.67' guest_ram_mb='1024' guest_add_disk='yes' guest_disk_gb='20' guest_num_cpus='1' guest_num_cpu_cores='1'
+npa-db05p ansible_host='172.29.27.68' guest_ram_mb='1024' guest_add_disk='yes' guest_disk_gb='20' guest_num_cpus='1' guest_num_cpu_cores='1'
+
+[npatezis:vars]
+prefix='24'
+guest_network='VLAN_83'                         
+guest_netmask='255.255.255.0'
+guest_gateway='172.29.27.254'
+guest_template='centos7_template_nic_removed'   #ubuntu18_template_nic_removed centos7_template_NIC_removed
+parent_folder='voshod-npa'
+join_domain='yes'                    
+ad_ou='tezis-gos'                   
+distribution='CentOS' # UBUNTU CentOS
+
+
+[parking]
+park-app01d ansible_host='172.29.27.70' guest_ram_mb='8192' guest_add_disk='yes' guest_disk_gb='100' guest_num_cpus='2' guest_num_cpu_cores='2'
+
+[parking:vars]
+prefix='29'
+guest_network='VLAN_83'                         
+guest_netmask='255.255.255.0'
+guest_gateway='172.29.27.254'
+guest_template='centos7_template_nic_removed'   #ubuntu18_template_nic_removed centos7_template_nic_removed
+parent_folder='parking' 
+sub_folder='parking-dev'   
+join_domain='yes'                               
+ad_ou='parking'                             
+distribution='CentOS' # Ubuntu CentOS
+
+

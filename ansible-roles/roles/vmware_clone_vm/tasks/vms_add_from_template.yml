@@ -1,0 +1,117 @@
+---
+- name: Create a parent_folder
+  register: vm_folder_creation_result
+  delegate_to: localhost
+  vcenter_folder:
+    hostname: '{{ vcenter_hostname }}'
+    username: '{{ vcenter_username }}'
+    password: '{{ vcenter_password }}'
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    folder_name: '{{ parent_folder }}'
+    folder_type: vm
+    state: present
+  when: parent_folder is defined
+  
+- name: Create a sub folder under VM folder on given datacenter
+  register: sub_folder_creation_result
+  delegate_to: localhost
+  vcenter_folder:
+    hostname: '{{ vcenter_hostname }}'
+    username: '{{ vcenter_username }}'
+    password: '{{ vcenter_password }}'
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    folder_name: '{{ sub_folder }}'
+    parent_folder: '{{ parent_folder }}'
+    state: present
+  when: sub_folder is defined
+
+- name: Create a VMs from a template
+  delegate_to: localhost
+  register: test_debug
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    cluster: "{{ vcenter_cluster }}"
+    folder: '{{ parent_folder }}/{{ sub_folder | default() }}'
+    name: '{{ inventory_hostname }}'
+    wait_for_ip_address: yes                                                      # for avoid - VMWareTools is not installed or is not running in the guest. VMware Tools are necessary to run this module.
+    state: poweredon
+    template: "{{ guest_template  | default('centos7_template_NIC_removed') }}"
+    disk:
+    - datastore: "{{ guest_datastore_disk | default('HQ-Datastore') }}"
+      size_gb: 12
+      type: thin
+    hardware:
+      memory_mb: "{{ guest_ram_mb | default('2048') }}"
+      num_cpus: "{{ guest_num_cpus | default('2') }}"
+      num_cpu_cores_per_socket: "{{ guest_num_cpu_cores | default('2') }}"       # num_cpus must be a multiple of num_cpu_cores_per_socket.
+      hotadd_cpu: True
+      hotremove_cpu: True
+      hotadd_memory: True
+      scsi: paravirtual
+    networks:
+    - name: '{{ guest_network }}'
+      start_connected: True
+      ip: '{{ ansible_host }}'
+      netmask: '{{ guest_netmask }}'
+      gateway: '{{ guest_gateway }}'
+    customization:
+      dns_servers:
+        - 172.29.134.240
+        - 172.29.141.129
+        - 8.8.4.4
+        - 8.8.8.8
+
+- name: Run command inside a vms CENTOS
+  delegate_to: localhost
+  register: shell_command_output
+  vmware_vm_shell:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    folder: '{{ parent_folder }}'
+    vm_id: "{{ inventory_hostname }}"
+    vm_username: "{{ guest_user }}"
+    vm_password: "{{ guest_passw }}"
+    vm_shell: "{{ item.cmd }}"
+    vm_shell_args: "{{ item.args }}"
+  with_items:
+    - { cmd: /usr/sbin/useradd, args: " -G wheel ansible_user" }
+    - { cmd: /usr/sbin/usermod, args: " -aG wheel ansible_user" }
+    - { cmd: /usr/bin/echo, args: " {{key}} >> /etc/ssh/authorized_keys/ansible_user" }
+  no_log: true
+  when: 
+  - distribution in [ "CentOS", "RedHat", "Fedora" ]
+
+- name: Run command inside a vms UBUNTU 18
+  delegate_to: localhost
+  register: shell_command_output
+  vmware_vm_shell:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter_name | default('HQ') }}"
+    folder: '{{ parent_folder }}'
+    vm_id: "{{ inventory_hostname }}"
+    vm_username: "{{ guest_user }}"
+    vm_password: "{{ guest_passw }}"
+    vm_shell: "{{ item.cmd }}"
+    vm_shell_args: "{{ item.args }}"
+  with_items:
+    - { cmd: /usr/sbin/adduser, args: " --disabled-password  --gecos '' ansible_user" }
+    - { cmd: /usr/sbin/usermod, args: " -aG sudo ansible_user" }
+    - { cmd: /bin/echo, args: " {{key}} >> /etc/ssh/authorized_keys/ansible_user" }
+    - { cmd: /bin/mkdir, args: " -p /home/ansible_user/.ssh" }
+    - { cmd: /bin/echo, args: " {{key}} >> /home/ansible_user/.ssh/authorized_keys" }
+#  no_log: true
+  when: 
+  - distribution in [ "Debian", "Ubuntu" ]
+  

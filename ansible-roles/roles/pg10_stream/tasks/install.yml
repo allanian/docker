@@ -1,0 +1,44 @@
+---
+- name: Install package
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages: 
+      - yum-utils
+      - nano
+      - policycoreutils-python
+      - rsync
+      - bash-completion
+      - bash-completion-extras
+  when: postgresql10_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+- name: Install package postgres
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars: 
+    packages: "{{ postgresql_packages }}"
+  when: postgresql10_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+- name: Creates directory for postgres
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "postgres"
+    group: "postgres"
+    mode: 0700
+  with_items:
+  - "/var/lib/pgsql/.ansible/tmp"
+  - "/home/postgres/.ansible/tmp"
+  - "{{ PGDATA10 }}"
+
+- name: Verify postgresql 10 is installed
+  stat:
+    path: "{{PGDATA10 }}/PG_VERSION"
+  register: pg_version
+

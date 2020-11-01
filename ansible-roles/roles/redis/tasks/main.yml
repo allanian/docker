@@ -1,0 +1,8 @@
+- name: add-repo
+  include: add-repo.yml
+
+- name: install
+  include: install.yml
+    
+- name: Ensure Redis is running and enabled on boot.
+  service: "name={{ redis_daemon }} state=started enabled=yes"

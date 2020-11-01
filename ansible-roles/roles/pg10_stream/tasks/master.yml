@@ -1,0 +1,52 @@
+---
+- name: MASTER | Ensure PostgreSQL database is initialized.
+  command: "{{ postgresql_bin_path }}/initdb -D {{ PGDATA10 }}"
+  when: 
+  - not pg_version.stat.exists
+  become: yes
+  become_user: postgres
+    #  See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+    #  vars:
+    #    ansible_ssh_pipelining: true
+    #  notify: restart postgresql
+
+- name: Copy config - MASTER
+  template:
+    src: "{{ line_item.src }}"
+    dest: "{{ line_item.dest }}"
+  with_items:
+  - { src: "postgresql-10.service.j2",dest: "/etc/systemd/system/postgresql.service" }
+  - { src: "postgres.sh.j2",dest: "/etc/profile.d/postgres.sh" }
+  - { src: "postgresql_master.conf.j2",dest: "{{ PGDATA10 }}/postgresql.conf" }
+  - { src: "pg_hba.conf.j2",dest: "{{ PGDATA10 }}/pg_hba.conf" }
+  notify: restart postgresql
+  loop_control: 
+    loop_var: line_item
+
+- name: Add trust in pg_hba.conf
+  lineinfile:
+    state: present
+    dest: "{{ PGDATA10 }}/pg_hba.conf"
+    regexp: 'host.*replication.*{{ line1_item }}/32.*trust'
+    line: "host    replication    {{replic_user_name}}  {{ hostvars[line1_item]['ansible_default_ipv4']['address'] }}/32 trust"
+  with_items:
+  - "{{ slave_ip }}"
+  notify: restart postgresql
+  loop_control: 
+    loop_var: line1_item
+
+- name: Ensure PostgreSQL is started and enabled on boot.
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: "restarted"
+    enabled: true
+
+- name: Create replication user account
+  postgresql_user:
+    name: "{{ replic_user_name }}"
+    password: "{{ replic_user_pass }}"
+    role_attr_flags: replication
+  become: yes
+  become_user: postgres
+
+  

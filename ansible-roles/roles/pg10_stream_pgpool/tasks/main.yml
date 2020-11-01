@@ -1,0 +1,36 @@
+---
+- name: add-repo
+  include: add-repo.yml
+  
+- name: install
+  include: install.yml
+
+- name: firewall
+  include: firewall.yml
+
+- name: master
+  include: master.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ master_ip }}"
+
+- name: slave start
+  include: replica.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ slave_ip }}"
+
+- name: check sync_state
+  include: check_sync.yml
+  when: (ansible_default_ipv4.address == hostvars[item]['ansible_default_ipv4']['address'])
+  with_items: 
+  - "{{ master_ip }}"
+
+- name: Ensure PostgreSQL is started and enabled on boot.
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: "{{ postgresql_restarted_state }}"
+
+
+
+

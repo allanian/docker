@@ -1,0 +1,4 @@
+---
+dir_for_gluster: "/usr/share/gluster"
+name_gluster_vlm: "gluster_vlm"
+replicas: 2

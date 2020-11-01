@@ -1,0 +1,19 @@
+---
+- name: add-repo
+  include: add-repo.yml
+
+- name: install
+  include: install.yml
+
+- name: firewall
+  include: firewall.yml
+
+- name: config
+  include: config.yml
+
+- name: Ensure PostgreSQL is started and enabled on boot.
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: "{{ postgresql_restarted_state }}"
+
+

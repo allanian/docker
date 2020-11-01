@@ -1,0 +1,22 @@
+---
+- name: status service firewalld
+  service:
+    name: firewalld
+  register: services_state
+
+- name: Open port in firewalld
+  firewalld:
+    port: "{{item}}/tcp"
+    permanent: true
+    state: enabled
+    immediate: yes
+  ignore_errors: yes
+  when: services_state.status.ActiveState == 'running'
+  with_items:
+  - 2376
+  - 2377
+  - 7946
+  - 80
+  - 7946
+  - 4789
+  - 2376

@@ -1,0 +1,32 @@
+- name: Create a VM in resource pool
+  hosts: parking
+  become: true
+  gather_facts: false
+  vars_files:       # path to ansible-vault pass
+    - roles/vmware_clone_vm/files/secret1
+  roles:
+  - vmware_clone_vm
+  - { role: vmware_add_volume, when: guest_add_disk == "yes" }
+  - netbox
+
+- name: Add to domain
+  hosts: parking
+  become: true
+  gather_facts: true
+  vars_files:       # path to ansible-vault pass
+    - roles/vmware_clone_vm/files/secret
+  roles:
+  - { role: domain, when: join_domain == "yes" }
+  - docker
+  #- nginx
+
+
+
+#- name: test
+#  hosts: kube
+#  become: yes
+#  gather_facts: yes
+#  roles:
+#    - minikube
+#    - kubernetes
+#  tags: test

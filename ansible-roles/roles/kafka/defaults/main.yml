@@ -1,0 +1,19 @@
+---
+kafka_scala_version: "2.4.0"
+kafka_version: "2.13-2.4.0"
+
+kafka_url: "https://www.apache.org/dist/kafka/2.4.0/kafka_2.13-2.4.0.tgz"
+
+# USERS / GROUPS
+kafka_user: kafka
+kafka_group: kafka
+
+# DIRECTORY
+kafka_tmp_dir: "/tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tar.gz"
+kafka_conf_dir: /etc/kafka
+kafka_data_dir: /var/kafka
+kafka_log_dir: /var/log/kafka
+
+
+kafka_heap_opts: "-Xmx1G -Xms1G"
+kafka_environment: {}

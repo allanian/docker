@@ -1,0 +1,121 @@
+---
+- name: MASTER | Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  register: reset_cluster
+  notify: restart docker
+ 
+- meta: flush_handlers
+
+- name: MASTER | Pull images
+  command: "kubeadm config images pull"
+
+- name: MASTER | Init Kubernetes cluster
+  shell: "kubeadm init --service-cidr {{ service_cidr }} \
+		       --kubernetes-version={{ kubeadm_version }} \
+                       --pod-network-cidr={{ pod_network_cidr }} \
+                       --apiserver-advertise-address={{ apiserver_advertise_address | default(ansible_default_ipv4.address, true) }}
+                       {{ kubeadm_opts }}"
+  register: init_cluster
+  when: reset_cluster is succeeded
+
+- name: MASTER | Print the init output to screen (only if run with -vv) # working with run ansible-playbook and add -vv
+  debug:
+    var: init_cluster.stdout
+    verbosity: 2
+  when: reset_cluster is succeeded
+
+- name: MASTER | Creates directory
+  file:
+    path: "{{ kube_home }}/.kube"
+    state: "{{dir_state}}"
+    owner: "{{ kube_user }}"
+    group: "{{ kube_user }}"
+    mode: 0755
+  when: reset_cluster is succeeded
+  with_items:
+    - absent
+    - directory
+  loop_control:
+    loop_var: dir_state
+
+- name: MASTER | add permission to kube_user
+  file: 
+    dest: "/etc/kubernetes/"
+    owner: "{{ kube_user }}"
+    group: "{{ kube_user }}"
+    mode: 0755
+    recurse: yes
+
+- name: MASTER | Symlink the kubectl admin.conf to ~/.kube/conf.
+  file:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kube_home }}/.kube/config"
+    state: link
+    owner: "{{ kube_user }}"
+    group: "{{ kube_user }}"
+    mode: 0755
+  when: init_cluster is succeeded
+  become: yes
+  become_user: "{{ kube_user }}"
+
+- name: MASTER | Configure Flannel networking.
+  command: "kubectl apply -f {{ flannel_item }}"
+  with_items:
+    - "{{ kubernetes_flannel_manifest_file }}"
+    - "{{ kubernetes_flannel_manifest_file_rbac }}"
+#  with_file:
+#    - "kube-flannel.yml"
+#    - "kube-flannel-rbac.yml" 
+  register: flannel_result
+  changed_when: "'created' in flannel_result.stdout"
+  become: yes
+  become_user: "{{ kube_user }}"
+  loop_control:
+    loop_var: flannel_item
+  when: reset_cluster is succeeded
+
+# TODO: Check if taint exists with something like `kubectl describe nodes`
+# instead of using kubernetes_init_stat.stat.exists check.
+- name: MASTER | Allow pods on master node (if configured).
+  command: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+  when:
+    - kubernetes_allow_pods_on_master | bool
+    - not kubernetes_init_stat.stat.exists
+  become: yes
+  become_user: "{{ kube_user }}"
+
+- name: MASTER | Check if Kubernetes Dashboard UI service already exists.
+  shell: kubectl get services --namespace kube-system | grep kubernetes-dashboard
+  changed_when: false
+  failed_when: false
+  register: kubernetes_dashboard_service
+  when: 
+    - kubernetes_enable_dashboard | bool
+  become: yes
+  become_user: "{{ kube_user }}"
+
+- name: MASTER | Enable the Kubernetes Web Dashboard UI (if configured).
+  command: "kubectl apply -f {{ kubernetes_dashboard }}"
+  when:
+    - kubernetes_enable_dashboard | bool
+#    - kubernetes_dashboard_service is failed
+  become: yes
+  become_user: "{{ kube_user }}"
+
+- name: MASTER | Generate join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: MASTER | Show join-command
+  debug: 
+    msg: "{{join_command}}"
+
+- name: MASTER | Copy join command to local file
+  local_action: copy content="{{ join_command.stdout_lines[0] }}" dest=".join-command"
+
+
+
+
+
+
+

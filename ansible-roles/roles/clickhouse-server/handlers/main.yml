@@ -1,0 +1,7 @@
+---
+- name: restart clickhouse_server 
+  systemd:
+    state: "present"
+    name: "clickhouse-server"
+    daemon_reload: yes
+    enabled: yes

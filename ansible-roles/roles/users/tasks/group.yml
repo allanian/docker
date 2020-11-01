@@ -1,0 +1,27 @@
+---
+- name: Groups | Create group
+  group:
+    name: "{{ group_user }}"
+    state: present
+
+#- name: Groups | get the username running the deploy
+#  local_action: command whoami
+#  register: username_on_the_host
+#  become: false
+  
+#- name: Groups | adding existing user to group
+#  user:
+#    name: "{{ username_on_the_host.stdout }}"
+#    groups: "{{ group_user }}"
+#    append: yes
+#  with_items:
+#    - "{{ username_on_the_host.stdout }}"
+#    - "root"
+
+- name: Groups | Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'

@@ -1,0 +1,15 @@
+---
+httpd_config: /etc/httpd/conf/httpd.conf
+
+httpd_server_root: "/etc/httpd"
+httpd_listen: "8080"
+httpd_listen_ssl: "8443"
+httpd_server_admin: "root@localhost"
+httpd_document_root: "/var/www/html"
+
+httpd_error_log: logs/error_log
+httpd_error_log_ssl: logs/ssl_error_log
+httpd_access_log: logs/access_log
+httpd_access_log_ssl: logs/ssl_access_log
+
+httpd_log_level: warn

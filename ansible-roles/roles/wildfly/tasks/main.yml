@@ -1,0 +1,22 @@
+---
+- name: add-repo
+  include: add-repo.yml
+
+- name: install
+  include: install.yml
+
+- name: firewall
+  include: firewall.yml
+
+- name: config
+  include: config.yml
+
+- name: users
+  include: users.yml
+
+- name: service
+  include: service.yml
+
+#- name: Deploy
+#  include: deploy.yml
+

@@ -1,0 +1,23 @@
+---
+- name: copy clickhouse packages on remote server
+  copy:
+    src: "{{ item }}"
+    dest: "/tmp"
+    mode: 0755
+  with_items:
+  - "{{ clickhouse_packages }}"
+
+- name: Install package clickhouse
+  yum:
+    name: 
+      - "/tmp/clickhouse-client-19.3.6-1.el7.x86_64.rpm"
+      - "/tmp/clickhouse-common-static-19.3.6-1.el7.x86_64.rpm"
+      - "/tmp/clickhouse-server-19.3.6-1.el7.x86_64.rpm"
+      - "/tmp/clickhouse-server-common-19.3.6-1.el7.x86_64.rpm"
+    state: present
+  notify: restart clickhouse_server
+
+
+
+
+ 

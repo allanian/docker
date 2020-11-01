@@ -1,0 +1,28 @@
+---
+- name: install packages required to ntpd
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ ntpd_packages }}"
+
+- name: copy ntpd configuration file ubuntu
+  template:
+    src: ntp.conf.ubuntu.j2
+    dest: /etc/ntp.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - restart ntp
+  when: ansible_distribution == "Ubuntu"
+
+- name: copy ntpd configuration file centos
+  template:
+    src: ntp.conf.centos.j2
+    dest: /etc/ntp.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - restart ntpd
+  when: ansible_distribution == "CentOS"

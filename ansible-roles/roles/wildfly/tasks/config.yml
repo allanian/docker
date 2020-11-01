@@ -1,0 +1,41 @@
+- name: Create WildFly config paths
+  file:
+    path: "{{ wildfly_conf_path }}"
+    state: directory
+    owner: "{{ wildfly_user }}"
+    group: "{{ wildfly_group }}"
+    recurse: yes
+
+- name: Copy wildfly config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.permissions }}"
+    owner: "{{ wildfly_user }}"
+    group: "{{ wildfly_group }}"
+  with_items:
+    - { src: "wildfly.conf.j2",
+        dest: "{{ wildfly_conf_path }}/wildfly.conf",
+        permissions: "0640" }
+    - { src: "standalone.xml.j2",
+        dest: "{{ wildfly_home_path }}/standalone/configuration/standalone.xml",
+        permissions: "0644" }
+    - { src: "launch.sh.j2",
+       dest: "{{ wildfly_home_path }}/bin/launch.sh",
+       permissions: "0755" }
+  notify: restart wildfly
+  ignore_errors: yes
+
+- name: uncomment for debug
+  replace:
+    path: "{{ wildfly_running_configuration_file }}"
+    regexp: '^#(.*address=8787.*)'
+    replace: '\1'
+
+- name: Copy Daemon script
+  template:
+    src: wildfly.service.j2
+    dest: /etc/systemd/system/wildfly.service
+    mode: 0644
+  notify: restart wildfly
+

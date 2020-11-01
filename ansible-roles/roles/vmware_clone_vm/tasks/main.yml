@@ -1,0 +1,8 @@
+---
+- name: create vm from template
+  include: vms_add_from_template.yml
+
+- name: add disk to vm
+  include: vms_add_disk.yml
+  when: 
+  - (guest_add_disk == "yes")

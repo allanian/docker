@@ -1,0 +1,20 @@
+---
+- name: Install package and etc.
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+#    - java-1.8.0-openjdk.x86_64
+#    - java-1.8.0-openjdk-devel.x86_64
+    - java-1.8.0-openjdk-headless.x86_64
+    - pwgen
+    - nano
+    - nc
+    - mongodb-org
+    - elasticsearch
+    - graylog-server
+    - policycoreutils-python
+  when: graylog_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"

@@ -1,0 +1,14 @@
+---
+- name: Creates directory - mongo_data
+  file:
+    path: "{{dir_for_mongo_data}}"
+    state: directory
+    owner: "mongod"
+    group: "mongod"
+    mode: 0775
+    
+- name: mongodb should be configured
+  template:
+    src: "mongod.conf.j2"
+    dest: "/etc/mongod.conf"
+  notify: "restart mongo"

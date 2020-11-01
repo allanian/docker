@@ -1,0 +1,21 @@
+--- 
+- name: start glusterd
+  service:
+    name: glusterd
+    state: started
+    enabled: yes
+
+- name: restart glusterd
+  service:
+    name: glusterd
+    state: "restarted"
+  when: glusterd_service_state != 'stopped'
+
+- name: restart firewall
+  service: 
+    name: firewalld 
+    state: restarted
+    enabled: yes
+  ignore_errors: yes  
+
+

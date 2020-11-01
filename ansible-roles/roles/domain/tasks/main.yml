@@ -1,0 +1,11 @@
+---
+- name: ntp_client
+  include: ntp_client.yml
+
+- name: sssd-client
+  include: sssd.yml
+
+- name: restart sssd
+  service:
+    name: sssd
+    state: restarted

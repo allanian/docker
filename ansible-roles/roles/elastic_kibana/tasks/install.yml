@@ -1,0 +1,41 @@
+---
+- name: Install package and etc.
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - java-1.8.0-openjdk-headless.x86_64
+    - nano
+    - nc
+#    - elasticsearch
+#    - kibana
+  when: elastic_repo is success
+  environment: "{{item}}"
+  with_items: "{{proxy_env}}"
+
+#- name: copy packages on remote server
+#  copy:
+#    src: "{{ item }}"
+#    dest: "/tmp"
+#    mode: 0755
+#  with_items:
+#  - "elasticsearch-6.6.1.rpm"
+#  - "kibana-6.6.1-x86_64.rpm"
+
+#- name: Install package clickhouse
+#  yum:
+#    name: 
+#      - "/tmp/elasticsearch-6.6.1.rpm"
+#      - "/tmp/kibana-6.6.1-x86_64.rpm"
+#    state: present
+
+
+- name: Creates directory for elasticsearch
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "elasticsearch"
+    group: "elasticsearch"
+  with_items:
+  - "{{ path_data }}"

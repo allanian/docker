@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+tinker panic 0
+
+driftfile /var/lib/ntp/drift
+
+
+restrict default nomodify notrap nopeer noquery kod limited
+restrict -6 default nomodify notrap nopeer noquery kod limited
+
+restrict 127.0.0.1
+restrict ::1
+
+#disable monitor
+{% for value in ntpd_servers %}
+server {{value}} iburst
+{% endfor %}

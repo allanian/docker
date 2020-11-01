@@ -1,0 +1,8 @@
+---
+- name: install apache
+  package: 
+    name: httpd
+    update_cache: yes
+    state: latest
+  notify:
+  - restart apache

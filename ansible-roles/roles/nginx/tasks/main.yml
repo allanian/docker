@@ -1,0 +1,18 @@
+- name: Add Repo
+  include: add-repo.yml
+
+- name: Install Nginx 
+  include: install.yml
+
+- name: Firewall Nginx
+  include: firewall.yml
+
+- name: Config Nginx
+  include: config.yml
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+---
+postgresql_version: "10"
+PGDATA10: "/data/pgsql-{{ postgresql_version }}"
+postgresql_daemon: "postgresql"
+postgresql_restarted_state: "restarted"
+postgresql_bin_path: "/usr/pgsql-{{ postgresql_version }}/bin"
+
+# INSTALL
+#==============================================================================
+postgresql_packages:
+  - "postgresql{{ postgresql_version }}"
+  - "postgresql{{ postgresql_version }}-server"
+  - "postgresql{{ postgresql_version }}-contrib"
+  - "postgresql{{ postgresql_version }}-libs"
+  - "postgresql{{ postgresql_version }}-devel"
+  - "python-psycopg2"
+  - "postgis24_10"
+
+# NETWORK
+#==============================================================================
+master_ip:  "{{ groups['PG_MASTER'][0] }}"
+slave_ip: "{{ groups['PG_REPLICA'] }}"
+##pgsqlrep_replica_address: "{{ groups['PG_CLUSTER_SLAVE'] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | list }}"
+
+# for recovery
+master_ip_recovery: "{{ hostvars[master_ip]['ansible_default_ipv4']['address'] }}"
+replica_ip_recovery: "{{ hostvars[slave_ip]['ansible_default_ipv4']['address'] }}"
+
+pg_network: "{{ hostvars[master_ip]['ansible_default_ipv4']['network'] }}"
+
+
+#REPLICATION USER
+replic_user_name: "replication"
+replic_user_pass: "replication"
+
+# postgresql.conf
+#==============================================================================
+#MASTER
+#==============================================
+listen_addresses: "*"
+wal_level_master: "hot_standby"
+# max number of walsender processes
+max_wal_senders_master: "{{ slave_ip | length * 2 }}"
+# in logfile segments, 16MB each; 0 disables
+wal_keep_segments_master: "100"
+synchronous_commit: local
+
+application_name1: 's1'
+application_name2: 's2'
+synchronous_standby_names: '2 ({{application_name1}},{{application_name2}})'
+#SLAVE
+#==============================================
+postgresql_conf_slave:
+- { regexp: "^#?hot_standby = .*$", replace: "hot_standby = 'on'" }
+
+# pg_hba.conf
+#============================================================================
+# Host based authentication (hba) entries to be added to the pg_hba.conf. This
+# variable's defaults reflect the defaults that come with a fresh installation.
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+postgresql_hba_entries:
+  - {type: local, database: all, user: postgres, auth_method: peer}
+  - {type: local, database: all, user: all, auth_method: peer}
+  - {type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5}
+  - {type: host, database: all, user: all, address: '::1/128', auth_method: md5}
+  - {type: host, database: all, user: all, address: '{{ master_ip_recovery }}/32', auth_method: md5}
+  - {type: host, database: all, user: postgres, address: '{{ pg_network }}/24', auth_method: md5}
+#  - {type: host, database: all, user: all, address: '{{ pg_network }}/24', auth_method: md5}
+#  - {type: host, database: replication, user: postgres, address: '{{ slave_ip_recovery }}/32', auth_method: trust}
+#  - {type: host, database: replication, user: '{{replic_user_name}}', address: '{{ slave_ip_1 }}/32', auth_method: trust}

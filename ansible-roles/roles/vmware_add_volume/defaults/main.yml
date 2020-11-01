@@ -1,0 +1,10 @@
+---
+lvm_packages:
+  EL:
+    - "lvm2"
+    - "sg3_utils"
+    - "util-linux"
+  DEB:
+    - "lvm2"
+    - "scsitools"
+    - "xfsprogs"

@@ -1,0 +1,12 @@
+---
+awx_package_dependencies:
+  - bzip2
+  - '@Development tools'
+  - gcc-c++
+  - gettext
+
+pip_install_packages:
+  - name: docker
+  - name: docker-compose
+
+nodejs_version: "10.x"

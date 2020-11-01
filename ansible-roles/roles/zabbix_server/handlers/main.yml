@@ -1,0 +1,21 @@
+---
+- name: restart php-fpm
+  systemd:
+    state: "{{ php_fpm_restarted_state }}"
+    name: "{{ php_fpm_daemon }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: restart mariadb
+  systemd:
+    state: "{{ mariadb_restarted_state }}"
+    name: "{{ mariadb_daemon }}"
+    daemon_reload: yes
+    enabled: yes
+
+- name: restart zabbix-server
+  systemd:
+    state: "restart"
+    name: "zabbix-server"
+    daemon_reload: yes
+    enabled: yes

@@ -1,0 +1,21 @@
+---
+# handlers file for mssql
+- name: stop mssql-server
+  service:
+    name: mssql-server
+    state: stopped
+
+- name: restart mssql-server
+  service:
+    name: mssql-server
+    state: restarted
+
+- name: configure mssql-server using mssql-conf
+  command: /opt/mssql/bin/mssql-conf -n setup
+  environment:
+    MSSQL_SA_PASSWORD: "{{ mssql_sa_password }}"
+    MSSQL_PID: "{{ mssql_pid }}"
+    ACCEPT_EULA: Y
+
+- name: set network.ipaddress
+  command: /opt/mssql/bin/mssql-conf set network.ipaddress {{ ansible_default_ipv4.address }}

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+%{{admin_sudoers_group}}@{{domain|upper}}   ALL=(ALL)       NOPASSWD: ALL
+{% for value in sudoers_groups %}
+%{{value}}@{{domain|upper}}   ALL=(ALL)       NOPASSWD: ALL
+{% endfor %}
