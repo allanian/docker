@@ -1,5 +1,5 @@
 variables:
-   REGISTRY_BASE_URL: registry.docker.altarix.org:5001/gilmullinrr/ansible-roles/ansible
+   REGISTRY_BASE_URL: registry.docker.company.org:5001/gilmullinrr/ansible-roles/ansible
 
 #  GIT_STRATEGY: none
 #image: docker:git

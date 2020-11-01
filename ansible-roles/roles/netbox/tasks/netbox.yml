@@ -2,7 +2,7 @@
 - name: NETBOX | Create new available IP
   delegate_to: localhost
   netbox_ip_address:
-    netbox_url: https://netbox.alt.altarix.ru/
+    netbox_url: https://netbox.alt.company.ru/
     netbox_token: bf48a9b0efc56e33907ae3a54c225dbc285bfbdc
     data:
       address: '{{item.ip}}/{{prefix}}'

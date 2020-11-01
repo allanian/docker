@@ -9,5 +9,4 @@
   - remi-safe.repo
   - mariadb.repo
   - zabbix.repo
-  - altarix-epel7.repo
   register: zabbix_repo

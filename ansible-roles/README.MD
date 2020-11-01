@@ -3,7 +3,7 @@ Create Gitlab-runner on server with ansible (change description, token and etc.)
 example command:
 gitlab-runner register 
 --non-interactive 
---url "https://git2.altarix.org/" 
+--url "https://git2.company.org/" 
 --registration-token "qs-12MtctyWav8wdxc2z" 
 --description "ansible" 
 --tag-list "ansible" 
@@ -41,10 +41,10 @@ ansible-playbook pre_playbook.yml -i hosts -u root --vault-password-file=./roles
 # FOR CREATE VM
 ### Playbook for create and configure VMs from template with ansible.
 
-Действия:
-####Действия
+пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:
+####пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 
-1. Отредактируйте hosts (вбиваем свободный ip из netbox и т.д.);
-2. Отредактируйте main.yml (смените hosts: на нужный)
-3. Запускайте CI/CD => pipeline => job - infra вручную
-4. Запись в netbox добавляется последним шагом
+1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ hosts (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ip пїЅпїЅ netbox пїЅ пїЅ.пїЅ.);
+2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ main.yml (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ hosts: пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
+3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CI/CD => pipeline => job - infra пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+4. пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ netbox пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ

@@ -29,9 +29,9 @@ ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 
 # other in secret
 #### connect to V-center ####
-vcenter_hostname: "vc.alt.altarix.ru"            # hostname vm-server
+vcenter_hostname: "vc.alt.company.ru"            # hostname vm-server
 vcenter_datacenter_name: "HQ"
-vcenter_cluster: "Altarix_HQ"
+vcenter_cluster: "company_HQ"
 
 
 #### MAIN Settings - CHANGE IT ####
@@ -61,7 +61,7 @@ disk_lvm:
 #    mount: /mnt
 
 # if join to DOMAIN
-vm_dns_domain: alt.altarix.ru
+vm_dns_domain: alt.company.ru
 access_groups:
 - "{{ ad_ou }}-access"
 sudoers_groups:

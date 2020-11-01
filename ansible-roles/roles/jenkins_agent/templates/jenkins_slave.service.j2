@@ -4,7 +4,7 @@ Description=jenkins_slave
 [Service]
 PIDFile=/u01/jenkins/slave/slave.pid
 User=jenkins
-ExecStart=/bin/java -jar /u01/jenkins/slave/agent.jar -jnlpUrl https://jenkins.altarix.ru/computer/{{ name_server }}/slave-agent.jnlp -secret {{ secret }} -workDir "/u01/jenkins/slave"
+ExecStart=/bin/java -jar /u01/jenkins/slave/agent.jar -jnlpUrl https://jenkins.company.ru/computer/{{ name_server }}/slave-agent.jnlp -secret {{ secret }} -workDir "/u01/jenkins/slave"
 
 [Install]
 WantedBy=multi-user.target

@@ -5,6 +5,5 @@
     dest: "/etc/yum.repos.d/"
     mode: u+rw,g-wx,o-rwx
   with_items:
-  - altarix-epel7.repo
   - mongo.repo
   register: mongo_repo

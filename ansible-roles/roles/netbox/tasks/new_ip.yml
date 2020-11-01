@@ -1,7 +1,7 @@
 ---
 - name: NETBOX | get new ip
   netbox_ip_address:
-    netbox_url: https://netbox.alt.altarix.ru/
+    netbox_url: https://netbox.alt.company.ru/
     netbox_token: bf48a9b0efc56e33907ae3a54c225dbc285bfbdc
     data:
       prefix: "{{netbox_prefix}}"

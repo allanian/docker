@@ -1,9 +1,3 @@
 ---
-- name: copy Repo on remote server
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/yum.repos.d/"
-    mode: u+rw,g-wx,o-rwx
-  with_items:
-  - altarix-epel7.repo
+
   

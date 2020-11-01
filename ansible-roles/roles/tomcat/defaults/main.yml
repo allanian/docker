@@ -5,8 +5,8 @@ tomcat_user: "tomcat"
 
 ## INSTALL
 
-#ALTARIX
-tomcat_url: "https://upload.altarix.org/apache-tomcat-9.0.13.tar.gz"
+#Company
+tomcat_url: "https://upload.company.org/apache-tomcat-9.0.13.tar.gz"
 #tomcat_url: "http://apache-mirror.rbc.ru/pub/apache/tomcat/tomcat-9/v9.0.13/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
 
 tomcat_version: "9.0.13"

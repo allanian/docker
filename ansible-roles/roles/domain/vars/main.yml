@@ -3,10 +3,8 @@ ntpd_packages:
 - ntp
 - ntpdate
 ntpd_servers:
-- alt.altarix.ru
-- smr-dc01.alt.altarix.ru
-- smr-dc02.alt.altarix.ru
-- smr-dc03.alt.altarix.ru
+- alt.company.ru
+- smr-dc01.alt.company.ru
 
 
 ldap_packages_centos:
@@ -31,18 +29,18 @@ ldap_packages_ubuntu:
 - libnss-sss 
 - libpam-sss
 
-domain: "alt.altarix.ru"
-domain_base: "dc=alt,dc=altarix,dc=ru"
-domain_project_base: "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+domain: "alt.company.ru"
+domain_base: "dc=alt,dc=company,dc=ru"
+domain_project_base: "ou=Projects,ou=Service accounts,dc=alt,dc=company,dc=ru"
 domain_user_bases:
-- "ou=altarix.ru,ou=HQ,dc=alt,dc=altarix,dc=ru"
-- "ou=Outsource,ou=HQ,dc=alt,dc=altarix,dc=ru"
-- "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
+- "ou=company.ru,ou=HQ,dc=alt,dc=company,dc=ru"
+- "ou=Outsource,ou=HQ,dc=alt,dc=company,dc=ru"
+- "ou=Projects,ou=Service accounts,dc=alt,dc=company,dc=ru"
 domain_group_bases:
-- "ou=Service accounts,dc=alt,dc=altarix,dc=ru"
-- "ou=Projects,ou=Service accounts,dc=alt,dc=altarix,dc=ru"
-- "ou=Группы_распространения,ou=HQ,dc=alt,dc=altarix,dc=ru"
-- "cn=Domain Users,cn=Users,dc=alt,dc=altarix,dc=ru"
+- "ou=Service accounts,dc=alt,dc=company,dc=ru"
+- "ou=Projects,ou=Service accounts,dc=alt,dc=company,dc=ru"
+- "ou=Группы_распространения,ou=HQ,dc=alt,dc=company,dc=ru"
+- "cn=Domain Users,cn=Users,dc=alt,dc=company,dc=ru"
 admin_access_group: "admin-access"
 admin_sudoers_group: "admin-sudoers"
 realmd_cache_path: "/var/cache/realmd"
