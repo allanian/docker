@@ -1,0 +1,44 @@
+variables:
+  SSH_CONFIG: "-o StrictHostKeyChecking=no"
+  CI_REGISTRY_USER: "gitlab-ci-token"
+  CI_REGISTRY_PASSWORD: ${token}
+  CI_REGISTRY_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${CI_JOB_NAME}
+  DOCKER_LOGIN: "docker login -u gitlab-ci-token -p $token ${CI_REGISTRY}"
+
+stages:
+  - package
+
+.packing:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /root/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - |
+        /kaniko/executor \
+          --context $CI_PROJECT_DIR \
+          --cache \
+          --cache-repo $CI_REGISTRY_IMAGE \
+          --no-push \
+          --dockerfile $CI_PROJECT_DIR/Dockerfile \
+          --destination $CI_REGISTRY_IMAGE:latest \
+          --destination $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_NAME} \
+          --build-arg APP=$APP_NAME \
+          --build-arg CI_JOB_TOKEN=$CI_JOB_TOKEN  \
+          --build-arg CI_PROJECT_ID=$CI_PROJECT_ID \
+          --build-arg CI_SERVER_URL=$CI_SERVER_URL
+  tags:
+    - docker
+
+vcore:
+  extends: .packing
+  variables:
+    APP_NAME: VCore
+  only:
+    refs:
+      - master
+      - develop
+    changes:
+      - "**/VCore/**"
