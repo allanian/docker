@@ -1,0 +1,103 @@
+# INSTALL
+yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+yum update
+yum install readline-devel epel-release socat rsync nc
+sudo dnf module disable mysql
+yum install Percona-Server-server-57 -y
+systemctl start mysql.service
+# check auto-password
+grep -i password /var/log/mysqld.log
+# use that password to login as root
+mysql -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'PASS';
+exit;
+sudo service mysql stop
+#---------------------------------------------------
+############# MASTER CONFIG
+#---------------------------------------------------
+nano /etc/my.cnf
+nano /etc/percona-server.conf.d/mysqld.cnf
+sudo service mysql restart
+mysql -u root -p'PASS'
+SHOW MASTER STATUS\G
+mysql> SHOW MASTER STATUS\G
+*************************** 1. row ***************************
+             File: mydb-bin.000001
+         Position: 1370
+     Binlog_Do_DB: test
+ Binlog_Ignore_DB: 
+Executed_Gtid_Set: 
+1 row in set (0.00 sec)
+
+# create user for replication
+CREATE USER 'repl_user'@'%' IDENTIFIED BY 'PASS';
+GRANT replication slave ON *.* TO 'repl_user'@'%';
+FLUSH PRIVILEGES;
+
+# создаем и выбираем нашу реплицируемую БД
+create database test;
+
+# create backup and send to Slaves
+# lock tables, before backup
+mysql -u root -p'pass'
+FLUSH TABLES WITH READ LOCK;
+\q
+mysqldump -u root -p test > mydb.sql # делаем полный дамп БД в файл
+scp mydb.sql root@slave1:/tmp
+scp mydb.sql root@slave2:/tmp
+# unlock tables
+mysql -u root -p'pass'
+use test;
+UNLOCK TABLES; 
+\q
+
+#---------------------------------------------------
+############# SLAVE CONFIG
+#---------------------------------------------------
+nano /etc/my.cnf
+nano /etc/percona-server.conf.d/mysqld.cnf
+sudo service mysql restart
+# import dump slave
+mysql -u root -p'pass'
+create database test;
+\q
+mysql -u root -p test < /tmp/mydb.sql
+mysql -u root -p'PASS'
+# check server-id
+SELECT @@server_id;
+# здесь проверьте все название опций MASTER_LOG_FILE & MASTER_LOG_POS (ITion) - на мастере - SHOW MASTER STATUS\G 
+CHANGE MASTER TO MASTER_HOST = 'ip-mysql-master', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'PASS', MASTER_LOG_FILE = 'mysql-bin.000015', MASTER_LOG_POS = 1043057553;
+START SLAVE;
+show slave status\G
+
+#---------------------------------------------------
+############# CHECK replication
+#---------------------------------------------------
+### on master, create test table with data
+use test;
+create table DemoTable1
+     (
+     Id int,
+     FirstName varchar(20),
+     Age int
+     );
+insert into DemoTable1 values(101,'Chris',24);
+insert into DemoTable1 values(102,'David',28);
+select * from DemoTable1;
+
+# on slave, check existing table
+use test;
+select * from DemoTable1;
+
+
+
+
+##########################
+# HOW REMOVE SLAVE
+#STOP SLAVE;
+#RESET SLAVE;
+# REMOVE
+service mysql stop
+yum remove Percona-Server* -yU
+rm -rf /var/lib/mysql
+rm -f /etc/my.cnf
