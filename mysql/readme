@@ -97,15 +97,12 @@ BACKUP  SNAPSHOT VM - db and my.cnf
 cp /etc/my.cnf /etc/my.cnf.old
 cp -r /etc/percona-server.conf.d /etc/percona-server.conf.d-bkp
 cp -r /var/lib/mysql /var/lib/mysql-old
-mysqlcheck -u root -p'Ex1!SDdd3s' --all-databases --check-upgrade
-
-############## MAYBE NEED STOP SLAVE !!!!!!!!!!!!!!!!!!!!!!!
+mysqlcheck -u root -p'PASS' --all-databases --check-upgrade
 systemctl stop mysql
-############## MAYBE NEED STOP SLAVE !!!!!!!!!!!!!!!!!!!!!!!
+# install mysql 8 percona
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 sudo percona-release setup ps80 
-sudo yum install percona-server-server
-##sudo yum install percona-server-server --allowerasing
+sudo yum install percona-server-server --allowerasing
 # CHANGE CONFIGS
 cp /etc/my.cnf.old /etc/my.cnf
 cp /etc/percona-server.conf.d/mysqld.cnf.rpmsave /etc/percona-server.conf.d/mysqld.cnf
@@ -124,6 +121,7 @@ nano /etc/percona-server.conf.d/mysqld.cnf
 #skip-networking
 #skip-slave-start
 #skip-log-bin
+systemctl restart mysqld
 
 # CHECK UPGRADE SLAVE
 # mysqlcheck
@@ -149,17 +147,13 @@ BACKUP  SNAPSHOT VM - db and my.cnf
 cp /etc/my.cnf /etc/my.cnf.old
 cp -r /etc/percona-server.conf.d /etc/percona-server.conf.d-bkp
 cp -r /var/lib/mysql /var/lib/mysql-old
-mysqlcheck -u root -p'Ex1!SDdd3s' --all-databases --check-upgrade
-
-############## MAYBE NEED STOP SLAVE !!!!!!!!!!!!!!!!!!!!!!!
+mysqlcheck -u root -p'PASS' --all-databases --check-upgrade
 systemctl stop mysql
-############## MAYBE NEED STOP SLAVE !!!!!!!!!!!!!!!!!!!!!!!
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
-sudo percona-release setup ps80 
-sudo yum install percona-server-server
-##sudo yum install percona-server-server --allowerasing
+sudo percona-release setup ps80 -y
+sudo yum install percona-server-server --allowerasing
 # CHANGE CONFIGS
-cp /etc/my.cnf.old /etc/my.cnf
+mv /etc/my.cnf.old /etc/my.cnf
 cp /etc/percona-server.conf.d/mysqld.cnf.rpmsave /etc/percona-server.conf.d/mysqld.cnf
 nano /etc/percona-server.conf.d/mysqld.cnf
 # add that
@@ -167,8 +161,8 @@ skip-networking
 skip-slave-start
 skip-log-bin
 # comment this
-#query-cache-type                 = 1   # enable cache
-#query-cache-size                 = 256M
+#query-cache-type = 1
+#query-cache-size = 256M
 
 systemctl start mysqld
 После успешного старта еще раз перезапускаем сервер — уже без параметров, которые добавлялись в первом пункте.
@@ -176,7 +170,7 @@ nano /etc/percona-server.conf.d/mysqld.cnf
 #skip-networking
 #skip-slave-start
 #skip-log-bin
-
+systemctl restart mysqld
 # CHECK UPGRADE SLAVE
 # mysqlcheck
 mysqlcheck -u root -p'PASS' -o --all-databases
