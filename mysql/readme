@@ -36,8 +36,9 @@ FLUSH PRIVILEGES;
 
 # создаем и выбираем нашу реплицируемую БД
 create database test;
-
-# create backup and send to Slaves
+# restore backup
+pv -pert /data/test.bak | mysql --user root --password='Ex1!SDdd3s' test
+#!# if you already have master, create backup and send to Slaves
 # lock tables, before backup
 mysql -u root -p'pass'
 FLUSH TABLES WITH READ LOCK;
