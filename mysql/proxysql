@@ -1,0 +1,228 @@
+ProxySQL Install on Centos 8
+yum install proxysql2
+sudo systemctl start proxysql
+sudo systemctl enable proxysql
+sudo systemctl status proxysql
+ 
+# connect to admin console proxysql
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+# Add Servers to mysql_servers
+# WRITERS (master in both groups)
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES (0,'10.3.3.184',3306);
+# READERS
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES (1,'10.3.3.184',3306);
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES (1,'10.3.3.186',3306);
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES (1,'10.3.3.185',3306);
+## check all mysql_servers
+SELECT * FROM mysql_servers;
+LOAD MYSQL SERVERS TO RUNTIME;
+SAVE MYSQL SERVERS TO DISK;
+ 
+# check status
+SELECT hostgroup_id, hostname, status, weight FROM runtime_mysql_servers ORDER BY hostgroup_id, weight DESC;
+ProxySQL Monitoring User for connect to Cluster
+# User for PROXYSQL, create it on mysql servers (master/slaves)
+mysql -uroot -p'Ex1!SDdd3s'
+CREATE USER 'proxysql_monitor'@'%' IDENTIFIED WITH mysql_native_password by 'Ax1!SD@dd3s';
+GRANT USAGE ON *.* TO 'proxysql_monitor'@'%';
+FLUSH PRIVILEGES;
+# on proxysql server, add created user to global-variables
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+UPDATE global_variables SET variable_value='proxysql_monitor' WHERE variable_name='mysql-monitor_username';
+UPDATE global_variables SET variable_value='Ax1!SD@dd3s' WHERE variable_name='mysql-monitor_password';
+LOAD MYSQL VARIABLES TO RUNTIME;
+SAVE MYSQL VARIABLES TO DISK;
+# check the monitoring logs - STATUS connection
+SELECT * FROM monitor.mysql_server_connect_log ORDER BY time_start_us DESC LIMIT 6;
+SELECT * FROM monitor.mysql_server_ping_log ORDER BY time_start_us DESC LIMIT 6;
+LOAD MYSQL SERVERS TO RUNTIME;
+SAVE MYSQL VARIABLES TO DISK;
+PROXYSQL MySQL replication hostgroups
+# get current info about hostgroups (0-writers,1-readers)
+SELECT * FROM monitor.mysql_server_read_only_log ORDER BY time_start_us DESC LIMIT 10;
+SELECT * FROM mysql_replication_hostgroups;
+ 
+# add new cluster - cluster1
+If they have read_only=0 , they will be moved to hostgroup 0
+If they have read_only=1 , they will be moved to hostgroup 1
+INSERT INTO mysql_replication_hostgroups (writer_hostgroup,reader_hostgroup,comment) VALUES (0,1,'cluster1');
+SELECT * FROM mysql_servers;
+LOAD MYSQL SERVERS TO RUNTIME;
+SELECT * FROM monitor.mysql_server_read_only_log ORDER BY time_start_us DESC LIMIT 10;
+SELECT * FROM mysql_servers;
+SAVE MYSQL SERVERS TO DISK;
+SAVE MYSQL VARIABLES TO DISK;
+ 
+# change priority for READERS = SLAVE, bc our master in readers too
+UPDATE mysql_servers SET weight=200 WHERE hostgroup_id=1 AND hostname='10.3.3.184';
+UPDATE mysql_servers SET weight=1000 WHERE hostgroup_id=1 AND hostname='10.3.3.185';
+########ProxySQL mysql_users for do access in MYSQL CLUSTER
+# create user on master/slaves
+CREATE USER 'proxysql_usr'@'%' IDENTIFIED WITH mysql_native_password by 'sbtest!SD@dd3s';
+GRANT ALL PRIVILEGES ON *.* TO 'proxysql_usr'@'%';
+FLUSH PRIVILEGES;
+\q
+# on proxysql node
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+INSERT INTO mysql_users(username, password, default_hostgroup) VALUES ('proxysql_usr', 'sbtest!SD@dd3s', 1);
+LOAD MYSQL USERS TO RUNTIME;
+SAVE MYSQL USERS TO DISK;
+exit;
+# test connect
+mysql -u proxysql_usr -h 127.0.0.1 -p'sbtest!SD@dd3s' -P6033 -e "SELECT @@HOSTNAME as hostname"
+
+
+# TEST ON PROXYSQL - Optimize
+SYSBENCH
+# on master/slaves create db
+CREATE DATABASE sbtest;
+# install sysbench on proxysql node
+yum install sysbench
+# generate data (10 tables with 1000000 rows)
+sysbench oltp_read_only --db-driver=mysql \
+--mysql-host=127.0.0.1 --mysql-port=6033 --mysql-db=sbtest --mysql-user=proxysql_usr --mysql-password='sbtest!SD@dd3s' \
+--threads=10 --tables=10 --table-size=1000000 \
+prepare
+ 
+# run
+# num-threads=10 - count of clients oltp_read_only, test in read mode
+sysbench oltp_read_only --db-driver=mysql --num-threads=20 --max-time=10 \
+--mysql-host=127.0.0.1 --mysql-port=6033 --mysql-db=sbtest --mysql-user=proxysql_usr --mysql-password='sbtest!SD@dd3s' \
+--time=0 --events=0 --report-interval=1 \
+run
+ 
+# transactions: 11512 (1148.79 per sec.)
+# queries: 184192 (18380.65 per sec.)
+ 
+# Analyze
+# on proxysql server
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+SHOW TABLES FROM stats;
+SELECT * FROM stats_mysql_commands_counters;
+# cluster status Automatic failover
+SELECT hostgroup_id,hostname,port,status FROM mysql_servers;
+   2. MYSQLSLAP
+# on proxysql node
+mysqlslap -uproxysql_usr -p'sbtest!SD@dd3s' -P6033 -h127.0.0.1 --auto-generate-sql --verbose
+-u указывает пользователя, который будет подключаться к серверу.
+-p запрашивает пароль пользователя.
+-P выполняет подключение с помощью заданного порта.
+-h подключается к заданному хосту.
+--auto-generate-sql позволяет MySQL выполнять тестирование загрузки с помощью генерируемых самостоятельно запросов.
+--verbose делает вывод более информативным.
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+SELECT count_star,sum_time,hostgroup,digest,digest_text FROM stats_mysql_query_digest ORDER BY sum_time DESC;
+exit;
+# run test without cache - 8 users 4 times
+mysqlslap -uproxysql_usr -p'sbtest!SD@dd3s' -P6033 -h127.0.0.1 --concurrency=20 --iterations=10 --create-schema=rendez_vous --query="SELECT * from catalog_models" --verbose
+Benchmark
+Average number of seconds to run all queries: 12.721 seconds
+Minimum number of seconds to run all queries: 12.487 seconds
+Maximum number of seconds to run all queries: 13.354 seconds
+Number of clients running queries: 20
+Average number of queries per client: 1
+ 
+ 
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+SELECT count_star,sum_time,hostgroup,digest,digest_text FROM stats_mysql_query_digest ORDER BY sum_time DESC;
+| 343        | 3120252515 | 1         | 0xD2B4AB097D728B54 | SELECT * from catalog_models
+Посмотрите на первую строку. В ней содержится информация о запросе, который был выполнен 2000 раз. 
+Это тестируемый запрос, выполненный ранее. Используйте его дайджест и сохраните его для использования при добавлении правила запроса для кеширования.
+ 
+ 
+В этой команде мы добавляем новую запись в таблицу mysql_query_rules;
+эта таблица хранит все правила, применяемые перед выполнением запроса.
+В этом примере мы добавляем значение столбца cache_ttl​​​, которое приводит к тому, что соответствующий запрос
+по указанному дайджесту будет кешироваться в течение определенного числа миллисекунд, указанного в этом столбце.
+Вы добавили 1 в столбце применения, чтобы гарантировать, что правило будет применяться к запросам.
+INSERT INTO mysql_query_rules(active, digest, cache_ttl, apply) VALUES(1,'0xD2B4AB097D728B54',2000,1);
+active = 1 - вкл/выкл
+cache_ttl - время хранение, 2000 миллисекунд
+apply = 1 - в столбце применения, чтобы гарантировать, что правило будет применяться к запросам.
+0xF8F780C47A8D1D82 - ID запроса, который будет кэшироваться
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+exit;
+mysqlslap -uproxysql_usr -p'sbtest!SD@dd3s' -P6033 -h127.0.0.1 --concurrency=20 --iterations=10 --create-schema=rendez_vous --query="SELECT * from catalog_models" --verbose
+Benchmark
+Average number of seconds to run all queries: 12.642 seconds
+Minimum number of seconds to run all queries: 12.478 seconds
+Maximum number of seconds to run all queries: 13.394 seconds
+Number of clients running queries: 20
+Average number of queries per client: 1
+
+
+3.  Optimize ALL query
+# on proxysql node
+# send all select to slaves
+INSERT INTO mysql_query_rules (active, match_digest, destination_hostgroup, apply) VALUES (1, '^SELECT.*', 1, 0);
+# send all insert/update to master
+INSERT INTO mysql_query_rules (active, match_digest, destination_hostgroup, apply) VALUES (1, '^SELECT.*FOR UPDATE', 0, 1);
+ 
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+
+## PROXYSQL change port
+# on proxysql node
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+UPDATE global_variables SET variable_value='0.0.0.0:3306' WHERE variable_name='mysql-interfaces';
+SELECT * FROM global_variables WHERE variable_name='mysql-interfaces';
+SAVE MYSQL VARIABLES TO DISK;
+exit;
+systemctl restart proxysql
+mysql -u proxysql_usr -h 127.0.0.1 -p'sbtest!SD@dd3s' -P3306 -e "SELECT @@HOSTNAME as hostname"
+
+# test
+create table DemoTable11
+     (
+     Id int,
+     FirstName varchar(20),
+     Age int
+     );
+insert into DemoTable11 values(101,'Chris',24);
+insert into DemoTable11 values(102,'David',28);
+
+Example of working with proxysql
+# create user on master/slaves
+CREATE USER 'antonov'@'%' IDENTIFIED WITH mysql_native_password by 'O1w6869yAl6zd';
+GRANT ALL PRIVILEGES ON *.* TO 'antonov'@'%';
+FLUSH PRIVILEGES;
+\q
+# on proxysql node
+mysql -uadmin -p'admin' -h 127.0.0.1 -P6032
+INSERT INTO mysql_users(username, password, default_hostgroup) VALUES ('antonov', 'O1w6869yAl6zd', 1);
+LOAD MYSQL USERS TO RUNTIME;
+SAVE MYSQL USERS TO DISK;
+exit;
+# test
+mysql -u antonov -h 10.3.3.182 -p'O1w6869yAl6zd' -P3306 -e "SELECT @@HOSTNAME as hostname"
+
+
+COMMON
+
+# PASSWORD
+SHOW GLOBAL VARIABLES LIKE 'validate_password%';
+SET GLOBAL validate_password_special_char_count = 0;
+ 
+## TABLE SIZE
+SELECT
+TABLE_NAME AS `Table`,
+ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024) AS `Size (MB)`
+FROM
+information_schema.TABLES
+WHERE
+TABLE_SCHEMA = "rendez_vous"
+ORDER BY
+(DATA_LENGTH + INDEX_LENGTH)
+DESC;
+ 
+# create table with data
+create table DemoTable11
+(
+Id int,
+FirstName varchar(20),
+Age int
+);
+insert into DemoTable11 values(101,'Chris',24);
+insert into DemoTable11 values(102,'David',28);

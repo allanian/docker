@@ -23,7 +23,7 @@ services:
         registry_nginx['listen_port'] = 5001
         registry_nginx['listen_https'] = false
         registry_nginx['redirect_http_to_https'] = false
-        registry_nginx['proxy_set_headers'] = {"X-Forwarded-Proto" => "https","X-Forwarded-Ssl" => "on", "Host" => "registry.vko-simvol.ru"}
+        registry_nginx['proxy_set_headers'] = {"X-Forwarded-Proto" => "https","X-Forwarded-Ssl" => "on", "Host" => "registry.company.ru"}
         # GITLAB
         gitlab_rails['registry_enabled'] = true
         gitlab_rails['registry_issuer'] = "omnibus-gitlab-issuer"
