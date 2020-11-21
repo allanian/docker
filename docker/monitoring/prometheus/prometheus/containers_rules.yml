@@ -1,0 +1,14 @@
+groups:
+- name: containers
+  rules:
+  - alert: Some container is down on the host http://45.33.96.243:8019/metrics
+    expr: 
+        absent (container_start_time_seconds{image!="",instance="45.33.96.243:8019",name=~".+stg_emailotpservice.+"} ) or
+        absent (container_start_time_seconds{image!="",instance="45.33.96.243:8019",name=~".+fluentd.+"} ) 
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Critical: Some container is down on the host {{ $labels.instance }} for more than 1 minutes"
+      description: "Some container is down on the host {{ $labels.instance }}"
+ 

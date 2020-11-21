@@ -1,0 +1,28 @@
+FROM fluent/fluentd:v1.11-1
+
+# Use root account to use apk
+USER root
+RUN apk add --update --virtual .build-deps \
+        build-base ruby-dev \
+ # install plugins
+ && gem install \
+        fluent-plugin-elasticsearch \
+        fluent-plugin-rewrite-tag-filter \
+        fluent-plugin-detect-exceptions \
+        fluent-plugin-forest \
+        fluent-plugin-record-reformer \
+        fluent-plugin-filter-docker_metadata \
+        fluent-plugin-filter_typecast \
+        fluent-plugin-filter_empty_keys \
+        fluent-plugin-route \
+ && gem sources --clear-all \
+ && apk del .build-deps \
+ && rm -rf /var/cache/apk/* \
+           /home/fluent/.gem/ruby/2.3.0/cache/*.gem
+     
+COPY ./fluent_agent.conf /fluentd/etc/fluent.conf
+RUN mkdir -p /etc/fluent && cp /fluentd/etc/fluent.conf /etc/fluent/fluent.conf
+COPY ./entrypoint.sh /bin/ 
+RUN chmod +x /bin/entrypoint.sh
+
+#USER fluent

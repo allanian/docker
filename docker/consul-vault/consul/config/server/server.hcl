@@ -1,4 +1,4 @@
-datacenter = "shakti_dc1"
+datacenter = "company_dc1"
 data_dir = "/tmp/data"
 domain = "livelinux"
 server=true

@@ -12,7 +12,7 @@ client_addr = "0.0.0.0"
 connect {
   enabled = true
 }
-datacenter = "shakti_dc"
+datacenter = "company_dc"
 data_dir = "/opt/consul"
 dns_config {
   enable_truncate = true

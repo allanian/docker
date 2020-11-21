@@ -1,0 +1,25 @@
+---
+proxy_env:
+  - http_proxy: ""   #for no proxy
+    https_proxy: ""
+#  - http_proxy: "http://127.0.0.1:3128 | default('omit')"  # for where you have remote server in another ZOD or another private-avtonomnya network - ne kruto!)
+#    https_proxy: "http://127.0.0.1:3128 | default('')"
+#  - http_proxy: "http://172.24.43.164:3128 | default('')"  # for network where exist network connection
+#    https_proxy: "http://172.24.43.164:3128 | default('')"
+
+
+
+
+
+# for connection
+ansible_python_interpreter: "/usr/bin/env python"
+ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+#ansible_python_interpreter: "/usr/bin/env python3" #centos 8
+#ansible_python_interpreter: "/usr/bin/env python2.7"
+#-R3128:127.0.0.1:3128"
+
+
+
+
+
+

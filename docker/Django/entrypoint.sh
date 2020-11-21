@@ -7,7 +7,7 @@ then
     done
     echo "PostgreSQL started"
 fi
-python manage.py  collectstatic --noinput --settings=shakti.settings
+python manage.py  collectstatic --noinput --settings=admin.settings
 python manage.py makemigrations
 python manage.py migrate --noinput
 exec "$@"

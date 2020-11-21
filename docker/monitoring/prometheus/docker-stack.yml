@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  cadvisor:
+    image: google/cadvisor
+    command: -logtostderr -docker_only
+    ports:
+      - 8019:8080
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "5m"  
+    volumes:
+      - /:/rootfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run:/var/run
+      - /sys:/sys:ro
+      - /data/docker:/data/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /sys/fs/cgroup:/cgroup:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /dev/kmsg:/dev/kmsg:ro
+    devices:
+      - "/dev/kmsg:/dev/kmsg"
+    privileged: true
+    networks:
+      - app_network
+
+  nodeexporter:
+    image: prom/node-exporter
+    command:       
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+#      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 8016:9100
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "5m"  
+    network_mode: host
+    volumes:
+      - /proc:/host/proc:ro       
+      - /sys:/host/sys:ro       
+      - /:/rootfs:ro    
+    #networks:
+    #  - app_network  
+
+networks:
+  app_network:
+    external: true
+

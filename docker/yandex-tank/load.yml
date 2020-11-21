@@ -1,5 +1,5 @@
 phantom:
-    address: login.shakticoin.com
+    address: login.company.com
     ssl: true
     uris: # don't use it with ammofile
     - "/"

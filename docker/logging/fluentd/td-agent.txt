@@ -1,0 +1,58 @@
+<source>
+  @type tail
+  @id input_tail_oxauth
+  path /opt/gluu-server/opt/gluu/jetty/oxauth/logs/oxauth.log
+  pos_file /data/gluu.oxauth.pos
+  tag gluu.dev.oxauth
+  skip_refresh_on_startup false
+  refresh_interval 10s
+  <parse>
+    @type none
+    time_format %Y-%m-%dT%H:%M:%S.%NZ
+  </parse>
+</source>
+
+<source>
+  @type tail
+  @id input_tail_oxtrust
+  path /opt/gluu-server/opt/gluu/jetty/identity/logs/oxtrust.log
+  pos_file /data/gluu.oxtrust.pos
+  tag gluu.dev.oxtrust
+  skip_refresh_on_startup false
+  refresh_interval 10s
+  <parse>
+    @type none
+    time_format %Y-%m-%dT%H:%M:%S.%NZ
+  </parse>
+</source>
+
+<filter gluu.dev.**>
+  @type record_transformer
+  enable_ruby
+  <record>
+    hostname "#{Socket.gethostname}"
+  </record>
+</filter>
+
+<match gluu.dev.oxtrust gluu.dev.oxauth>
+  @type forward
+  @id forward_collector
+  <server>
+    name main_server
+    host ip_server_main
+    port 24224
+  </server>
+  <buffer>
+    @type file
+    path /data/buffers/gluu
+    flush_mode interval
+    retry_type exponential_backoff
+    flush_thread_count 2
+    flush_interval 2s
+    retry_forever
+    retry_max_interval 30
+    chunk_limit_size 4M
+    queue_limit_length 512
+    overflow_action block
+  </buffer>
+</match>

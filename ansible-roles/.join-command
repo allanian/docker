@@ -1,1 +1,0 @@
-kubeadm join 10.250.88.200:6443 --token fn7kem.o6ksbhv782aeleky     --discovery-token-ca-cert-hash sha256:74b11f36be823cbdb2ef19c63c32ea1432207596a9d55b14c3c4cee2d7fc42ac 

@@ -1,5 +1,0 @@
-#key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCh9uqAkPrDpXM6CuWjck4NuLOi6EytNVSeDL8U5LOIczEY2JkwPrxPMriEwaWmFm4Sp4QAPDjLfYuR+n8ndMvTD4neg2awY5yir89zkfcC+oNVzfK8GZOe7/VpgDRyv2zMs6Gie063SxwH4jfT+KqezmQj67NXUXMOy5pKg6L5mKV4L/qksEKi7v/gAHguuK5yHym6QYLzQduIhqBaPMHrBjR9N/KaGRqf3kHqjiKuf3f22BPthAIMqBpfq6fw6kWZvTym1QZnUh9U7wb/c2QhguPOkbEz/kUBz37FFJQPLDgebTjdyxuGZ4VjBm8zhcWVQU0XBzHGVjFmR1um+mfZ root@localhost.localdomain"
-
-
-
-### guest_mac: "{{ '00:50:56' | random_mac }}" 			# to avoid - VM MAC Conflict - dont't HELPED! # better remove NIC from template, then use random in mac

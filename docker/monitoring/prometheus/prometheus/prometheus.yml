@@ -1,0 +1,60 @@
+global:
+  scrape_interval:     15s 
+  evaluation_interval: 15s
+  external_labels:
+      monitor: 'myprometheus'
+
+rule_files:
+  - 'alert.rules'
+  - "containers_rules.yml"
+  
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+         - targets: ['localhost:9090']
+
+  - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+         - targets: 
+           - '172.105.159.75:8019'
+
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+         - targets: 
+           - '172.105.159.75:8016'
+           
+  - job_name: 'nginx'
+    static_configs:
+    - targets:
+      - '45.56.107.156:9113'
+      - '96.126.106.224:9113'
+      
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+     - targets:
+     # api stg
+        # atlassian
+        - https://confluence.company.com
+    relabel_configs:
+     - source_labels: [__address__]
+       target_label: __param_target
+     - source_labels: [__param_target]
+       target_label: instance
+     - target_label: __address__
+       replacement: blackbox:9115
+#    file_sd_configs:
+#    - files:
+#      - scrape/blackbox/*.yml   #путь указан из папки прометеуса
