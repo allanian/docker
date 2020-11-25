@@ -1,0 +1,61 @@
+version: '3.6'
+
+services:
+  bookstack:
+    image: linuxserver/bookstack
+    container_name: bookstack
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - APP_URL=https://bookstack.company.ru
+      - DB_HOST=bookstack_db
+      - DB_USER=bookstack
+      - DB_PASS=bookstackpass
+      - DB_DATABASE=bookstackapp
+      # General auth 
+      - AUTH_METHOD=ldap
+      # LDAP Settings
+      - LDAP_SERVER=192.168.1.187
+      - LDAP_BASE_DN=OU=Users,DC=company,DC=lan
+      - LDAP_DN=CN=gitlab,OU=Users,DC=company,DC=lan
+      - LDAP_PASS=pass
+      - LDAP_ID_ATTRIBUTE=BIN;objectGUID
+      #use double $$ since we are using docker
+      - LDAP_USER_FILTER=(&(sAMAccountName=$${user}))
+      - LDAP_VERSION=3
+      - LDAP_EMAIL_ATTRIBUTE=mail
+      - LDAP_DISPLAY_NAME_ATTRIBUTE=displayName
+      - LDAP_USER_TO_GROUPS=true
+      - LDAP_GROUP_ATTRIBUTE="memberof"
+      - LDAP_REMOVE_FROM_GROUPS=false
+      # SMTP
+      - MAIL_DRIVER=smtp
+      - MAIL_HOST=smtp.mail.ru
+      - MAIL_PORT=465
+      - MAIL_ENCRYPTION=tls
+      - MAIL_USERNAME=bookstack@company.ru
+      - MAIL_PASSWORD=pass
+      - MAIL_FROM=bookstack@company.ru 
+      - MAIL_FROM_NAME=BookStack
+    ports:
+      - 6875:80
+    volumes:
+      - /data/bookstack/app_config:/config
+
+  bookstack_db:
+    image: linuxserver/mariadb
+    container_name: bookstack_db
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=pass
+      - TZ=Europe/Moscow
+      - MYSQL_DATABASE=bookstackapp
+      - MYSQL_USER=bookstack
+      - MYSQL_PASSWORD=bookstackpass
+    volumes:
+      - /data/bookstack/db:/config

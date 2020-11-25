@@ -1,0 +1,1 @@
+mysqldump -u <username> -p<password> redmine > redmine.sql
