@@ -22,7 +22,7 @@ full_backup() {
             mkdir -p $BACKUP_DIR
         fi
         echo BACKUP_OLD
-        rsync -zr /data/mysql_dump/* $REMOTE_DIR &&\
+        rsync -pvr /data/mysql_dump/* $REMOTE_DIR &&\
           find $REMOTE_DIR/* -mtime +7 -type f -delete &&\
           find $REMOTE_DIR -empty -type d -delete
         echo CLEAR OLD_DIR        
@@ -35,7 +35,7 @@ full_backup() {
                 echo `date '+%Y-%m-%d %H:%M:%S:%s'`": Cleanup the backup folder is done! Starting backup" >> $BACKUP_DIR/xtrabackup.log
         fi
         echo START BACKUP
-        xtrabackup --backup --user=root --password=pass --history --compress --slave-info --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/FULL
+        xtrabackup --backup --user=root --password=Wah0baiL --history --compress --slave-info --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/FULL
         echo `date '+%Y-%m-%d %H:%M:%S:%s'`": Backup Done!" >> $BACKUP_DIR/xtrabackup.log
 }
 
@@ -56,9 +56,9 @@ incremental_backup()
         echo `date '+%Y-%m-%d %H:%M:%S:%s'`": Starting Incremental backup $NUMBER" >> $BACKUP_DIR/xtrabackup.log
         if [ $NUMBER -eq 1 ]
         then
-                xtrabackup --backup --user=root --password=pass --history --slave-info --incremental --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/inc$NUMBER --incremental-basedir=$BACKUP_DIR/FULL 
+                xtrabackup --backup --user=root --password=Wah0baiL --history --slave-info --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/inc$NUMBER --incremental-basedir=$BACKUP_DIR/FULL 
         else
-                xtrabackup --backup --user=root --password=pass --history --slave-info --incremental --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/inc$NUMBER --incremental-basedir=$BACKUP_DIR/inc$(($NUMBER - 1)) 
+                xtrabackup --backup --user=root --password=Wah0baiL --history --slave-info --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/inc$NUMBER --incremental-basedir=$BACKUP_DIR/inc$(($NUMBER - 1)) 
         fi
 
         echo $NUMBER > $BACKUP_DIR/last_incremental_number
@@ -94,3 +94,4 @@ fi
             ;;
         *) echo "invalid option";;
     esac
+
