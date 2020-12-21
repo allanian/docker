@@ -1,5 +1,5 @@
 SHELL=/usr/bin/bash
 # mysql backup
-0 * * * * flock -E 5 -w 0 /var/run/mysql-dump.lock -c /usr/local/bin/mysql_full_inc_backup.sh full
-0 1-23 * * * flock -E 5 -w 0 /usr/local/bin/mysql_full_inc_backup.sh incremental
-#0 23 * * * flock -E 5 -w 0 /usr/local/bin/mysql_full_inc_backup.sh archive
+0 0 * * *     /usr/local/bin/mysql_full_inc_backup.sh full
+0 1-23 * * *  /usr/local/bin/mysql_full_inc_backup.sh incremental
+
