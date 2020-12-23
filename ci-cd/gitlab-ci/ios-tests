@@ -1,0 +1,28 @@
+stages:
+  - unit_tests
+
+before_script:
+  - export LANG=en_US.UTF-8
+  - export LANGUAGE=en_US.UTF-8
+  - export LC_ALL=en_US.UTF-8
+  - gem install bundler
+  - gem install bundler -v 1.17.3
+
+unit_tests:
+  dependencies: []
+  stage: unit_tests
+  script:
+    #Chmod repodir 777
+    #install xcode App-Store
+    - gem install generemba
+    - gem install cocoapods
+    - make init 
+    - make build
+    - make test 
+    - fastline test
+  artifacts:
+    paths:
+      - fastlane/test_output
+  tags:
+    - test_ios
+  when: manual
