@@ -1,0 +1,5 @@
+SHELL=/usr/bin/bash
+# mysql backup
+0 0 * * *     /usr/local/bin/mysql_full_inc_backup.sh full
+0 1-23 * * *  /usr/local/bin/mysql_full_inc_backup.sh incremental
+
