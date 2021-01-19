@@ -4,7 +4,8 @@ node.name: es01
 network.host: 0.0.0.0
 bootstrap.memory_lock: "true"
 discovery.type: single-node
-
+# default 1000
+cluster.max_shards_per_node: "3000"
 # for browser access, grafana
 #http.cors.enabled: true
 #http.cors.allow-origin: "*"
