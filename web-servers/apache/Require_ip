@@ -1,0 +1,7 @@
+# allow only from localhost
+<Location "/server-status">
+  SetHandler server-status
+  <RequireAny>
+    Require ip 127.0.0.1
+  </RequireAny>
+</Location>
