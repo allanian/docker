@@ -1,0 +1,6 @@
+---
+network.host: 0.0.0.0
+discovery.type: single-node
+indices.memory.index_buffer_size: 30%
+# default 1000
+cluster.max_shards_per_node: "3000"

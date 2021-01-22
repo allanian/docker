@@ -1,0 +1,110 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    container_name: elasticsearch
+    restart: always
+    environment:
+      cluster.name: "elk"
+      node.name: es01
+      bootstrap.memory_lock: "true" # disable swapping
+      ES_JAVA_OPTS: "-Xms4g -Xmx4g" # 50% of ram
+      # security
+      ELASTIC_PASSWORD: "QWE123qwe"
+      # enable basic auth - only for standart
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.http.ssl.key: "/usr/share/elasticsearch/config/certificates/es01.key"
+      ##xpack.security.http.ssl.certificate_authorities: /etc/elasticsearch/certs/ca.crt
+      xpack.security.http.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es01.crt"
+      xpack.security.transport.ssl.enabled: "true"
+      xpack.security.transport.ssl.verification_mode: certificate
+      ##xpack.security.transport.ssl.certificate_authorities: /certs/ca.crt
+      xpack.security.transport.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es01.crt"
+      xpack.security.transport.ssl.key: "/usr/share/elasticsearch/config/certificates/es01.key"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - "/data/efk_storage/es1/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml" 
+      - "/data/efk_storage/es1/curator:/etc/curator"
+      - efk_data1:/usr/share/elasticsearch/data
+      - /etc/localtime:/etc/localtime:ro
+      - /data/efk_storage/certs:/usr/share/elasticsearch/config/certificates
+    expose:
+      - 9200
+#    ports:
+#      - 9200:9200
+    networks:
+      - efk_stack
+
+  fluentd:
+    image: registry.company.com/fluent:latest
+    container_name: fluentd
+    restart: always
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    user: root
+    volumes:
+      - /data/efk_storage/fluent/fluent.conf:/fluentd/etc/fluent.conf
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - efk_stack
+        
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    container_name: kibana
+    restart: always
+    environment:
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: QWE123qwe
+#      SERVER_SSL_ENABLED: "true"
+#      SERVER_SSL_KEY: "/usr/share/elasticsearch/config/certificates/es01.key"
+#      SERVER_SSL_CERTIFICATE:  "/usr/share/elasticsearch/config/certificates/es01.crt"
+    depends_on:
+      - elasticsearch
+    volumes:
+      - "/data/efk_storage/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
+      - /etc/localtime:/etc/localtime:ro
+      - /data/efk_storage/certs:/usr/share/elasticsearch/config/certificates
+    expose:
+      - 5601
+#    ports: 
+#      - 5601:5601
+    networks:
+      - efk_stack
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - /data/efk_storage/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /data/efk_storage/nginx/htpasswd.efk:/etc/nginx/htpasswd.efk
+      - /data/efk_storage/nginx/proxy.conf:/etc/nginx/proxy.conf
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 80:80
+      - 8080:8080
+    networks:
+      - efk_stack
+      
+volumes:
+  efk_data1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/data/efk_storage/es1'
+
+networks:
+  efk_stack:
+    external: true
+#    driver: bridge
+#env
+#VERSION=7.8.1
+#nano /etc/sysctl.conf
+#vm.max_map_count = 262144
+#sudo sysctl -p
+# curl -X GET "localhost:9200/_cat/nodes?v&pretty"
