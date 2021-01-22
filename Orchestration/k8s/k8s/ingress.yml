@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-rv-stat
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # redirect to https
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    # web-site url
+    - text.company.ru
+  rules:
+  # web-site url
+  - host: text.company.ru
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # service name
+            name: rv-stat
+            port: 
+              # service port
+              number: 8080
