@@ -4,6 +4,7 @@ services:
     image: 'gitlab/gitlab-ce:13.0.10-ce.0'
     restart: always
     hostname: 'git'
+    privileged: 'true'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.company.ru'
@@ -67,6 +68,10 @@ services:
         # backup
         gitlab_rails['manage_backup_path'] = true
         gitlab_rails['backup_path'] = "/mnt/backups"
+    logging:
+      options:
+        max-size: "10000m"
+        max-file: "3"
     ports:
     - '5001:5001'
     - '80:80'
