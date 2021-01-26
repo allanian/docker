@@ -194,7 +194,16 @@ kubectl get sa external-dns
 
 6.3) Update External DNS Kubernetes manifest
 CHANGE LINE 9, copy from IAM-POLICY-NAME-ARN ID
-
+Copy the role-arn you have made a note at the end of step-03 and replace at line no 9.
+    eks.amazonaws.com/role-arn: arn:aws:iam::411686525067:role/eksctl-demo1-addon-iamserviceaccount-default-Role1-M7IEPRHZYLPB   
+Chnage-2: Line 55, 56: Commented them¶
+We used eksctl to create IAM role and attached the AllowExternalDNSUpdates policy
+We didnt use KIAM or Kube2IAM so we don't need these two lines, so commented
+    #annotations:  
+    #iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME    
+Change-3: Line 65, 67: Commented them¶
+    # - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+    # - --policy=upsert-only # would prevent ExternalDNS from deleting any reco
 
 
 
