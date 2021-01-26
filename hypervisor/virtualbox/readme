@@ -1,0 +1,84 @@
+Список команд
+Команда	Описание
+Настройка параметров машины	
+VBoxManage modifyvm PG_SONAR --memory 8192
+	Установить RAM =  8гб для машины PG_SONAR 
+VBoxManage modifyvm PG_SONAR --cpus 2
+	Установить CPU =  2 для машины PG_SONAR
+VBoxManage modifyvm PG_SONAR --nic3 bridged --bridgeadapter3 eth0	Установить сетевой мост для машины PG_SONAR
+ВКЛ/ВЫКЛ машины	
+VBoxManage startvm ZABBIX --type headless	Запуск виртуальной машины ZABBIX в фоновом режиме
+VBoxManage controlvm ZABBIX poweroff	Выключение
+VBoxManage list vms 	Список машин
+VBoxManage list runningvms	Посмотреть список запущенных виртуальных машин
+
+############NAT, проброс портов и адреса локальной машины в VB
+Заходим в настройки виртуалки
+Выбираем Сеть
+Тип подключения – NAT
+Внизу расширенные – проброс портов
+Добавляем правило и добавляем Порт хоста – 2222 и порт гостя – 22 (порт ssh)
+Добавляем подключение в putty 127.0.0.1 и порт 2222
+http://rus-linux.net/MyLDP/vm/VirtualBox-networking.html
+Update VIRTUALBOX on debian
+sudo apt-get update
+killall VBoxSVC VBoxXPCOMIPCD #just in case
+sudo apt-get install virtualbox-5.2
+
+1) Различное
+1.1) Расширение/уменьшение диска
+1.1.1) Расширение д.диска
+Запускаем VBOX
+Настройки машины, носители, выбираем нужный и копируем Расположение (путь до файла с диском)
+Выключаем машину!
+Если есть пробел в пути – добавляем кавычки
+# LINUX
+vboxmanage modifyhd "/home/test/VirtualBox VMs/ZABBIX/ZABBIX.vdi" --resize 30000
+vboxmanage showhdinfo "/home/test/VirtualBox VMs/ZABBIX/ZABBIX.vdi"
+# WINDOWS
+cd "C:\Program Files\Oracle\VirtualBox"
+vboxmanage modifyhd "C:\Users\user\VirtualBox VMs\cent7.3\cent7.3.vdi" --resize 20000
+vboxmanage showhdinfo "C:\Users\user\VirtualBox VMs\cent7.3\cent7.3.vdi"
+
+
+1.1.2) Уменьшение диска
+1)	Устанавливаем ZEROFREE
+В терминале выполняем
+sudo apt-get install zerofree
+Перезагружаем UBUNTU
+Когда всплывает окно биоса жмем ESC для входа в GRUB
+В меню GRUB выберите "recovery mode".
+Выберите в Recovery Menu - root
+6. Check to see disk names:
+Введите – df
+7. From previous command in left corner there are /dev/... devices in my case /dev/sda1. Mount this disk as read only:
+Code:
+mount -n -o remount,ro -t ext2 /dev/sda1 /
+8. Make zeros:
+Code:
+zerofree /dev/sda1
+9. Shutdown Ubuntu:
+Code:
+halt
+10. From Windows host execute:
+Code:
+"C:\Program Files\Sun\xVM VirtualBox\VBoxManage" modifyhd vdi_file.vdi compact
+В DEBIAN
+vboxmanage modifyhd "/home/test/VirtualBox VMs/ZABBIX/ZABBIX.vdi" compact
+
+
+1.1.3) Расширяем фиксированный виртуальный диск в VirtualBox
+modifyhd –resize
+Расширить таким способом можно только динамический виртуальный диск, с фиксированными дисками этот трюк не пройдет, и в командной строке вы получите ошибку "Resize hard disk operation for this format is not implemented yet!". Сие означает, что данная функция, то есть resize, для фиксированного типа диска не реализована.
+Жаль конечно, но пока что никаких способов расширить фиксированный диск в VirtualBox не имеется. Однако мы можем пойти на маленькую хитрость. Мы преобразуем фиксированный диск в динамический, после чего уже известным способом добавим нужный нам объем.
+Инфо о диске
+vboxmanage showhdinfo "/home/test/VirtualBox VMs/SONAR_PG/SONAR_PG.vdi"
+Клонируем его
+vboxmanage clonehd "/home/test/VirtualBox VMs/SONAR_PG/SONAR_PG.vdi" "/home/test/VirtualBox VMs/SONAR_PG/SONAR_PG2.vdi"
+Создастся клон диска – тип динамический
+Расшарияем его до 35гб
+vboxmanage modifyhd /home/test/VirtualBox VMs/SONAR_PG/SONAR_PG2.vdi --resize 35000
+Готово
+В VIRTUALBOX – добавляем Существующий диск (КЛОН), старый удаляем и запускаем машину в фоновом режиме.
+
+
