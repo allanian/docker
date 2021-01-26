@@ -1,0 +1,116 @@
+WILDFLY
+Сервер приложений JAVA
+
+CLI
+/usr/share/wildfly/bin/jboss-cli.sh -c --commands=":read-attribute(name=product-version)" --controller=10.250.30.16:9990 --user=wildfly --password="wildfly"
+/usr/share/wildfly/bin/jboss-cli.sh --connect --controller=10.250.30.16:9990 --user=wildfly --password="wildfly"
+прочитать переменную
+/subsystem=undertow/:read-attribute(name=instance-id)
+изменить переменную
+/subsystem=undertow/:write-attribute(name=instance-id,value=myroute)
+перезагрузка
+reload
+/usr/share/wildfly-13.0.0.Final/bin/jboss-cli.sh -c --commands=":read-attribute(name=product-version)" --controller=172.29.74.74:9990 --user=wildfly --password="wildfly"
+/usr/share/wildfly-13.0.0.Final/bin/add-user.sh -s wildfly wildfly && touch /usr/share/wildfly-13.0.0.Final/.mgmt-users.wildfly.provisioned
+sh jboss-cli.sh --controller=[ip]:9990 and then connect. It looks like the connect was successfully as the error message does not appear, however the jboss server dies after that, I mean, thr http://[ip]:8080 and  http://[ip]:9990 stop working.
+
+
+
+Удаление WILDFLY
+systemctl stop wildfly
+rm -rf /usr/share/wildfly
+rm -rf /usr/share/wildfly-13.0.0.Final/
+rm -rf /etc/wildfly/
+rm -rf /etc/systemd/system/multi-user.target.wants/wildfly.service
+rm -rf /etc/systemd/system/wildfly.service
+systemctl daemon-reload
+WILDFLY CMD
+CONNECT
+/usr/share/wildfly-13.0.0.Final/bin/jboss-cli.sh --connect --user=wildfly --password="wildfly"
+Check work
+/usr/share/wildfly-13.0.0.Final/bin/jboss-cli.sh -c --commands=":read-attribute(name=product-version)" --controller=172.29.74.74:9990 --user=wildfly --password="wildfly"
+
+
+
+DEPLOY APP
+deploy /home/gilmullinrr/serverside-develop/discovery-server/build/libs/discovery-server.war --all-server-groups
+SEE LOG
+/subsystem=logging:read-children-names(child-type=log-file)
+READ LOG
+/subsystem=logging/log-file=server.log:read-log-file
+CHANGE LVL LOG
+/subsystem=logging/root-logger=ROOT:write-attribute(name="level", value="LEVEL") 
+/subsystem=logging/root-logger=ROOT:write-attribute(name="level", value=“DEBUG”)
+ADD HANDLER
+/subsystem=logging/root-logger=ROOT:root-logger-assign-handler(name="HANDLER") 
+CATEGORY
+DISPLAY CATEGORY - Replace CATEGORY with the name of the category.
+/subsystem=logging/logger=CATEGORY:read-resource 
+            <logger category="com.arjuna">
+                <level name="WARN"/>
+            </logger>
+DISPLAY CATEGORY CONTENT
+/subsystem=logging/logger=com.arjuna:read-resource
+ADD CATEGORY
+/subsystem=logging/logger=config-server:add 
+SET LEVEL CATEGORY
+/subsystem=logging/logger=config-server:write-attribute(name="level", value="DEBUG")
+Set the log category to use the log handlers of the root logger.
+/subsystem=logging/logger=config-server:write-attribute(name="use-parent-handlers", value="true")
+Add a log handlers to a log category - config-server
+/subsystem=logging/logger=CATEGORY:assign-handler(name="HANDLER") 
+/subsystem=logging/logger=config-server:assign-handler(name="AccountsNFSAsync")
+REMOVE CATEGORY - config-server
+/subsystem=logging/logger=config-server:remove 
+ADD HANDLER
+/subsystem=logging/root-logger=ROOT:root-logger-assign-handler(name="handler-config")
+/subsystem=logging/root-logger=ROOT:periodic-rotating-file-handler(name="handler-config")
+REMOVE HANDLER - AccountsNFSAsync
+/subsystem=logging/root-logger=ROOT:root-logger-unassign-handler(name="AccountsNFSAsync")
+How to deploy one .war after another on JBoss
+Имеем 2 приложения А и B, B должно стартовать после А.
+Создать файл jboss-all.xml внутри приложения (B) с содержимым ниже.
+<jboss umlns="urn:jboss:1.0">
+  <jboss-deployment-dependencies xmlns="urn:jboss:deployment-dependencies:1.0">
+    <dependency name="A.war" />
+  </jboss-deployment-dependencies>
+</jboss> 
+
+
+
+Instance-id
+Добавляется в /standalone/configuration/standalone.xml
+<subsystem xmlns=”urn:jboss:domain:undertow:1.1” instance-id=”ranDOM”>
+	<server name=”default-server”>
+
+
+Debug-mode
+Remote debug with intelij
+https://blog.codeleak.pl/2017/06/remote-debugging-wildfly-application-in.html
+
+
+
+Доступ к файлам с помощью HTTP wildfly server
+Создаем директорию /home/example/testdir и название directory-listing-uri
+
+<subsystem xmlns="urn:jboss:domain:undertow:2.0">
+     ...
+     <server name="default-server">
+         ...
+         <host name="default-host" alias="localhost">
+             ...
+             <location name="/directory-listing-uri" handler="directory-listing-handler"/>
+             ...
+         </host>
+         ...
+     </server>
+     ...
+     <handlers>
+         ...
+         <file name="directory-listing-handler" path="/home/example/testdir" directory-listing="true"/>
+     </handlers>
+     ...
+</subsystem>
+
+
+
