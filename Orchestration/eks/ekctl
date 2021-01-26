@@ -73,18 +73,6 @@ NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
 aws-load-balancer-controller   1/1     1            1           23m
 
 
-5.8) FARGATE PROFILE
-# get profiles
-eksctl --cluster QA get fargateprofile
-# create new fargateprofile
-eksctl create fargateprofile --cluster QA --region us-west-2 --name shakti --namespace shakti --labels name=qa
-# delete
-eksctl --cluster QA delete fargateprofile --name alb-sample-app
-
-
-
-
-
 
 
 
