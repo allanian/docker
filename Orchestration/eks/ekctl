@@ -10,6 +10,7 @@ Default region name us-west-2 (can be any)
 Default output format [None]: json (can be yaml)
 
 4) CREATE your k8s cluster - with 2 nodes by default
+4.1) create cluster with name QA
 eksctl create cluster \
 --name QA \
 --tags Name=QA \
@@ -23,8 +24,104 @@ eksctl create cluster \
 # delete cluster
 eksctl delete cluster --name my-cluster
 
+4.2) Create an IAM OIDC provider for your cluster
+aws eks describe-cluster --name QA --query "cluster.identity.oidc.issuer" --output text
+https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
+4.2.2) List the IAM OIDC providers in your account. Replace <EXAMPLED539D4633E53DE1B716D3041E> (including <>) with the value returned from the previous command.
+aws iam list-open-id-connect-providers | grep CE6FCFEA16144B1843EF64B838AC91C3
+Example output
+"Arn": "arn:aws:iam::111122223333:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E"
+4.2.3) Create an IAM OIDC identity provider for your cluster with the following command. Replace <cluster_name> (including <>) with your own value.
+eksctl utils associate-iam-oidc-provider --cluster QA --approve
+#######################################
+5) Controller AWS Load balancer
+https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+5.1) # check IAM OIDC
+aws eks describe-cluster --name <cluster_name> --query "cluster.identity.oidc.issuer" --output text
+aws eks describe-cluster --name QA --query "cluster.identity.oidc.issuer" --output text
+Пример вывода:
+https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
+Перечислите поставщиков IAM OIDC в своей учетной записи. Заменить <EXAMPLED539D4633E53DE1B716D3041E>(включая <>) значением, возвращенным предыдущей командой.
+aws iam list-open-id-connect-providers | grep <EXAMPLED539D4633E53DE1B716D3041E>
+Если результат возвращается предыдущей командой, значит, у вас уже есть провайдер для вашего кластера. Если выходные данные не возвращаются, необходимо создать поставщика IAM OIDC.
+5.2) Загрузите политику IAM для контроллера AWS Load Balancer Controller, которая позволяет ему выполнять вызовы API AWS от вашего имени. Вы можете просмотреть документ политикина GitHub. Используйте команду, соответствующую региону, в котором находится ваш кластер.
+curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.0/docs/install/iam_policy.json
+5.3) Создайте политику IAM, используя политику, загруженную на предыдущем шаге.
+aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam_policy.json
+    
+  "Policy": {
+        "PolicyName": "AWSLoadBalancerControllerIAMPolicy",
+        "PolicyId": "ANPAW5A7V7JN6WDOU7MYK",
+        "Arn": "arn:aws:iam::<AWS_ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2021-01-26T06:26:00+00:00",
+        "UpdateDate": "2021-01-26T06:26:00+00:00"
+5.4) Создайте роль IAM и аннотируйте сервисный аккаунт Kubernetes, названный aws-load-balancer-controllerв kube-system пространстве имен для AWS Load Balancer Controller, используя один из следующих вариантов.
+Использование eksctl, используйте следующую команду:
+  eksctl create iamserviceaccount \
+  --cluster=QA \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --attach-policy-arn=arn:aws:iam::<AWS_ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --override-existing-serviceaccounts \
+  --approve
+                
+<AWS_ACCOUNT_ID> - можно взять из 5.3 в строчке Arn
+<AWSLoadBalancerControllerIAMPolicy> - в строчке 5.3 Arn
+
+5.5) check existing AWS ALB ingress controller, need delete it.
+kubectl get deployment -n kube-system alb-ingress-controller
+Error from server (NotFound): deployments.apps "alb-ingress-controller" not found
+5.6) Установите AWS Load Balancer Controller одним из следующих способов:
+HELM:
+#Install the TargetGroupBinding custom resource definitions.
+kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+#Add the eks-charts repository.
+helm repo add eks https://aws.github.io/eks-charts
+# Install the AWS Load Balancer Controller using the command that corresponds to the Region that your cluster is in.
+# For FARGATE !!!
+helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
+  --set clusterName=QA \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set region=us-west-2 \
+  --set vpcId=<vpc-xxxxxxxx> \
+  -n kube-system
+# vpcId можно найти на странице кластера в AWS
+5.7) Verify
+kubectl get deployment -n kube-system aws-load-balancer-controller
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+aws-load-balancer-controller   1/1     1            1           23m
+
+6) Balancing 
+# example
+eksctl create fargateprofile --cluster QA --region us-west-2 --name alb-sample-app --namespace game-2048
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.0/docs/examples/2048/2048_full.yaml
+kubectl get ingress/ingress-2048 -n game-2048
+NAME           CLASS    HOSTS   ADDRESS                                                                   PORTS   AGE
+ingress-2048   <none>   *       k8s-game2048-ingress2-xxxxxxxxxx-yyyyyyyyyy.us-west-2.elb.amazonaws.com   80      2m32s
+Откройте браузер и перейдите по ADDRESS URL-адресу из предыдущего вывода команды, чтобы увидеть пример приложения. Если вы ничего не видите, подождите несколько минут и обновите страницу в браузере.
+# check
+kubectl logs -n kube-system   deployment.apps/aws-load-balancer-controller
+# delete
+kubectl delete -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.0/docs/examples/2048/2048_full.yaml
+
+
+
+
+
+
+4.5) предоставления разрешений IAM модулю Fargate
+eksctl utils associate-iam-oidc-provider --cluster QA --approve
 5) create profile fargate for your cluster
-eksctl create fargateprofile --cluster QA --name --namespace qa --labels name=qa
+eksctl create fargateprofile --cluster <my-cluster> --region <region-code> --name <alb-sample-app> --namespace game-2048
+eksctl create fargateprofile --cluster QA           --region <region-code> --name                  --namespace qa --labels name=qa
 
 
 
