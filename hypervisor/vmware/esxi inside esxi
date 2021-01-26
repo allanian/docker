@@ -1,0 +1,78 @@
+ESXI inside ESXI
+Ограничения у бесплатной версии
+•	Без поддержки
+•	Бесплатный ESXi нельзя добавить на vCenter Server
+•	2 физических процессора
+•	Неограниченное количество ядер на процессор
+•	Неограниченная физическая память
+•	Максимум. 8 виртуальных ЦП на ВМ
+
+Установка
+VMware does not support running nested ESXi/ESX servers in production environments. Please see this KB article for more details.
+https://kb.vmware.com/s/article/2009916
+ 
+# NETWORKING 
+GO IN EDIT NETWORKING -> VSWITCH0 -> EDIT SETTINGS -> Security: 
+Promiscuous mode		Accept
+MAC address changes		REJECT
+Forged transmits		Accept
+Установка NESTED ESXI in ESXI
+Создаем ВМ
+CPU 2
+ПРАВИМ В ВЕБ-КОНСОЛИ
+CPU/MMU Virtualization  - выбираем Hardware CPU and MMU
+CPU - ENABLE Expose hardware assisted virtualization to the guest OS
+MEM 8gb
+HDD 10gb - ESXI не занимает много места – хватит и 10гб
+SCSI Controller 0 - LSI Logic Parallel
+New CD/DVD Drive Datastore ISO - select ISO ESXI
+NEXT -> FINISH
+# INSTALLATION
+Запускаем её
+Press ENTER and F11 to accept
+Press ENTER to select our 10gb disk
+Press ENTER to select US (default ) keyboard
+QWE123qwe – Password ROOT
+NEXT PRESS F11 to install
+Remove ISO -> Reboot
+Выключаем ВМ
+Добавляем диск для хранение файлов ВМ – 80гб
+Включаем ВМ
+Add license to ESXI
+Go on site where you download ESXI – License & download
+License Information
+COMPONENT			LICENSE KEYS	
+VMware vSphere Hypervisor 6 License	JH2A4-DUL5H-L8U81-01204-9J973
+Создание нового хранилища данных
+Заходим в Веб интерфейс
+Storage – New DATASTORE
+Create New VMFS datastore - > Next
+Name - datastoreESX2 - > Next
+VMFS 6 and FULL DISK - >
+Finish
+ESXI STATIC IP
+Run console
+Press F2
+Выберите Настроить сеть управления из меню. Нажмите Enter .
+Выберите Конфигурация IPv4 в меню сети и нажмите Enter .
+Необязательно : Вы можете полностью отключить IPv6, но знайте, что для этого требуется перезагрузка хоста.
+Включите параметр « Установить статический адрес IPv4…» и введите действительный адрес IPv4, маску и адрес шлюза. Нажмите Enter .
+Выберите DNS Configuration в сетевом меню. Введите основной и дополнительный адреса DNS и имя хоста для ESXi. Нажмите Enter .
+PRESS Y
+ERROR
+efi virtual disk (0.0) unsuccessful
+Выключаем ВМ
+Идем в настройки ВМ – VM OPTIONS – BOOT OPTIONS – FIRMWARE = BIOS
+Загрузка новых образов
+Datastore Browser - Upload
+
+
+### ERROR - Virtualized Intel VT-x/EPT is disabled for this ESX VM. You will only be able to run 32-bit nested VMs
+on ESXI in settings EDIT NEXT
+Step 21 – We also need to make sure that we can host VMs with a 64-bit guest OS on the nested ESXi hosts after we finish installing them. 
+From the VM Options tab, expand Advanced and click on the Edit configuration. Click Add Row and add the vhv.enable = “TRUE” line.
+
+This can also be done through the user interface.  Just go to VM->Settings, click on Processors, and check the box next to "Virtualize Intel VT-x/EPT or AMD-V/RVI."
+
+ON ESXI disable in Security - MAC CHANGES
+MAC address changes  -  Reject
