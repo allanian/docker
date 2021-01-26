@@ -3,57 +3,8 @@
 - **Reference:** https://aws.amazon.com/fargate/pricing/    
 - Amazon EKS support for AWS Fargate is available in us-east-1, us-east-2, eu-west-1, and ap-northeast-1.
 
-aws eks
-#### Step-00: install software
-aws cli, ekctl
-# then go to iam, my user
-security credentials/access keys/create access keys
-# on server, 
-aws configure
-AWS Access Key ID [None]:exampleKeyID
-AWS Secret Access Key: exampleAccessKey
-Default region name us-west-2 (can be any)
-Default output format [None]: json (can be yaml)
 
-#### Step-01: Create EKS Cluster using eksctl
-# Create Cluster
-eksctl create cluster \
---name QA \
---tags Name=QA \
---version 1.18 \
---region us-west-2 \
---nodegroup-name ng-qa \
---nodes 3 \
---nodes-min 2 \
---nodes-max 3 \
---fargate 
-# Get List of clusters
-eksctl get clusters  
-# delete cluster
-eksctl delete cluster --name my-cluster
 
-### Step-02: Create & Associate IAM OIDC Provider for our EKS Cluster
-To enable and use AWS IAM roles for Kubernetes service accounts on our EKS cluster, we must create & associate OIDC identity provider.
-To do so using eksctl we can use the below command.
-################ Maybe don't needed
-aws eks describe-cluster --name QA --query "cluster.identity.oidc.issuer" --output text
-https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
-## ist the IAM OIDC providers in your account. Replace <EXAMPLED539D4633E53DE1B716D3041E> (including <>) with the value returned from the previous command.
-aws iam list-open-id-connect-providers | grep CE6FCFEA16144B1843EF64B838AC91C3
-Example output
-"Arn": "arn:aws:iam::111122223333:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E"
-#######################################
-# Template
-eksctl utils associate-iam-oidc-provider \
-    --region region-code \
-    --cluster <cluter-name> \
-    --approve
-
-# Replace with region & cluster name
-eksctl utils associate-iam-oidc-provider \
-    --region us-west-2 \
-    --cluster QA \
-    --approve
 
 
 5) Controller AWS Load balancer
@@ -131,79 +82,6 @@ eksctl create fargateprofile --cluster QA --region us-west-2 --name shakti --nam
 eksctl --cluster QA delete fargateprofile --name alb-sample-app
 
 
-6) 
-https://www.stacksimplify.com/aws-eks/aws-alb-ingress/install-externaldns-on-aws-eks/
-6.1) create iam policy
-Перейдите в Services -> IAM -> Policies -> Create Policy -> Json Tab -> paste json below
-Name -> AllowExternalDNSUpdates
-Description -> Allow access to Route53 Resources for ExternalDNS
-
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ChangeResourceRecordSets"
-      ],
-      "Resource": [
-        "arn:aws:route53:::hostedzone/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ListHostedZones",
-        "route53:ListResourceRecordSets"
-      ],
-      "Resource": [
-        "*"
-      ]
-    }
-  ]
-}
-
-Запишите Политику ARN, которую мы будем использовать на следующем шаге.
-arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates
-
-6.2) Create IAM Role, k8s Service Account & Associate IAM Policy
-As part of this step, we are going to create a k8s Service Account named external-dns and also a AWS IAM role and associate them by annotating role ARN in Service Account.
-In addition, we are also going to associate the AWS IAM Policy AllowExternalDNSUpdates to the newly created AWS IAM Role.
-Create IAM Role, k8s Service Account & Associate IAM Policy
-# Template
-eksctl create iamserviceaccount \
-    --name service_account_name \
-    --namespace service_account_namespace \
-    --cluster cluster_name \
-    --attach-policy-arn IAM_policy_ARN \
-    --approve \
-    --override-existing-serviceaccounts
-
-# Replaced name, namespace, cluster, arn 
-eksctl create iamserviceaccount \
-    --name external-dns \
-    --namespace default \
-    --cluster QA \
-    --attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates \
-    --approve \
-    --override-existing-serviceaccounts
-
---attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates  - можно взять IAM-POLICY-NAME-ARN ID
-#Verify the Service Account
-kubectl get sa external-dns
-
-6.3) Update External DNS Kubernetes manifest
-CHANGE LINE 9, copy from IAM-POLICY-NAME-ARN ID
-Copy the role-arn you have made a note at the end of step-03 and replace at line no 9.
-    eks.amazonaws.com/role-arn: arn:aws:iam::411686525067:role/eksctl-demo1-addon-iamserviceaccount-default-Role1-M7IEPRHZYLPB   
-Chnage-2: Line 55, 56: Commented them¶
-We used eksctl to create IAM role and attached the AllowExternalDNSUpdates policy
-We didnt use KIAM or Kube2IAM so we don't need these two lines, so commented
-    #annotations:  
-    #iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME    
-Change-3: Line 65, 67: Commented them¶
-    # - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
-    # - --policy=upsert-only # would prevent ExternalDNS from deleting any reco
 
 
 
@@ -224,23 +102,6 @@ Change-3: Line 65, 67: Commented them¶
 
 
 
-
-
-
-
-
-6) EXAMPLE Balancing 
-# example
-eksctl create fargateprofile --cluster QA --region us-west-2 --name alb-sample-app --namespace game-2048
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.0/docs/examples/2048/2048_full.yaml
-kubectl get ingress/ingress-2048 -n game-2048
-NAME           CLASS    HOSTS   ADDRESS                                                                   PORTS   AGE
-ingress-2048   <none>   *       k8s-game2048-ingress2-xxxxxxxxxx-yyyyyyyyyy.us-west-2.elb.amazonaws.com   80      2m32s
-Откройте браузер и перейдите по ADDRESS URL-адресу из предыдущего вывода команды, чтобы увидеть пример приложения. Если вы ничего не видите, подождите несколько минут и обновите страницу в браузере.
-# check
-kubectl logs -n kube-system   deployment.apps/aws-load-balancer-controller
-# delete
-kubectl delete -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.0/docs/examples/2048/2048_full.yaml
 
 
 
