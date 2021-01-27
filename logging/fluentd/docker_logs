@@ -1,0 +1,21 @@
+# update docker to v20 version
+nano /etc/docker/daemon.json
+{
+  "log-driver": "fluentd",
+  "log-opts": {
+    "fluentd-address": "efk.company.ru:24224" 
+  }
+}
+
+# EXAMPLE - add logging section to docker-compose.yml
+version: "3.8"
+services:
+  nginxtest1:
+    image: nginx
+    ports:
+      - "8034:80"
+    logging:
+      driver: fluentd  
+      options:
+        fluentd-address: efk.company.ru:24224
+        tag: back.docker
