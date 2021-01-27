@@ -1,0 +1,120 @@
+# java
+yum install java-1.8.0-openjdk.x86_64
+
+# sudo vi /etc/bashrc
+export JRE_HOME=/usr/lib/jvm/jre
+export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
+PATH=$PATH:$JRE_HOME:$JAVA_HOME
+
+source /etc/bashrc
+
+
+#### USER 
+useradd kafka -m
+passwd kafka
+sudo usermod -aG wheel kafka
+su kafka
+
+cd ~
+wget http://apache.osuosl.org/kafka/2.7.0/kafka_2.13-2.7.0.tgz
+tar -xvzf kafka_2.13-2.7.0.tgz
+mv kafka_2.13-2.7.0/* .
+rmdir /home/kafka/kafka_2.13-2.7.0
+sudo nano /lib/systemd/system/zookeeper.service
+[Unit]
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+User=kafka
+ExecStart=/home/kafka/bin/zookeeper-server-start.sh /home/kafka/config/zookeeper.properties
+ExecStop=/home/kafka/bin/zookeeper-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+############
+sudo nano /etc/systemd/system/kafka.service
+[Unit]
+Requires=network.target remote-fs.target zookeeper.service
+After=network.target remote-fs.target zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+ExecStart=/home/kafka/bin/kafka-server-start.sh /home/kafka/config/server.properties
+ExecStop=/home/kafka/bin/kafka-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+###########
+sudo nano /home/kafka/config/server.properties
+
+
+sudo systemctl daemon-reload
+listeners=PLAINTEXT://:9092
+log.dirs=/var/log/kafka-logs
+
+
+
+
+
+systemctl daemon-reload
+sudo mkdir -p /var/log/kafka-logs
+chown kafka:kafka -R /var/log/kafka-logs
+
+sudo systemctl start zookeeper.service
+sudo systemctl start kafka.service
+systemctl enable zookeeper.service
+systemctl enable kafka.servic
+systemctl status zookeeper.service
+systemctl status kafka.service
+sudo netstat -tunlp | grep -e \:9092 -e \:2181
+
+
+
+
+###################################################
+Kafka web UI
+yum install unzip
+cd /opt && wget https://github.com/SourceLabOrg/kafka-webview/releases/download/v2.7.0/kafka-webview-ui-2.7.0-bin.zip
+unzip kafka-webview-ui-2.7.0-bin.zip
+mv kafka-webview-ui-2.7.0 kafka-webview
+nano /lib/systemd/system/kafka-webview.service
+[Unit]
+Description=Kafka Web UI daemon
+After=kafka.service
+
+[Service]
+Type=simple
+ExecStart=/opt/kafka-webview/start.sh
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+
+systemctl enable kafka-webview.service
+systemctl start kafka-webview.service
+systemctl status kafka-webview.service
+
+# firewall-cmd --permanent --add-port=2181/tcp
+# firewall-cmd --permanent --add-port=9092/tcp
+# firewall-cmd --permanent --add-port=8080/tcp
+# firewall-cmd --reload
+
+http://192.168.147.128:8080
+
