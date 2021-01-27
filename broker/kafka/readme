@@ -118,3 +118,57 @@ systemctl status kafka-webview.service
 
 http://192.168.147.128:8080
 
+
+
+
+# SASL AUTH
+nano /home/kafka/config/zookeeper_jaas.conf
+Server {
+org.apache.kafka.common.security.plain.PlainLoginModule required
+username="admin"
+password="12345"
+user_admin="12345";
+};
+nano /home/kafka/config/zookeeper.properties
+#auth
+authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+requireClientAuthScheme=sasl
+jaasLoginRenew=3600000
+
+
+# KAFKA AUTH
+nano /home/kafka/config/kafka_server_jaas.conf
+KafkaServer {
+  org.apache.kafka.common.security.plain.PlainLoginModule required
+  username="admin"
+  password="12345"
+  user_admin="12345";
+};
+
+Client {
+  org.apache.kafka.common.security.plain.PlainLoginModule required
+  username="admin"
+  password="12345";
+};
+
+nano /home/kafka/config/server.properties
+# AUTH
+
+security.inter.broker.protocol=SASL_PLAINTEXT
+sasl.mechanism.inter.broker.protocol=PLAIN
+sasl.enabled.mechanisms=PLAIN
+
+authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
+allow.everyone.if.no.acl.found=true
+listeners=SASL_PLAINTEXT://0.0.0.0:9092
+advertised.listeners=SASL_PLAINTEXT://:9092
+
+nano /usr/lib/systemd/system/zookeeper.service
+Environment="KAFKA_OPTS=-Djava.security.auth.login.config=/home/kafka/config/zookeeper_jaas.conf"
+nano /etc/systemd/system/kafka.service
+Environment="KAFKA_OPTS=-Djava.security.auth.login.config=/home/kafka/config/kafka_server_jaas.conf"
+systemctl daemon-reload
+systemctl restart zookeeper
+systemctl status zookeeper
+systemctl restart kafka
+systemctl status kafka
