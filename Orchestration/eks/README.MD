@@ -2,13 +2,44 @@ https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controlle
 ## Step-01: Create EKS Cluster using eksctl
 
 #### Create Cluster
+--tags name=qa
+--region us-west-1 - California
 
     eksctl create cluster \
     --name qa \
     --tags name=qa \
     --version 1.18 \
-    --region us-west-2 \
+    --region us-west-1 \
     --fargate
+
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: fargate-cluster-qa
+  region: us-west-2
+
+fargateProfiles:
+  - name: fp-default
+    selectors:
+      # All workloads in the "default" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: default
+      # All workloads in the "kube-system" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: kube-system
+  - name: fp-shakti
+    selectors:
+      # All workloads in the "shakti" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: shakti
+      #  labels:
+      #    env: dev
+      #    checks: passed
+      
+eksctl create cluster -f farget-cluster.yml
+
 
 #### Get List of clusters
 
