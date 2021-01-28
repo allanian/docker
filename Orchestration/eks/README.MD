@@ -5,6 +5,7 @@ https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controlle
 #### Create Cluster
 --tags name=qa
 --region us-west-1 - California
+--region us-west-2 - Oregon
 
     eksctl create cluster \
     --name qa \
