@@ -7,7 +7,7 @@
   {% include vault.backend_file with context -%}
 {% endif %}
 
-# check var=true
+# check var=true (include - paste all from external file)
 {% if item.proxy_gluu|default(false, true) %}
         proxy_pass_header Authorization;
         proxy_pass  https://{{item.ip_port}};
