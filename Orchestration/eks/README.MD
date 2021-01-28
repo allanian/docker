@@ -104,14 +104,6 @@ policy
     --override-existing-serviceaccounts \
     --approve
     
-    eksctl create iamserviceaccount \
-    --cluster=fargate-cluster-qa \
-    --namespace=kube-system \
-    --name=alb-ingress-controller \
-    --attach-policy-arn=arn:aws:iam::F7256510289C6864D550185505375F89:policy/ALBIngressControllerIAMPolicy  \
-    --override-existing-serviceaccounts \
-    --approve
-    
 ## Step-05: To verify that the new service role was created, run the following command:
 #### --name iamserviceaccount - your-service-account-name
     eksctl get iamserviceaccount --cluster fargate-cluster-qa --name alb-ingress-controller --namespace kube-system
