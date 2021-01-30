@@ -428,6 +428,8 @@ spec:
 # you should see service load balancer with name - test-svc
 kubectl get svc
 
+# если запись не создается 
+надо удалить старую запись вручную
 
 
 # k8s dashboard
