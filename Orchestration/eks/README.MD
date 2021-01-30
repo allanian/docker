@@ -580,7 +580,7 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing # public service
     alb.ingress.kubernetes.io/target-type: ip  # ip, because FARGATE!
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-1:ARM_ID:certificate/CERTIFICATE_ID  # for ssl add ARN or SSL CERT in AWS
+    #alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-1:ARM_ID:certificate/CERTIFICATE_ID  # for ssl add ARN or SSL CERT in AWS
   labels:
     app: "app-3048"
 spec:
