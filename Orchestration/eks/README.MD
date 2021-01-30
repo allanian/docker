@@ -594,3 +594,15 @@ spec:
               servicePort: 80
               
 ```
+
+# AWS Certificate Manager
+Provision certificates
+import certificates
+Do the following:
+For Certificate body, paste the PEM-encoded certificate to import.
+For Certificate private key, paste the PEM-encoded, unencrypted private key that matches the certificate's public key.
+(Optional) For Certificate chain, paste the PEM-encoded certificate chain.
+Choose Review and import.
+Review the information about your certificate, then choose Import
+
+then copy ARN
