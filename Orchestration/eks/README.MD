@@ -528,8 +528,22 @@ aws route53 list-hosted-zones-by-name
 can be enabled on cluster gui page - configuration / logging
 # externaldns logs (check this actions with dns route53)
 kubectl logs external-dns-57d774cd5c-wtd6d -f
+kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+') 
+# externaldns
+dig echoserver.company.com
+;; QUESTION SECTION:
+;echoserver.josh-test-dns.com.  IN      A
+
+;; ANSWER SECTION:
+echoserver.josh-test-dns.com. 60 IN     A       13.59.147.105
+echoserver.josh-test-dns.com. 60 IN     A       18.221.65.39
+echoserver.josh-test-dns.com. 60 IN     A       52.15.186.25
+
+curl echoserver.company.com
+
 # ALB controller logs
 # example with ExternalDNS
+eksctl --region=us-west-1 --cluster qafgcluster create fargateprofile --name game-3048 --namespace game-3048
 ```
 ---
 apiVersion: v1
@@ -596,6 +610,11 @@ spec:
               servicePort: 80
               
 ```
+#### how check
+kubectl get all -n game-3048
+kubectl get ingress -n game-3048
+# можно проверить здесь, EC2/LOAD BALANCERS
+https://us-west-1.console.aws.amazon.com/ec2/v2/home?region=us-west-1#LoadBalancers:sort=loadBalancerName
 
 # AWS Certificate Manager
 Provision certificates
