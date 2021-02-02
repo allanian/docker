@@ -1,0 +1,33 @@
+# create PVC on VMWARE
+Go to esxi server with ssh
+
+vmkfstools -c 2G /vmfs/volumes/HP_SAN01_LUN01_HDD/k8s-ops-volumes/mspa_db.vmdk
+ls -la /vmfs/volumes/HP_SAN01_LUN01_HDD/k8s-ops-volumes/
+
+# connect it to k8s
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mspa-db
+  namespace: mspa-134-default
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  vsphereVolume:
+    volumePath: "volumePath: [HP_SAN01_LUN01_HDD] k8s-ops-volumes/mspa_db.vmdk"
+    fsType: ext4
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-mspa-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: pv-static
