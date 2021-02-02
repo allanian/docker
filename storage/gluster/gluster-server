@@ -1,0 +1,117 @@
+# hostname
+hostnamectl set-hostname gluster1
+hostnamectl set-hostname gluster2
+hostnamectl set-hostname gluster3
+
+yum install nano wget dnf-utils -y
+nano /etc/hosts
+10.3.3.208 gluster01
+10.3.3.209 gluster02
+10.3.3.210 gluster03
+
+# 3 XFS disk on nodes
+ls /sys/class/scsi_host/ | while read host ; do echo "- - -" |sudo tee /sys/class/scsi_host/$host/scan > /dev/null; done
+sudo lsblk
+sudo pvcreate /dev/sdb
+sudo vgcreate data /dev/sdb
+sudo lvcreate -l 100%FREE -n lv_data data
+sudo mkfs.xfs -n ftype=1 /dev/data/lv_data
+echo "/dev/mapper/data-lv_data /data                       xfs     defaults        0 0" | sudo tee -a /etc/fstab >/dev/null
+sudo mkdir /data
+sudo mount /data
+df -h
+
+# CHRONY install
+
+# gluster install 
+dnf install centos-release-gluster -y
+dnf config-manager --set-enabled powertools
+yum install glusterfs-server -y
+# start
+systemctl start glusterd
+systemctl status glusterd
+
+# firewalld
+firewall-cmd --add-service=glusterfs --permanent;firewall-cmd --reload
+
+# check disks
+lvs
+[root@gluster3 ~]# lvs
+  LV      VG   Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root    cs   -wi-ao----  <21.94g                                                    
+  swap    cs   -wi-ao----   <2.06g                                                    
+  lv_data data -wi-ao---- <150.00g 
+  
+lv_data - volume for gluster in XFS format
+
+
+# CONFIG
+#from server 1
+gluster peer probe 10.3.3.209
+gluster peer probe 10.3.3.210
+gluster peer status
+
+# on all servers
+mkdir -p /data/gfsbrick/gfsvol01
+# on 1 server
+gluster volume create gfsvol01 replica 3 transport tcp 10.3.3.208:/data/gfsbrick/gfsvol01 10.3.3.209:/data/gfsbrick/gfsvol01 10.3.3.210:/data/gfsbrick/gfsvol01
+gluster volume start gfsvol01
+
+# Verify GlusterFS Volumes
+gluster volume info all
+
+
+
+# CLIENTS!!!!
+
+dnf install centos-release-gluster
+dnf install glusterfs glusterfs-fuse
+sudo firewall-cmd --add-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+
+mkdir -p /k8s/glusterfs_data
+mount -t glusterfs 10.3.3.208:/gfsvol01 /k8s/glusterfs_data
+df -hT
+10.3.3.208:/gfsvol01     fuse.glusterfs  150G  2.6G  148G   2% /k8s/data
+nano /etc/fstab
+10.3.3.208:/gfsvol01 /k8s/data glusterfs defaults,_netdev 0 0
+
+
+
+
+Gluster при подключении к одной из нод, отдает адреса всех нод и автоматически подключается ко всем. Если клиент уже подключился, то отказ одной из нод не приведет к остановке работы. Но вот если будет недоступен первый узел, подключиться в случае разрыва сессии уже не получится. Для этого при монтировании можно передать параметр backupvolfile с указанием второй ноды.
+mount.glusterfs gluster-01.example.com:/main /gluster -o backupvolfile-server=gluster-02.example.com
+
+Важный момент: gluster синхронизирует файлы между нодами только если их изменение было через монтированный volume. Если делать изменения напрямую на нодах, будет рассинхрон файлов
+
+
+
+
+
+
+
+
+
+
+
+# DELETE NODE
+# 1 delete brick
+gluster volume list
+gluster volume remove-brick gfsvol01 10.3.3.208:/gfsvol01 10.3.3.209:/gfsvol01 10.3.3.210:/gfsvol01 start
+
+
+gluster peer detach
+
+
+
+
+#######
+# RECOMMEND OLD
+$ gluster volume set main network.ping-timeout 5
+$ gluster volume set main cluster.quorum-type fixed
+$ gluster volume set main cluster.quorum-count 1
+$ gluster volume set main performance.quick-read on
+
+
+
+
