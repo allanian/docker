@@ -1,0 +1,22 @@
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-cu17-ubuntu
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_PID: 'Standard'
+      SA_PASSWORD: '123'
+      MSSQL_DB: 123'
+      MSSQL_USER: '123'
+      MSSQL_PASSWORD: '123'
+      DUMP_URL: ${DUMP_URL}
+      MSSQL_COLLATION: 'Cyrillic_General_CI_AI'
+      TZ: "Europe/Moscow"
+    volumes:
+      - dbdata:/var/opt/mssql/data/
+      - ./mssql:/mssql
+    ports:
+      - "${DB_PORT:-14330}:1433"
+    entrypoint: /mssql/startup.sh
+    healthcheck:
+      test: ls /tmp/ready
+      start_period: 5m
+    stop_grace_period: 15s
