@@ -95,7 +95,8 @@ kubectl get sc
 
 
 
-
+# BACKUP
+heketi-cli db dump > /opt/backup/heketi-db-dump-$(date -I).json
 
 
 
