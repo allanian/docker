@@ -19,7 +19,9 @@ nano farget-cluster.yml
     metadata:
       name: fargate-qa
       region: us-west-2
-    
+      version: '1.18'
+    iam:
+      withOIDC: true
     fargateProfiles:
       - name: fp-default
         selectors:
@@ -37,7 +39,10 @@ nano farget-cluster.yml
           #  labels:
           #    env: dev
           #    checks: passed
-      
+    cloudWatch:
+      clusterLogging:
+        enableTypes: ["*"]
+
     eksctl create cluster -f farget-cluster.yml
 
 
