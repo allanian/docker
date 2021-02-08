@@ -1,8 +1,8 @@
 # MYSQL Percona 8
 
 # Menu
-[BACKUP](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
-[Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
+ - [BACKUP](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
+ - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
 ## Backup 
 ### FULL
