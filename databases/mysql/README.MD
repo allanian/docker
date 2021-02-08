@@ -4,7 +4,27 @@
  - [Backup](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
  - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
-## Backup 
+# Install
+## Centos 8 Stream
+```
+sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+# enable repo
+sudo percona-release setup ps80
+# disable mysql
+sudo dnf module disable mysql
+# install
+sudo yum install percona-server-server percona-toolkit
+sudo percona-release enable-only tools release
+sudo yum install percona-xtrabackup-80
+# start
+sudo systemctl enable --now mysqld
+# get temp password
+sudo grep "temporary password" /var/log/mysqld.log
+mysql_secure_installation 
+# access to db
+mysql -u root -p
+```
+# Backup 
 ### FULL
 ```
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
@@ -15,6 +35,7 @@ xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 
 
 # Replication
+## Master/Slave
 ### full backup on master
 ```
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
@@ -27,9 +48,22 @@ rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql04:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql03:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
 ```
+### on master (if multi-master/transfer master)
+ 1. install percona xtrabackup 8
+ 2. restore from backup dir
+```
+xtrabackup --move-back --target-dir=/data/bkp
+# chown to mysql datadir
+## chown -R mysql:mysql data_dir_mysql
+chown -R mysql:mysql /var/lib/mysql
+systemctl restart mysqld
+mysql -u root -p'PASS'
+SHOW MASTER STATUS\G
+mysql> SHOW MASTER STATUS\G
+```
 ### on slave
  1. install percona xtrabackup 8
- 2.  restore from backup dir
+ 2. restore from backup dir
 ```
 xtrabackup --move-back --target-dir=/data/bkp
 # chown to mysql datadir
