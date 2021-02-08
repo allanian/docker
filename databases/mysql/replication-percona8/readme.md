@@ -1,19 +1,32 @@
-# полный бэкап
+# MYSQL Percona 8
+
+## Backup 
+### FULL
+```
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
-# подготовка для развертывания
+####### подготовка для развертывания
 xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
-			 
-# copy on slave server
+```
+
+
+
+# Replication
+### full backup
+```
+xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
+####### подготовка для развертывания
+xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
+```
+### copy on slave server
+```
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql04:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql03:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
-
-# on slave
-# install percona xtrabackup 8
-systemctl stop mysql
-mv old_data_dir
-
-# restore from backup dir
+```
+### on slave
+ 1. install percona xtrabackup 8
+ 2.  restore from backup dir
+```
 xtrabackup --move-back --target-dir=/data/bkp
 # chown to mysql datadir
 chown -R mysql:mysql /data/mysql
@@ -22,7 +35,6 @@ chown -R mysql:mysql /var/lib/mysql
 #cat /var/lib/mysql/xtrabackup_binlog_pos_innodb
 cat /data/bkp/xtrabackup_binlog_info
 mysql-bin.013849	765893607
-
 # start db
 systemctl start mysqld
 # connect to db
@@ -37,3 +49,4 @@ SHOW SLAVE STATUS \G
 Ошибок быть не должно и статус должен быть YES.
 SQL YES
 SQL YES
+```
