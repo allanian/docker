@@ -52,6 +52,8 @@ rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
  1. install percona xtrabackup 8
  2. restore from backup dir
 ```
+systemctl stop mysql
+mv old_data_dir
 xtrabackup --move-back --target-dir=/data/bkp
 # chown to mysql datadir
 ## chown -R mysql:mysql data_dir_mysql
