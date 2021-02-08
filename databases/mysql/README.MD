@@ -11,7 +11,7 @@ xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 
 
 # Replication
-### full backup
+### full backup on master
 ```
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
 ####### подготовка для развертывания
