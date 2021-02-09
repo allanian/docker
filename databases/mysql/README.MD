@@ -62,12 +62,21 @@ rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
  2. restore from backup dir
 ```
 systemctl stop mysql
-mv old_data_dir
-xtrabackup --defaults-file="/etc/my.cnf.d/mysqld.conf" --move-back --target-dir=/data/bkp
+#mv old_data_dir
+mv /home/mysql /home/mysql-old
+my /home/mysql-logs /home/mysql-logs-old
+mkdir -p /home/mysql
+mkdir -p /home/mysql-logs
+mkdir -p /var/log/mysql
+# restore
+xtrabackup --defaults-file="/etc/my.cnf" --move-back --target-dir=/data/bkp
 # chown to mysql datadir
 ## chown -R mysql:mysql data_dir_mysql
 chown -R mysql:mysql /home/mysql
+chown -R mysql:mysql /home/mysql-logs
 chown -R mysql:mysql /var/lib/mysql
+chown -R mysql:mysql /var/log/mysql
+# copy config to /etc/my.cnf
 systemctl restart mysqld
 mysql -u root -p'PASS'
 SHOW MASTER STATUS\G
