@@ -45,8 +45,14 @@ xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 
 # Replication
 ## Master/Slave
-### full backup on master
+### Plan
 ```
+# create user for replication
+CREATE USER 'repl_user'@'%' IDENTIFIED BY 'Ax1!SD@dd3s';
+GRANT replication slave ON *.* TO 'repl_user'@'%';
+FLUSH PRIVILEGES;
+quit;
+# full backup on master
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
 ####### подготовка для развертывания
 xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
@@ -94,10 +100,9 @@ chown -R mysql:mysql /data/mysql
 chown -R mysql:mysql /data/mysql-logs
 chown -R mysql:mysql /var/lib/mysql
 chown -R mysql:mysql /var/log/mysql
-# get current log file and pos – Позиции должны быть на момент создания бэкапа, иначе будут ошибки
-#cat /var/lib/mysql/xtrabackup_binlog_pos_innodb
+# get current log file and pos – Позиции должны быть на момент создания бэкапа, иначе будут ошибки, можно посмотреть в файле или show master status;
 cat /data/bkp/xtrabackup_binlog_info
-mysql-bin.013849	765893607
+mysql-bin.014649	156
 # start db
 systemctl start mysqld
 # connect to db
@@ -105,7 +110,7 @@ mysql -uroot -p'pass'
 
 # start slave
 STOP SLAVE;
-CHANGE MASTER TO MASTER_HOST = 'rv-site-sql01', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'Ax1!SD@dd3s', MASTER_LOG_FILE = 'mysql-bin.013849', MASTER_LOG_POS = 765893607;
+CHANGE MASTER TO MASTER_HOST = 'rv-site-sql01', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'password', MASTER_LOG_FILE = 'mysql-bin.014649', MASTER_LOG_POS = 156;
 START SLAVE;
 SHOW SLAVE STATUS \G
 
