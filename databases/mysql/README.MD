@@ -21,8 +21,9 @@ sudo systemctl enable --now mysqld
 # get temp password
 sudo grep "temporary password" /var/log/mysqld.log
 mysql_secure_installation 
-# access to db
+# access to db - sudo grep "temporary password" /var/log/mysqld.log
 mysql -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
 ```
 # Backup 
 ### FULL
@@ -42,7 +43,7 @@ xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
 ####### подготовка для развертывания
 xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 ```
-### copy on slave server
+### copy on servers (master/slave)
 ```
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql04:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql03:/data/bkp/
@@ -54,9 +55,10 @@ rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
 ```
 systemctl stop mysql
 mv old_data_dir
-xtrabackup --move-back --target-dir=/data/bkp
+xtrabackup --defaults-file="/etc/my.cnf.d/mysqld.conf" --move-back --target-dir=/data/bkp
 # chown to mysql datadir
 ## chown -R mysql:mysql data_dir_mysql
+chown -R mysql:mysql /home/mysql
 chown -R mysql:mysql /var/lib/mysql
 systemctl restart mysqld
 mysql -u root -p'PASS'
@@ -90,3 +92,6 @@ SHOW SLAVE STATUS \G
 SQL YES
 SQL YES
 ```
+
+# ERROR
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
