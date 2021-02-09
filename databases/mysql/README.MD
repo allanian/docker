@@ -61,6 +61,7 @@ rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
  1. install percona xtrabackup 8
  2. restore from backup dir
 ```
+yum install rsync -y
 systemctl stop mysql
 #mv old_data_dir
 mv /home/mysql /home/mysql-old
@@ -86,10 +87,13 @@ mysql> SHOW MASTER STATUS\G
  1. install percona xtrabackup 8
  2. restore from backup dir
 ```
-xtrabackup --move-back --target-dir=/data/bkp
+yum install rsync -y
+xtrabackup --defaults-file="/etc/my.cnf" --move-back --target-dir=/data/bkp
 # chown to mysql datadir
 chown -R mysql:mysql /data/mysql
+chown -R mysql:mysql /data/mysql-logs
 chown -R mysql:mysql /var/lib/mysql
+chown -R mysql:mysql /var/log/mysql
 # get current log file and pos – Позиции должны быть на момент создания бэкапа, иначе будут ошибки
 #cat /var/lib/mysql/xtrabackup_binlog_pos_innodb
 cat /data/bkp/xtrabackup_binlog_info
