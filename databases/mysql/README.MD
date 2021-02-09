@@ -17,6 +17,14 @@ sudo yum install percona-server-server percona-toolkit
 sudo percona-release enable-only tools release
 sudo yum install percona-xtrabackup-80
 # start
+mkdir -p /etc/systemd/system/mysqld.service.d/
+nano /etc/systemd/system/mysqld.service.d/override.conf
+
+[Service]
+LimitNOFILE=999999
+
+systemctl daemon-reload
+systemctl restart mysqld
 sudo systemctl enable --now mysqld
 # get temp password
 sudo grep "temporary password" /var/log/mysqld.log
