@@ -3,7 +3,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: emarsys-nginx-config
+  name: nginx-config
 data:
   nginx.conf: |
     server_tokens off;
