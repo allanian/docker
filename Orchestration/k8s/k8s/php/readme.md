@@ -1,3 +1,4 @@
+```
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -108,3 +109,4 @@ data:
     php_admin_value[output_buffering] = "4096"
     php_admin_value[post_max_size] = "100M"
     php_admin_value[upload_max_filesize] = "100M"
+```
