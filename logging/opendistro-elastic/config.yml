@@ -1,0 +1,75 @@
+---
+_meta:
+  type: "config"
+  config_version: 2
+
+config:
+  dynamic:
+    http:
+      anonymous_auth_enabled: false
+
+# AUTHENTICATION
+    authc:
+      internal_auth:
+        order: 0
+        description: "HTTP basic authentication using the internal user database"
+        http_enabled: true
+        transport_enabled: true
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: internal
+
+      ldap_auth:
+        order: 1
+        description: "Authenticate using LDAP"
+        http_enabled: true
+        transport_enabled: true
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: ldap
+          config:
+            enable_ssl: false
+            enable_start_tls: false
+            enable_ssl_client_auth: false
+            verify_hostnames: true
+            hosts:
+            - dc.company.ru:389
+            bind_dn: "CN=User,OU=USERS,DC=company,DC=ru"
+            password: "password"
+            userbase: "DC=company,DC=ru"
+            usersearch: "(sAMAccountName={0})"
+            username_attribute: "cn"
+            
+# AUTHORIZE
+    authz:
+      ldap_roles:
+        description: "Authorize using LDAP"
+        http_enabled: true
+        transport_enabled: false
+        authorization_backend:
+          type: ldap
+          config:
+            enable_ssl: false
+            enable_start_tls: false
+            enable_ssl_client_auth: false
+            verify_hostnames: true
+            hosts:
+            - dc.company.ru:389
+            bind_dn: "CN=User,OU=USERS,DC=company,DC=ru"
+            password: "password"
+            userbase: "DC=company,DC=ru"
+            usersearch: "(uid={0})"
+            #username_attribute: cn
+            skip_users:
+              - admin
+              - kibanaserver
+            rolebase: "DC=rendez-vous,DC=ru"
+            rolesearch: "(member={0})"
+            rolename: "cn"
+            userrolename: "memberOf"
+            #userroleattribute: null
+            #resolve_nested_roles: true
