@@ -1,0 +1,46 @@
+global:
+  tier: devops
+
+namespace:
+  name: auth-system
+
+ServiceAccount:
+  name: dex
+
+ClusterRole:
+  name: dex
+
+ClusterRoleBinding:
+  name: dex
+
+configmap:
+  name: dex
+  # dns records - Dex OIDC provider
+  issuer: "https://dex.k8s.company.ru/dex"
+  # dns	records	- Custom Login Application
+  login: "https://login.k8s.company.ru/callback"
+  ldap:
+    path: "company.ru:389"
+    bindDN: "CN=user,OU=group,DC=company,DC=ru"
+    bindPW: "password"
+    userSearch:
+      baseDN: "DC=company,DC=ru"
+    groupSearch:
+      baseDN: "DC=company,DC=ru"
+
+ingress:
+  enabled: true
+  tls:
+    - hosts:
+      - dex.k8s.company.ru
+  hosts:
+    - host: dex.k8s.company.ru
+      paths:
+      - path: "/"
+        serviceName: dex
+        servicePort: 5556
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-port-in-redirects: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"

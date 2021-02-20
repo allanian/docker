@@ -1,0 +1,38 @@
+global:
+  tier: devops
+
+namespace:
+  name: gangway
+
+
+configmap:
+  name: gangway
+  # dns records - Dex OIDC provider
+  issuer: "https://dex.k8s.rendez-vous.ru/dex"
+  # dns	records	- Custom Login Application
+  login: "https://login.k8s.rendez-vous.ru/callback"
+  ldap:
+    path: "rendez-vous.ru:389"
+    bindDN: "CN=ADDSInfo,OU=Группы безопасности,OU=ФОД_Отдел информационных технологий,OU=Департамент финансово-операционный,OU=..RENDEZVOUS,DC=rendez-vous,DC=ru"
+    bindPW: "Ku1ibyaka"
+    userSearch:
+      baseDN: "DC=rendez-vous,DC=ru"
+    groupSearch:
+      baseDN: "DC=rendez-vous,DC=ru"
+
+ingress:
+  enabled: true
+  tls:
+    - hosts:
+      - dex.k8s.rendez-vous.ru
+  hosts:
+    - host: dex.k8s.rendez-vous.ru
+      paths:
+      - path: "/"
+        serviceName: dex
+        servicePort: 5556
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-port-in-redirects: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"

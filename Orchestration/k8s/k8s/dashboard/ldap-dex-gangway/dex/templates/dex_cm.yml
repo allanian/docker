@@ -1,0 +1,50 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dex
+data:
+  config.yaml: |
+    issuer: "{{ .Values.configmap.issuer }}"
+    storage:
+      type: sqlite3
+      config:
+	file: dex.db
+
+    # Configuration for the HTTP endpoints.
+    web:
+      http: 0.0.0.0:5556
+
+    staticClients:
+    - id: gangway
+      redirectURIs:
+      - "{{ .Values.configmap.login }}"
+      name: "Heptio Gangway"
+      secret: mfgDcwBEgSgFehUFdQh2fhbftrgPOQWy0Q05gZgY8bs= #shared secret from prerequisites
+
+    connectors:
+    - type: ldap
+      id: ldap
+      name: LDAP
+      config:
+        host: "{{ .Values.configmap.ldap.path }}"   #Address of AD Server
+        insecureNoSSL: true
+        insecureSkipVerify: true
+        # startTLS: true
+        # Path to a trusted root certificate file. Default: use the host's root CA.
+        # rootCA: /etc/dex/ldap.ca
+        bindDN: "{{ .Values.configmap.ldap.bindDN }}"
+        bindPW: "{{ .Values.configmap.ldap.bindPW }}"
+        usernamePrompt: AD Username
+        userSearch:
+          baseDN: "{{ .Values.configmap.ldap.userSearch.baseDN }}"
+          filter: "(objectClass=person)"
+          username: sAMAccountName
+          idAttr: sn
+          emailAttr: mail
+          nameAttr: givenName
+        groupSearch:
+          baseDN: "{{ .Values.configmap.ldap.groupSearch.baseDN }}"
+          filter: "(objectClass=group)"
+          userAttr: distinguishedName
+          groupAttr: memberOf
+          nameAttr: givenName
