@@ -7,11 +7,11 @@ cluster.max_shards_per_node: "3000"
 # enable basic auth - only for standart
 xpack.security.enabled: "true"
 xpack.security.http.ssl.enabled: "false"
-xpack.security.http.ssl.key: "/usr/share/elasticsearch/config/certificates/es01.key"
+xpack.security.http.ssl.key: "/usr/share/elasticsearch/config/certificates/es.key"
 ##xpack.security.http.ssl.certificate_authorities: /etc/elasticsearch/certs/ca.crt
-xpack.security.http.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es01.crt"
+xpack.security.http.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es.crt"
 xpack.security.transport.ssl.enabled: "true"
 xpack.security.transport.ssl.verification_mode: certificate
 ##xpack.security.transport.ssl.certificate_authorities: /certs/ca.crt
-xpack.security.transport.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es01.crt"
-xpack.security.transport.ssl.key: "/usr/share/elasticsearch/config/certificates/es01.key"
+xpack.security.transport.ssl.certificate: "/usr/share/elasticsearch/config/certificates/es.crt"
+xpack.security.transport.ssl.key: "/usr/share/elasticsearch/config/certificates/es.key"
