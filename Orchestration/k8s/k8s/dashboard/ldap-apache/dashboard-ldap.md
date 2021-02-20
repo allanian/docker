@@ -46,6 +46,14 @@ subjects:
 ## HTTPD CONFIG
 ```
 yum -y install httpd mod_ldap
+nano /etc/httpd/httpd.conf
+<Directory "/var/www/html">
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+
+
 nano /etc/httpd/conf.d/ldap.conf
 ### change token
 kubectl -n kubernetes-dashboard describe secret kubernetes-dashboard-view-token-jhljw
