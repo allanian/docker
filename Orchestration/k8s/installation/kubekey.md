@@ -18,9 +18,9 @@ metadata:
   name: sample
 spec:
   hosts:
-  - {name: node1, address: 10.3.3.216, internalAddress: 10.3.3.216, user: root, password: QWE123_qwe!}
-  - {name: node2, address: 10.3.3.217, internalAddress: 10.3.3.217, user: root, password: QWE123_qwe!}
-  - {name: node3, address: 10.3.3.218, internalAddress: 10.3.3.218, user: root, password: QWE123_qwe!}
+  - {name: node1, address: 172.1.1.1, internalAddress: 172.1.1.1, user: root, password: password}
+  - {name: node2, address: 172.1.1.2, internalAddress: 172.1.1.2, user: root, password: password}
+  - {name: node3, address: 172.1.1.3, internalAddress: 172.1.1.3, user: root, password: password}
   roleGroups:
     etcd:
     - node1
