@@ -116,13 +116,46 @@ spec:
   servicemesh:
     enabled: false
 
-  
+
 # create cluster with kubesphere v3.0.0
 ./kk create cluster -f config-sample.yaml
 
 # go to master node
 export PATH=$PATH:/usr/local/bin
 kubectl get nodes
+
+
+# dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+kubectl get svc -n kubernetes-dashboard
+## change to nodeport
+kubectl edit svc kubernetes-dashboard -o yaml -n kubernetes-dashboard
+kubectl get svc -n kubernetes-dashboard
+https://10.3.3.216:30943/
+
+# RBAC FOR DASHBOARD
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
+# get token
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 
 ```
 ## Working With Nodes and Clusters
@@ -170,3 +203,10 @@ Here we define the flags used above.
 –kubeconfig: This flag refers to the path where kubeconfig is located.
 Once the configuration file is generated, several parameters need to be added, like the ssh information for the nodes.
 ```
+
+
+# KUBESPHERE
+Make sure port 30880 is opened in your security group and access the web console through the NodePort (IP:30880) with the default account and password (admin/P@88w0rd).
+admin/P@88w0rd
+**http://10.3.3.216:30880/login**
+
