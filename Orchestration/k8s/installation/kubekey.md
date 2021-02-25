@@ -208,5 +208,5 @@ Once the configuration file is generated, several parameters need to be added, l
 # KUBESPHERE
 Make sure port 30880 is opened in your security group and access the web console through the NodePort (IP:30880) with the default account and password (admin/P@88w0rd).
 admin/P@88w0rd
-**http://10.3.3.216:30880/login**
+**http://172.1.1.1:30880/login**
 
