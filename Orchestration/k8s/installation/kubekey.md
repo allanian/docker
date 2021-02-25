@@ -149,18 +149,24 @@ If you started with the advanced (created with a configuration file):
 There are two options here. 
 
 We can use the All-in-one method to upgrade the cluster to a specific version. This approach supports upgrading Kubernetes, KubeSphere, or both Kubernetes and KubeSphere.
+```
 ./kk upgrade [--with-kubernetes version] [--with-kubesphere version]  
+```
 2. Using the Multi-node process, we can upgrade the cluster using a specific configuration file.
-
+```
 ./kk upgrade [--with-kubernetes version] [--with-kubesphere version] [(-f | --file) path] 
+```
 If running the commands using the –with-kubernetes or –with-kubesphere flags, the configuration file will also be amended. Alternatively, we can use the -f flag to specify which configuration file was built for the cluster creation.
 
 Note:
 When upgrading a multi-node cluster, we need to specify a configuration file. If a cluster is installed without using KubeKey, or the configuration file used for the installation is not found, a configuration file will need to be generated. This command obtains the cluster information and generates a KubeKey configuration file that can be used in the subsequent clusters.
+```
 ./kk create config [--from-cluster] [(-f | --file) path] [--kubeconfig path]
+```
 Here we define the flags used above. 
-
+```
 –from-cluster: This flag indicates that we are retrieving the cluster’s information from an existing cluster.
 -f: This flag refers to the path where the configuration file will be generated.
 –kubeconfig: This flag refers to the path where kubeconfig is located.
 Once the configuration file is generated, several parameters need to be added, like the ssh information for the nodes.
+```
