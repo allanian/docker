@@ -116,23 +116,25 @@ spec:
   servicemesh:
     enabled: false
 
-
 # create cluster with kubesphere v3.0.0
 ./kk create cluster -f config-sample.yaml
 
 # go to master node
 export PATH=$PATH:/usr/local/bin
 kubectl get nodes
-
+```
 
 # dashboard
+```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 kubectl get svc -n kubernetes-dashboard
+```
 ## change to nodeport
+```
 kubectl edit svc kubernetes-dashboard -o yaml -n kubernetes-dashboard
 kubectl get svc -n kubernetes-dashboard
 https://10.3.3.216:30943/
-
+```
 # RBAC FOR DASHBOARD
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
