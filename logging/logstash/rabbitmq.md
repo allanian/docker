@@ -30,8 +30,8 @@ input {
     # Consume from existing queue of APP
     queue => "put_object_version"
     durable => "true"
-    # No ack will boost your perf
-    ack => false
+    # No ack will boost your perf - but when logstash disabled you lost messages!!!!
+    ack => true
   }
 }
 
@@ -50,7 +50,7 @@ input {
     exchange => "logs"
     key => "app_version_queue"
     # No ack will boost your perf
-    ack => false
+    ack => true
   }
 }
 
@@ -71,7 +71,7 @@ input {
     # Take a copy of all messages with the "app_version_queue" routing key from the new exchange
     key => "app_version_queue"
     # No ack will boost your perf
-    ack => false
+    ack => true
   }
 }
 
