@@ -12,7 +12,7 @@ click save
 # in zabbix
 1) Administration/media types/click import and add media type from yaml https://www.zabbix.com/ru/integrations/rocketchat
 2) edit media type Rocket.Chat
-rc_url - https://chat.rendez-vous.ru
+rc_url - https://chat.company.ru
 # paste user_id and token, what we created in rocketChat in profile zabbix user
 rc_user_id - user_id_example
 rc_user_token - user_token_example
@@ -22,8 +22,14 @@ rc_title_link - change {$ZABBIX.URL} to https://zabbix.company.ru  (https://zabb
 # click test
 event_source 1
 
-
-
+# check with curl
+```
+curl -H "X-Auth-Token: pIk4RLKKd9H69gcq-UokBbWYf3MAQQmFW5JegkwW_Tt" \
+     -H "X-User-Id: Dw5Dzo97WZxwgHnEJ" \
+     -H "Content-type:application/json" \
+     https://chat.company.ru/api/v1/chat.postMessage \
+     -d '{"channel":"#zabbix","attachments":[{"collapsed":false,"color":"#97AAB3","title":"test","title_link":"https://zabbix.company.ru/tr_events.php?triggerid=test&eventid=test","text":"test"}]}'
+```
 # then create zabbix user with media Rocket.Chat
 send to #zabbix
 group zabbix admin
