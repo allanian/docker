@@ -126,8 +126,11 @@ kubectl get nodes
 
 # dashboard
 ```
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
+# releases here
+# https://github.com/kubernetes-sigs/metrics-server/releases/tag/v0.4.2
+# https://github.com/kubernetes/dashboard/releases/tag/v2.2.0
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.2/components.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 kubectl get svc -n kubernetes-dashboard
 ```
 ## change to nodeport
