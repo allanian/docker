@@ -1,31 +1,46 @@
-version: '3.6'
+version: '3.1'
 services:
+  confluence-nginx:
+    container_name: confluence-nginx
+    image: docker.io/nginx:stable-alpine
+    restart: unless-stopped
+    hostname: confluence
+    links:
+      - "confluence"
+    ports:
+      - '10.1.1.2:80:80'
+      - '10.1.1.2:443:443'
+    volumes:
+      - /data/confluence-nginx:/etc/nginx/conf.d/
+      - /etc/ssl/rv-ssl:/etc/ssl/rv-ssl:ro
+    network_mode: "bridge"
+
   confluence:
     container_name: confluence
+    #image: docker.io/atlassian/confluence-server:7.7.2
     image: docker.io/atlassian/confluence-server:7.8.3
     restart: unless-stopped
     hostname: confluence
-    depends_on:
+    links:
       - "confluence-db"
     environment:
       JVM_MINIMUM_MEMORY: 2048
       JVM_MAXIMUM_MEMORY: 2048
       JVM_SUPPORT_RECOMMENDED_ARGS: -Xmx4056M -Xms4056M
-      CATALINA_CONNECTOR_PROXYNAME: confluence.company.ru
+      CATALINA_CONNECTOR_PROXYNAME: confluence
       CATALINA_CONNECTOR_PROXYPORT: 443
       CATALINA_CONNECTOR_SCHEME: https
       CATALINA_CONNECTOR_SECURE: "True"
     volumes:
-      - ./confluence:/var/atlassian/application-data/confluence
+      - /data/confluence:/var/atlassian/application-data/confluence
       - ./server.xml:/opt/atlassian/confluence/conf/server.xml
-    ports:
-      - 8090:8090
-      - 8091:8091
+      - /data/confluence-logs/:/opt/atlassian/confluence/logs
+      - /data/confluence-tmp:/opt/atlassian/confluence/temp 
     network_mode: "bridge"
 
   confluence-db:
     container_name: confluence-db
-    image: postgres:12
+    image: centos/postgresql-10-centos7
     restart: unless-stopped
     hostname: postgresql-confluence
     environment:
@@ -34,5 +49,6 @@ services:
       POSTGRESQL_DATABASE: confluence
       POSTGRESQL_ADMIN_PASSWORD: confluencepasswdadmin
     volumes:
-      - ./db:/var/lib/pgsql/data
+      - ./confluence-db:/var/lib/pgsql/data
+     # - confluence-db:/var/lib/pgsql/data
     network_mode: "bridge"
