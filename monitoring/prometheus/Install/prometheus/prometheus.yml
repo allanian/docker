@@ -1,8 +1,10 @@
 global:
-  scrape_interval:     15s 
-  evaluation_interval: 15s
+  # How frequently to scrape targets
+  scrape_interval:     10s
+  # How frequently to evaluate rules
+  evaluation_interval: 10s
   external_labels:
-      monitor: 'myprometheus'
+    monitor: 'PROMETHEUS' # label for slack alerts
 
 rule_files:
   - 'alert.rules'
@@ -19,25 +21,27 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
-         - targets: ['localhost:9090']
+    - targets: ['localhost:9090']
 
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
-         - targets: 
-           - '172.105.159.75:8019'
+    - targets: 
+      - '172.105.159.75:8019'
 
   - job_name: 'node-exporter'
     scrape_interval: 5s
     static_configs:
-         - targets: 
-           - '172.105.159.75:8016'
-           
+    - targets: 
+      - '172.105.159.75:8016'
+      labels:
+        instance: 'node'
+          
   - job_name: 'nginx'
     static_configs:
     - targets:
-      - '45.56.107.156:9113'
-      - '96.126.106.224:9113'
+      - '11.111.11.11:9113'
+      - '11.111.11.12:9113'
       
   - job_name: blackbox
     metrics_path: /probe
@@ -45,9 +49,14 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
      - targets:
-     # api stg
-        # atlassian
-        - https://confluence.company.com
+       - https://confluence.company.com
+       labels:
+         instance: 'API DEV'
+     - targets:
+       - https://jira.company.com
+       - https://jiratest.company.com
+       labels:
+         instance: 'JIRA'
     relabel_configs:
      - source_labels: [__address__]
        target_label: __param_target
