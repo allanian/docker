@@ -140,6 +140,7 @@ kubectl get svc -n kubernetes-dashboard
 https://10.3.3.216:30943/
 ```
 # RBAC FOR DASHBOARD
+```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ServiceAccount
@@ -163,6 +164,21 @@ EOF
 # get token
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 
+
+# ADD NGINX INGRESS
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm install ingress-nginx ingress-nginx/ingress-nginx
+
+# check
+POD_NAME=$(kubectl get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].metadata.name}')
+kubectl exec -it $POD_NAME -- /nginx-ingress-controller --version
+
+
+
+
+```
 ```
 ## Working With Nodes and Clusters
 ```
