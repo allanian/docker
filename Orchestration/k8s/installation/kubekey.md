@@ -5,7 +5,7 @@
 - [Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)   
 - [Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)    
 - [Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)   
-- [Gitlab integration](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Gitlabintegration)   
+- [Gitlab integration](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Gitlab-integration)   
 - [Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
 
 ## Install
