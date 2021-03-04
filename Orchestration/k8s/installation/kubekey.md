@@ -5,6 +5,7 @@
 - [Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)   
 - [Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)    
 - [Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)   
+- [Gitlab integration](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Gitlab integration)   
 - [Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
 
 ## Install
@@ -244,7 +245,7 @@ kubectl apply -f gitlab-admin-service-account.yaml
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep gitlab | awk '{print $1}')
 
 ```
-```
+
 # Additional
 ## Working With Nodes and Clusters
 ```
