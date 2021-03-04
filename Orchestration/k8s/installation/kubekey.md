@@ -1,9 +1,9 @@
 # Kubekey
 ```
-- [Main](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#KUBEKEY)
-- [Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)
-- [Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)
-- [Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)
+- [Main](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#KUBEKEY)   
+- [Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)   
+- [Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)    
+- [Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)   
 - [Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
 ```
 ## Install
@@ -190,6 +190,59 @@ helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx
 # check
 POD_NAME=$(kubectl get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].metadata.name}')  kubectl exec -it $POD_NAME -- /nginx-ingress-controller --version
+```
+
+# Gitlab integration
+```
+go to admin console of gitlab / k8s / add integration
+cluster name - test
+env scope - test
+api url - https://10.3.3.215:6443
+```
+#### CA certificate
+List the secrets with 
+```
+kubectl get secrets
+```
+and one should be named similar to 
+```
+default-token-xxxxx
+```
+Copy that token name for use below.
+Get the certificate by running this command:
+```
+kubectl get secret <secret name> -o jsonpath="{['data']['ca\.crt']}" | base64 --decode
+```
+
+
+####Service token
+```
+nano gitlab-admin-service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: gitlab-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: gitlab
+    namespace: kube-system
+```
+```
+kubectl apply -f gitlab-admin-service-account.yaml
+#### get token
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep gitlab | awk '{print $1}')
+
+```
 ```
 # Additional
 ## Working With Nodes and Clusters
