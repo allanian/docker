@@ -1,9 +1,11 @@
 # Kubekey
-[Main](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#KUBEKEY)
-[Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)
-[Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)
-[Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)
-[Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
+```
+- [Main](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#KUBEKEY)
+- [Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)
+- [Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)
+- [Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)
+- [Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
+```
 ## Install
 ```
 # before creating k8s cluster, run ansible playbook with kubekey_docker role (its install that soft: docker,socan,openssl,tc and other tools)
