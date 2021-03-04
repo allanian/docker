@@ -1,4 +1,10 @@
-# KUBEKEY
+# Kubekey
+[Main](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#KUBEKEY)
+[Install](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Install)
+[Dashboard](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#dashboard)
+[Ingress-Nginx](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Ingress-Nginx)
+[Additional](https://github.com/allanian/docker/blob/master/Orchestration/k8s/installation/kubekey.md#Additional)
+## Install
 ```
 # before creating k8s cluster, run ansible playbook with kubekey_docker role (its install that soft: docker,socan,openssl,tc and other tools)
 ansible-playbook -i inventory/install_inventory -u root playbooks/install_soft.yml
@@ -133,13 +139,13 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 kubectl get svc -n kubernetes-dashboard
 ```
-## change to nodeport
+### change to nodeport
 ```
 kubectl edit svc kubernetes-dashboard -o yaml -n kubernetes-dashboard
 kubectl get svc -n kubernetes-dashboard
 https://10.3.3.216:30943/
 ```
-# RBAC FOR DASHBOARD
+### RBAC for Dashboard
 ```
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -174,12 +180,16 @@ helm install ingress-nginx ingress-nginx/ingress-nginx
 # check
 POD_NAME=$(kubectl get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].metadata.name}')
 kubectl exec -it $POD_NAME -- /nginx-ingress-controller --version
-
-
-
-
 ```
+# Ingress-Nginx
 ```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx
+# check
+POD_NAME=$(kubectl get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].metadata.name}')  kubectl exec -it $POD_NAME -- /nginx-ingress-controller --version
+```
+# Additional
 ## Working With Nodes and Clusters
 ```
 Add Nodes
@@ -231,4 +241,3 @@ Once the configuration file is generated, several parameters need to be added, l
 Make sure port 30880 is opened in your security group and access the web console through the NodePort (IP:30880) with the default account and password (admin/P@88w0rd).
 admin/P@88w0rd
 **http://172.1.1.1:30880/login**
-
