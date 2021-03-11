@@ -1,0 +1,133 @@
+datadir="/var/lib/proxysql"
+errorlog="/var/lib/proxysql/proxysql.log"
+
+admin_variables=
+{
+	admin_credentials="admin:admin"
+        admin-stats_credentials="stats:stats"
+#	mysql_ifaces="127.0.0.1:6032;/tmp/proxysql_admin.sock"
+	mysql_ifaces="0.0.0.0:6032"
+        #admin-web_enabled=yes
+        admin-web_enabled=true
+        web_enabled=true
+        #web_enabled=yes
+        admin-web_port=6080
+        web_port=6080
+	refresh_interval=2000
+	debug=true
+}
+
+mysql_variables=
+{
+	threads=4
+        admin-web_enabled=true
+        max_connections=2048
+	default_query_delay=0
+	default_query_timeout=36000000
+	have_compress=true
+	poll_timeout=2000
+#	interfaces="0.0.0.0:6033;/tmp/proxysql.sock"
+	interfaces="0.0.0.0:3306"
+	default_schema="information_schema"
+	stacksize=1048576
+	server_version="8.0.0"
+	connect_timeout_server=3000
+# make sure to configure monitor username and password
+# https://github.com/sysown/proxysql/wiki/Global-variables#mysql-monitor_username-mysql-monitor_password
+    monitor_username="artektiv"
+    monitor_password="O7UrtTt8HVT1W7ZxJmIwyB"
+	monitor_history=600000
+	monitor_connect_interval=60000
+	monitor_ping_interval=10000
+	monitor_read_only_interval=1500
+	monitor_read_only_timeout=500
+	ping_interval_server_msec=120000
+	ping_timeout_server=500
+	commands_stats=true
+	sessions_sort=true
+	connect_retries_on_failure=10
+}
+
+
+# defines all the MySQL servers
+mysql_servers =
+(
+ {
+   hostgroup=1
+#   address="10.3.4.15"
+   address="konev-database"
+   port=3306
+   max_connections=200
+   compression = 0
+   weight = 1
+   status = "ONLINE"
+ }
+)
+
+
+# defines all the MySQL users
+mysql_users:
+(
+  {
+    username = "root"
+    password = "rS4EKcUU50uXRQYe"
+    default_hostgroup = 1
+    max_connections=1000
+    default_schema="information_schema"
+    active = 1
+ },
+ {
+    username = "artektiv"
+    password ="O7UrtTt8HVT1W7ZxJmIwyB"
+    default_hostgroup = 1
+    max_connections=1000
+    default_schema="rendez_vous"
+    active = 1
+ }
+)
+
+
+
+#defines MySQL Query Rules
+mysql_query_rules:
+(
+#	{
+#		rule_id=1
+#		active=1
+#		match_pattern="^SELECT .* FOR UPDATE$"
+#		destination_hostgroup=0
+#		apply=1
+#	},
+#	{
+#		rule_id=2
+#		active=1
+#		match_pattern="^SELECT"
+#		destination_hostgroup=1
+#		apply=1
+#	}
+)
+
+scheduler=
+(
+#  {
+#    id=1
+#    active=0
+#    interval_ms=10000
+#    filename="/var/lib/proxysql/proxysql_galera_checker.sh"
+#    arg1="0"
+#    arg2="0"
+#    arg3="0"
+#    arg4="1"
+#    arg5="/var/lib/proxysql/proxysql_galera_checker.log"
+#  }
+)
+
+mysql_replication_hostgroups =
+(
+  {
+    writer_hostgroup=1
+    reader_hostgroup=1
+    comment="test repl 1" 
+ }
+)
+
