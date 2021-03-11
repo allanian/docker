@@ -1,0 +1,14 @@
+version: '3'
+mysql-proxysql:
+    container_name: mysql-proxysql
+    #image: proxysql/proxysql:2.0.17
+    image: severalnines/proxysql
+    volumes:
+    - "./proxysql/proxysql.cnf:/etc/proxysql.cnf"
+    - "./proxysql/proxysql:/var/lib/proxysql"
+    ports:
+    - "${EXT_IP}:6033:6033"
+    - "${EXT_IP}:6032:6032"
+    - "${EXT_IP}:6080:6080"
+    networks:
+      - mysql-net
