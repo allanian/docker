@@ -426,6 +426,7 @@ kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+')
 ```
 
 ## Tests, check external-dns
+** Change **test-qwe.company.com** to your domain!!!**
 ```
 ---
 apiVersion: v1
@@ -433,7 +434,7 @@ kind: Service
 metadata:
   name: test-svc
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: test-qwe.company.com
+    external-dns.alpha.kubernetes.io/hostname: **test-qwe.company.com**
 spec:
   type: LoadBalancer
   selector:
