@@ -97,7 +97,7 @@ eksctl utils associate-iam-oidc-provider --region us-west-1 --cluster qafgcluste
 ``` 
 **Note:** The **FargateExecutionRole** is the role that the **kubelet** and **kube-proxy** run your Fargate pod on. However, it's not the role for the Fargate pod (that is, the **alb-ingress-controller**). For the Fargate pod, you must use the IAM role for the service account.
 
-## STEP 02:  IAM policy for the AWS Load Balancer Controller
+# STEP 04:  IAM policy for the AWS Load Balancer Controller
 ```
 curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
 ```
@@ -108,7 +108,7 @@ aws iam create-policy \
 --policy-name AWSLoadBalancerControllerIAMPolicy \
 --policy-document file://iam-policy.json
 ```
-## STEP 03:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
+# STEP 05:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
 ```
 # Create IAM SERVICE ACCOUNT with POLICY - AWSLoadBalancerControllerIAMPolicy (you can go to AWS IAM, find policy with name - AWSLoadBalancerControllerIAMPolicy and copy ARN_ID)
 eksctl create iamserviceaccount \
@@ -126,7 +126,7 @@ eksctl get iamserviceaccount --region=us-west-1 --cluster=qafgcluster --namespac
 ```
 **Note:** The role name begins with **eksctl-your-cluster-name-addon-iamserviceaccount-**.
 
-## Step-04: Install aws-load-balancer-controller
+# Step-06: Install aws-load-balancer-controller
 
     #Add the EKS repository to Helm:
     helm repo add eks https://aws.github.io/eks-charts
