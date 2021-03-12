@@ -54,6 +54,7 @@ nano farget-cluster.yml
 #### Get List of clusters
 
     eksctl --region us-west-2 get clusters 
+#### KubeConfig
     aws eks --region us-west-1 update-kubeconfig --name qafgcluster
     cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/qa.yml
     export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/qa.yml
@@ -82,7 +83,7 @@ https://console.aws.amazon.com/iamv2/home?#/identity_providers
 
     aws iam list-open-id-connect-providers | grep <EXAMPLED539D4633E53DE1B716D3041E>
 
-Если результат возвращается предыдущей командой, значит, у вас уже есть провайдер для вашего кластера. Если выходные данные не возвращаются, необходимо создать поставщика IAM  OIDC.
+Если результат возвращается предыдущей командой, значит, у вас уже есть провайдер для вашего кластера - GO TO THE STEP 02. Если выходные данные не возвращаются, необходимо создать поставщика IAM  OIDC.
 Create an IAM OIDC identity provider for your cluster with the following command. Replace `<cluster_name>` (including `<>`) with your own value (allow the cluster to use AWS Identity and Access Management (IAM) for service accounts)
 
     eksctl utils associate-iam-oidc-provider --region us-west-1 --cluster qafgcluster --approve
