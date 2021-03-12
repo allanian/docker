@@ -1,6 +1,8 @@
- - [INSTALL](123)
-
-
+ - [Install tool](https://github.com/allanian/docker/tree/master/Orchestration/eks#step-01-install-eksctl)
+ - [Create cluster](https://github.com/allanian/docker/tree/master/Orchestration/eks#step-02-create-cluster)
+ - [Create & Associate IAM OIDC Provider for our EKS Cluster](https://github.com/allanian/docker/tree/master/Orchestration/eks#step-03-create--associate-iam-oidc-provider-for-our-eks-cluster)
+ - 
+# Step-01: install eksctl
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
 Create an Amazon EKS cluster, service account policy, and RBAC policies
 # Step-01: install eksctl
