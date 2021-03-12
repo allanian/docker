@@ -142,12 +142,14 @@ eksctl get iamserviceaccount --region=us-west-1 --cluster=qafgcluster --namespac
   Options
   https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
   
-#### uninstall
+**uninstall**
+```
 helm delete aws-load-balancer-controller
-####  To check the status of the  **alb-ingress-controller**  deployment, run the following command:
-
+```
+**To check the status of the  **alb-ingress-controller**  deployment, run the following command:**
+```
 kubectl -n kube-system get pod
-
+```
 #### EXAMPLE for check AWX-LB-controller
 ```
 eksctl --region=us-west-1 --cluster qafgcluster create fargateprofile --name game-2048 --namespace game-2048
