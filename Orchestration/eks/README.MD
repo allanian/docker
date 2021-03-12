@@ -13,7 +13,7 @@ eksctl version
 --region us-west-1 - California
 --region us-west-2 - Oregon
 
-eksctl create cluster --name qafgcluster --region us-west-1 --version 1.18 --fargate
+eksctl create cluster --name qafgcluster --region us-west-1 --version 1.19 --fargate
 #### or you can create from file:
 nano farget-cluster.yml
 
@@ -24,7 +24,7 @@ nano farget-cluster.yml
     metadata:
       name: fargate-qa
       region: us-west-2
-      version: '1.18'
+      version: '1.19'
     iam:
       withOIDC: true
     fargateProfiles:
