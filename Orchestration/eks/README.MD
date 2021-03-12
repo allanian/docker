@@ -56,69 +56,73 @@ nano farget-cluster.yml
 
 
 #### Get List of clusters
-
-    eksctl --region us-west-2 get clusters 
+```
+eksctl --region us-west-1 get clusters 
+```
 #### KubeConfig
-    aws eks --region us-west-1 update-kubeconfig --name qafgcluster
-    cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/qa.yml
-    export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/qa.yml
-    kubectl get svc
-
+```
+aws eks --region us-west-1 update-kubeconfig --name qafgcluster
+cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/qa.yml
+export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/qa.yml
+kubectl get svc
+```
 #### delete cluster
-
-    eksctl --region us-west-2 delete cluster --name qafargate 
-
-### Create a Fargate pod execution role (Don't need, if create cluster with --fargate)
+```
+eksctl --region us-west-2 delete cluster --name qafargate 
+```
+### Create a Fargate pod execution role (Don't need, if create cluster with option - --fargate)
 It's created auto for cluster type - fargate
 ##  Step-02: Create & Associate IAM OIDC Provider for our EKS Cluster
 ### Step-02.1: Create an IAM policy for the service account 
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
 #### verify
-
-    aws eks describe-cluster --region us-west-1 --name qafgcluster --query "cluster.identity.oidc.issuer" --output text
-
+```
+aws eks describe-cluster --region us-west-1 --name qafgcluster --query "cluster.identity.oidc.issuer" --output text
+```
 Пример вывода:
-
-    https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
-
+```
+https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
+```
 Так же можно проверить его тут:    
 https://console.aws.amazon.com/iamv2/home?#/identity_providers
 Перечислите поставщиков IAM  OIDC в своей учетной записи. Заменить <EXAMPLED539D4633E53DE1B716D3041E>(включая <>) значением, возвращенным предыдущей командой.
-
-    aws iam list-open-id-connect-providers | grep <EXAMPLED539D4633E53DE1B716D3041E>
-
-Если результат возвращается предыдущей командой, значит, у вас уже есть провайдер для вашего кластера - GO TO THE STEP 02. Если выходные данные не возвращаются, необходимо создать поставщика IAM  OIDC.
+```
+aws iam list-open-id-connect-providers | grep <EXAMPLED539D4633E53DE1B716D3041E>
+```
+Если результат возвращается предыдущей командой, значит, у вас уже есть провайдер для вашего кластера - **GO TO THE STEP 02**. Если выходные данные не возвращаются, необходимо создать поставщика IAM  OIDC.
 Create an IAM OIDC identity provider for your cluster with the following command. Replace `<cluster_name>` (including `<>`) with your own value (allow the cluster to use AWS Identity and Access Management (IAM) for service accounts)
-
-    eksctl utils associate-iam-oidc-provider --region us-west-1 --cluster qafgcluster --approve
-    
+```
+eksctl utils associate-iam-oidc-provider --region us-west-1 --cluster qafgcluster --approve
+``` 
 **Note:** The **FargateExecutionRole** is the role that the **kubelet** and **kube-proxy** run your Fargate pod on. However, it's not the role for the Fargate pod (that is, the **alb-ingress-controller**). For the Fargate pod, you must use the IAM role for the service account.
-
-
 
 ## STEP 02:  IAM policy for the AWS Load Balancer Controller
 ```
 curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
 ```
 ```
+# Create IAM POLICY with name - AWSLoadBalancerControllerIAMPolicy
 aws iam create-policy \
 --region=us-west-1 \
 --policy-name AWSLoadBalancerControllerIAMPolicy \
 --policy-document file://iam-policy.json
 ```
 ## STEP 03:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
-    eksctl create iamserviceaccount \
-    --cluster=qafgcluster \
-    --region=us-west-1 \
-    --namespace=kube-system \
-    --name=aws-load-balancer-controller \
-    --attach-policy-arn=arn:aws:iam::<ARN_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
-    --override-existing-serviceaccounts \
-    --approve
-
+```
+# Create IAM SERVICE ACCOUNT with POLICY - AWSLoadBalancerControllerIAMPolicy (you can go to AWS IAM, find policy with name - AWSLoadBalancerControllerIAMPolicy and copy ARN_ID)
+eksctl create iamserviceaccount \
+  --cluster=qafgcluster \
+  --region=us-west-1 \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --attach-policy-arn=arn:aws:iam::<ARN_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --override-existing-serviceaccounts \
+  --approve
+```
 ####  To verify that the new service role was created, run the following command:
-    eksctl get iamserviceaccount --region=us-west-1 --cluster=qafgcluster --namespace kube-system
-
+```
+eksctl get iamserviceaccount --region=us-west-1 --cluster=qafgcluster --namespace kube-system
+```
 **Note:** The role name begins with **eksctl-your-cluster-name-addon-iamserviceaccount-**.
 
 ## Step-04: Install aws-load-balancer-controller
