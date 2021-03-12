@@ -206,9 +206,11 @@ spec:
               serviceName: service-2048
               servicePort: 80
 ```
-
+```
+kubectl apply -f 2048.yml
 kubectl get ingress -n game-2048
-copy ADDRESS and paste to Browser
+```
+##### copy ADDRESS and paste to Browser
 
 ## ExternalDNS
 #### Used for Updating Route53 RecordSets from Kubernetes
