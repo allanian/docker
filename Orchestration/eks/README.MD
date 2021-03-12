@@ -198,7 +198,7 @@ spec:
   selector:
     app.kubernetes.io/name: app-2048
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: game-2048
@@ -209,12 +209,15 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
 spec:
   rules:
-    - http:
-        paths:
-          - path: /*
-            backend:
-              serviceName: service-2048
-              servicePort: 80
+  - http:
+      paths:
+      - path: /*
+        pathType: Prefix
+        backend:
+          service:
+            name: service-2048
+            port: 
+              number: 80
 ```
 ```
 kubectl apply -f 2048.yml
