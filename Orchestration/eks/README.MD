@@ -140,9 +140,11 @@ helm delete aws-load-balancer-controller
 
 kubectl -n kube-system get pod
 
-EXAMPLE for check AWX-LB-controller
+#### EXAMPLE for check AWX-LB-controller
+```
 eksctl --region=us-west-1 --cluster qafgcluster create fargateprofile --name game-2048 --namespace game-2048
 nano 2048.yml
+```
 ```
 ---
 apiVersion: v1
