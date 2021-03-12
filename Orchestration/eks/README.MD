@@ -11,10 +11,13 @@ mv /tmp/eksctl /usr/bin
 eksctl version
 
 #### Create Cluster
+```
+eksctl create cluster --name qafgcluster --region us-west-1 --version 1.19 --fargate
+
+# region example
 --region us-west-1 - California
 --region us-west-2 - Oregon
-
-eksctl create cluster --name qafgcluster --region us-west-1 --version 1.19 --fargate
+```
 #### or you can create from file:
 nano farget-cluster.yml
 
