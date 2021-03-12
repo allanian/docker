@@ -1,5 +1,6 @@
 
 
+
   
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
 # Create an Amazon EKS cluster, service account policy, and RBAC policies
@@ -298,15 +299,13 @@ Where get vars for that line
 используем ARM c iam policy for route53 - AllowExternalDNSUpdates
 https://console.aws.amazon.com/iam/home#/policies
 AWS=>IAM=>POLICY=>NAME=>ARN ID
-```
-
-#### Verify the Service Account
+**Verify the Service Account**
 ```
 kubectl get sa external-dns
 ```
-### Update External DNS Kubernetes manifest
+**Update External DNS Kubernetes manifest**
 https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
-## RBAC -
+## Deployment ExternalDNS
 ### 1. get iam role ARN
 -   Go to AWS -> Services -> CloudFormation
 -   Verify the latest CloudFormation Stack created. (`eksctl` external-dns)
@@ -318,7 +317,7 @@ https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.m
 ```
     arn:aws:iam::180789647333:role/eksctl-eksdemo1-addon-iamserviceaccount-defa-Role1-1O3H7ZLUED5H4
 ```
-### Changes in file:
+### 3. Changes in file:
 -   Change-1: Line number 9: IAM Role update[Iam role update¶](https://www.stacksimplify.com/aws-eks/aws-alb-ingress/install-externaldns-on-aws-eks/#change-1-line-number-9-iam-role-update)
 -    Change-2: Line 55, 56: Commented them
 ```
@@ -336,8 +335,7 @@ verify, rbac enabled or no
 - attach policy arn to SA, then we create
 ```
 kubectl api-versions | grep rbac.authorization.k8s.io
-nano rbac.yml
-```
+nano external_dns.yml
 ```
 ```
 ---
@@ -416,7 +414,7 @@ spec:
 
 ```
 # Verify Deployment by checking logs 
-kubectl apply -f rbac.yml
+kubectl apply -f external_dns.yml
 kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
 # List pods (external-dns pod should be in running state) 
 kubectl get pods
@@ -424,8 +422,7 @@ kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+')
 ##### если в логах ошибки, пересоздай!
 ```
 
-# Example, for check external-dns
-## service
+## Tests, check external-dns
 ```
 ---
 apiVersion: v1
@@ -533,7 +530,8 @@ First create fargrate profile
     aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
     kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
 
-## FARGATE PROFILE
+# Additional
+## 1. FARGATE PROFILE
 
     # get profiles
     eksctl --region=us-west-1 --cluster qafgcluster get fargateprofile
@@ -542,7 +540,7 @@ First create fargrate profile
     # delete
     eksctl --cluster qafargate delete fargateprofile --name alb-sample-app
 
-# deploy our app
+## 2. deploy our app
 
     # app should be with namespace, what we defined in fargetprofile
     eksctl --region=us-west-1 --cluster qafgcluster create fargateprofile --name developers --namespace developers
@@ -561,16 +559,19 @@ on ingress, set this
 ### logs ingress
 kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
 ### get all zones
-
+```
 aws route53 list-hosted-zones-by-name
+```
 
-
-# logging
+## 3.  logging
 can be enabled on cluster gui page - configuration / logging
-# externaldns logs (check this actions with dns route53)
+## 4. ExternalDNS checks
+externaldns logs (check this actions with dns route53)
+```
 kubectl logs external-dns-57d774cd5c-wtd6d -f
 kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+') 
-# externaldns
+```
+### externaldns
 dig echoserver.company.com
 ;; QUESTION SECTION:
 ;echoserver.josh-test-dns.com.  IN      A
