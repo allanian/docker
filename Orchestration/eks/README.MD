@@ -1,17 +1,14 @@
+ - [INSTALL](123)
 
 
-
-  
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
-# Create an Amazon EKS cluster, service account policy, and RBAC policies
-## Step-01: Create EKS Cluster using eksctl
-
-#### install eksctl
+Create an Amazon EKS cluster, service account policy, and RBAC policies
+# Step-01: install eksctl
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 mv /tmp/eksctl /usr/bin
 eksctl version
 
-#### Create Cluster
+# Step-02: Create Cluster
 ```
 eksctl create cluster --name qafgcluster --region us-west-1 --version 1.19 --fargate
 
