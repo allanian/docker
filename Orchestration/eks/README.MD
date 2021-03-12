@@ -1,4 +1,5 @@
 
+
   
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
 # Create an Amazon EKS cluster, service account policy, and RBAC policies
@@ -225,15 +226,15 @@ https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.m
 ### create iam policy
 
 Перейдите в Services -> IAM -> Policies -> Create Policy -> Json Tab -> paste json below
-https://console.aws.amazon.com/iam/home#/policies$new?step=edit
+[create iam policy ](https://console.aws.amazon.com/iam/home#/policies$new?step=edit)
 
- - [ ] Click on  **JSON**  Tab and copy paste below JSON
-       -   Click on  **Visual editor**  tab to validate
-       -   Click on  **Review Policy**
-       -   **Name:**  AllowExternalDNSUpdates
-       -   **Description:**  Allow access to Route53 Resources for ExternalDNS
-       -   Click on  **Create Policy**
-
+- Click on  **JSON**  Tab and copy paste below JSON
+-   Click on  **Visual editor**  tab to validate
+-   Click on  **Review Policy**
+	-   **Name:**  AllowExternalDNSUpdates
+	-   **Description:**  Allow access to Route53 Resources for ExternalDNS
+-   Click on  **Create Policy**
+```
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -258,15 +259,14 @@ https://console.aws.amazon.com/iam/home#/policies$new?step=edit
         }
       ]
     }
-
+```
 
 Запишите Политику ARN, которую мы будем использовать на следующем шаге.
 arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates
 
 ### Create IAM Role, k8s Service Account & Associate IAM Policy
-https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
+[Readme here](https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html)
 In addition, we are also going to associate the AWS IAM Policy AllowExternalDNSUpdates to the newly created AWS IAM Role.
-
 Create IAM Role, k8s Service Account & Associate IAM Policy
 
 #### Replaced name, namespace, cluster, arn
@@ -279,12 +279,13 @@ Create IAM Role, k8s Service Account & Associate IAM Policy
     --attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates \
     --approve \
     --override-existing-serviceaccounts
-
-##### Note!
---attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates  - используем ARM c iam policy for route53 - AllowExternalDNSUpdates:
+```
+Where get vars for that line
+--attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates
+используем ARM c iam policy for route53 - AllowExternalDNSUpdates
 https://console.aws.amazon.com/iam/home#/policies
 IAM=>POLICY=>NAME=>ARN ID
-
+```
 
 #### Verify the Service Account
 
@@ -293,7 +294,7 @@ IAM=>POLICY=>NAME=>ARN ID
   ### Update External DNS Kubernetes manifest
   https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
 ## how find role-arn
-### Verify CloudFormation Stack
+### Verify CloudFormation Stack (CFN)
 
 -   Go to Services -> CloudFormation
 -   Verify the latest CFN Stack created. `eksctl` external-dns
@@ -302,103 +303,118 @@ IAM=>POLICY=>NAME=>ARN ID
 
 ### Verify IAM Role & IAM Policy
 
--   With above step in CFN, we will be landed in IAM Role created for external-dns.
--   Verify in  **Permissions**  tab we have a policy named  **AllowExternalDNSUpdates**
--   Now make a note of that Role ARN, this we need to update in External-DNS k8s manifest Копируем ARN роли:
+-   On step Above, we created IAM ROLE for EXTERNAL DNS! (на шаге выше, мы создали IAM ROLE для EXTERNAL DNS)
+- Go to [IAM AWS](https://console.aws.amazon.com/iam/home#/policies/arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates$jsonEditor) and  click on **Permissions**  tab we have a policy named  **AllowExternalDNSUpdates** (кароч идем в IAM и проваливаемся в политику, которую создали выше с именем AllowExternalDNSUpdates, находим её ID на вкладке **Permissions** ) копируем и вставляем в создаваемый манифест.
+-   Now make a note of that Role ARN, this we need to update in External-DNS k8s manifest 
+-  COPY ARN OF ROLE (Копируем ARN роли:)
 ```
     arn:aws:iam::180789647333:role/eksctl-eksdemo1-addon-iamserviceaccount-defa-Role1-1O3H7ZLUED5H4
 ```
-#### Change-1: Line number 9: IAM Role update[¶](https://www.stacksimplify.com/aws-eks/aws-alb-ingress/install-externaldns-on-aws-eks/#change-1-line-number-9-iam-role-update "Permanent link")
-#### Chnage-2: Line 55, 56: Commented them
-
-#### config
-### verify, rbac enabled or no
-##### first we create policy, copy policy arn, attach policy arn to SA, then we create
+### Changes in file:
+-   Change-1: Line number 9: IAM Role update[Iam role update¶](https://www.stacksimplify.com/aws-eks/aws-alb-ingress/install-externaldns-on-aws-eks/#change-1-line-number-9-iam-role-update)
+-    Change-2: Line 55, 56: Commented them
+```
+# If you're using kiam or kube2iam, specify the following annotation.
+# Otherwise, you may safely omit it.
+#   annotations:
+#     iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
+# --domain-filter=external-dns-test.my-org.com
+# - --policy=upsert-only
+```
+**config**
+verify, rbac enabled or no
+- first we create policy
+- copy policy arn
+- attach policy arn to SAthen we create
+```
 kubectl api-versions | grep rbac.authorization.k8s.io
 nano rbac.yml
 ```
-    apiVersion: v1
-    kind: ServiceAccount
+```
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+  annotations:
+    # paster Role ARN
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+- apiGroups: [""]
+  resources: ["services","endpoints","pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["extensions","networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+- kind: ServiceAccount
+  name: external-dns
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
     metadata:
-      name: external-dns
-      annotations:
-        # paster Role ARN
-        eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1beta1
-    kind: ClusterRole
-    metadata:
-      name: external-dns
-    rules:
-    - apiGroups: [""]
-      resources: ["services","endpoints","pods"]
-      verbs: ["get","watch","list"]
-    - apiGroups: ["extensions","networking.k8s.io"]
-      resources: ["ingresses"]
-      verbs: ["get","watch","list"]
-    - apiGroups: [""]
-      resources: ["nodes"]
-      verbs: ["list","watch"]
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1beta1
-    kind: ClusterRoleBinding
-    metadata:
-      name: external-dns-viewer
-    roleRef:
-      apiGroup: rbac.authorization.k8s.io
-      kind: ClusterRole
-      name: external-dns
-    subjects:
-    - kind: ServiceAccount
-      name: external-dns
-      namespace: default
-    ---
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: external-dns
+      labels:
+        app: external-dns
+      # If you're using kiam or kube2iam, specify the following annotation.
+      # Otherwise, you may safely omit it.
+#      annotations:
+#        iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
     spec:
-      strategy:
-        type: Recreate
-      selector:
-        matchLabels:
-          app: external-dns
-      template:
-        metadata:
-          labels:
-            app: external-dns
-          # If you're using kiam or kube2iam, specify the following annotation.
-          # Otherwise, you may safely omit it.
-    #      annotations:
-    #        iam.amazonaws.com/role: arn:aws:iam::ACCOUNT-ID:role/IAM-SERVICE-ROLE-NAME
-        spec:
-          serviceAccountName: external-dns
-          containers:
-          - name: external-dns
-            image: k8s.gcr.io/external-dns/external-dns:v0.7.3
-            args:
-            - --source=service
-            - --source=ingress
-    #        - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
-            - --provider=aws
-    #        - --policy=upsert-only # comment for allow deleting any records ExternalDNS, uncomment to enable full synchronization
-            - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
-            - --registry=txt
-            - --txt-owner-id=my-hostedzone-identifier
-          securityContext:
-            fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        image: k8s.gcr.io/external-dns/external-dns:v0.7.3
+        args:
+        - --source=service
+        - --source=ingress
+#        - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --provider=aws
+#        - --policy=upsert-only # comment for allow deleting any records ExternalDNS, uncomment to enable full synchronization
+        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+        - --registry=txt
+        - --txt-owner-id=my-hostedzone-identifier
+      securityContext:
+        fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
+
 ```
 ```
-    # Verify Deployment by checking logs 
-    kubectl apply -f rbac.yml
-    kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
-    # List pods (external-dns pod should be in running state) 
-    kubectl get pods
-    kubectl logs external-dns-57d774cd5c-wtd6d
-    ##### если в логах ошибки, пересоздай!
+# Verify Deployment by checking logs 
+kubectl apply -f rbac.yml
+kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
+# List pods (external-dns pod should be in running state) 
+kubectl get pods
+kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
+##### если в логах ошибки, пересоздай!
 ```
 
-# Example external-dns
+# Example, for check external-dns
 ## service
 ```
 ---
@@ -440,12 +456,12 @@ spec:
         - containerPort: 80
           name: http
 ```
-# you should see service load balancer with name - test-svc
+**you should see service load balancer with name - test-svc**
+```
 kubectl get svc
-
-# если запись не создается 
+```
+**если запись не создается**
 надо удалить старую запись вручную
-
 
 # k8s dashboard
 First create fargrate profile
