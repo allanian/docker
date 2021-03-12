@@ -4,6 +4,11 @@ https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controlle
 # Create an Amazon EKS cluster, service account policy, and RBAC policies
 ## Step-01: Create EKS Cluster using eksctl
 
+#### install eksctl
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+mv /tmp/eksctl /usr/bin
+eksctl version
+
 #### Create Cluster
 --region us-west-1 - California
 --region us-west-2 - Oregon
