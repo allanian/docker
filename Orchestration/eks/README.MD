@@ -71,7 +71,7 @@ eksctl --region us-west-2 delete cluster --name qafargate
 ```
 ### Create a Fargate pod execution role (Don't need, if create cluster with option - --fargate)
 It's created auto for cluster type - fargate
-##  Step-02: Create & Associate IAM OIDC Provider for our EKS Cluster
+#  Step-03: Create & Associate IAM OIDC Provider for our EKS Cluster
 ### Step-02.1: Create an IAM policy for the service account 
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
 #### verify
