@@ -344,6 +344,8 @@ verify, rbac enabled or no
 kubectl api-versions | grep rbac.authorization.k8s.io
 nano external_dns.yml
 ```
+**if you create FARGATE CLUSTER IN REGION, where you already have FARGATE, please change name external-dns to external-dns1**
+**ALSO CHANGE --txt-owner-id=QA**
 ```
 ---
 apiVersion: v1
@@ -352,7 +354,7 @@ metadata:
   name: external-dns
   annotations:
     # paster Role ARN
-    eks.amazonaws.com/role-arn: arn:aws:iam::**AWS-ACCOUNT-ID**:role/**IAM-SERVICE-ROLE-NAME**
+    #eks.amazonaws.com/role-arn: arn:aws:iam::**AWS-ACCOUNT-ID**:role/**IAM-SERVICE-ROLE-NAME**
     eks.amazonaws.com/role-arn: arn:aws:iam::180789647333:role/eksctl-eksdemo1-addon-iamserviceaccount-defa-Role1-1O3H7ZLUED5H4
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -414,7 +416,7 @@ spec:
 #        - --policy=upsert-only # comment for allow deleting any records ExternalDNS, uncomment to enable full synchronization
         - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
         - --registry=txt
-        - --txt-owner-id=my-hostedzone-identifier
+        - --txt-owner-id=QA
       securityContext:
         fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
 ```
