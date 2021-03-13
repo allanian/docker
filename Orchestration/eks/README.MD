@@ -114,6 +114,7 @@ aws iam create-policy \
 # STEP 05:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
 ```
 # Create IAM SERVICE ACCOUNT with POLICY - AWSLoadBalancerControllerIAMPolicy (you can go to AWS IAM, find policy with name - AWSLoadBalancerControllerIAMPolicy and copy ARN_ID)
+# !!! IF YOU CREATE ANOTHER FARGATE CLUSTER IN THE SAME REGION, change --name to aws-load-balancer-controller1
 eksctl create iamserviceaccount \
   --cluster=qafgcluster \
   --region=us-west-1 \
@@ -137,12 +138,14 @@ eksctl get iamserviceaccount --region=us-west-1 --cluster=qafgcluster --namespac
     kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
     
     # Install the AWS Load Balancer controller, if using iamserviceaccount
-    helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
-    --set clusterName=qafgcluster \
-    --set serviceAccount.create=false \
-    --set serviceAccount.name=aws-load-balancer-controller \
-    --set vpcId=vpc-00756875232f0fc37 \
-    --set region=us-west-1
+```
+helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
+--set clusterName=devfgcluster \
+--set serviceAccount.create=false \
+--set serviceAccount.name=aws-load-balancer-controller \
+--set vpcId=vpc-05b9064a622aebe31 \
+--set region=us-west-1
+```
   Options
   https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
   
@@ -287,12 +290,13 @@ Create IAM Role, k8s Service Account & Associate IAM Policy
 
 #### IAM SERVICE ACCOUNT with policy AllowExternalDNSUpdates
 **Replaced name, namespace, cluster, arn** (also you can attach it manually from aws=>iam=>policy=>usage console)
+**if you create role in region, where you already HAVE FARGATE CLUSTER change name to external-dns1**
 ```
 eksctl create iamserviceaccount \
 --name external-dns \
 --region=us-west-1 \
 --namespace default \
---cluster=devfgcluster \
+--cluster=qafgcluster \
 --attach-policy-arn arn:aws:iam::180789647333:policy/AllowExternalDNSUpdates \
 --approve \
 --override-existing-serviceaccounts
