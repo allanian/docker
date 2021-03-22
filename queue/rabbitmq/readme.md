@@ -1,4 +1,60 @@
 ```
+RabbitMQ ‒ это брокер сообщений. Его основная цель ‒ принимать и отдавать сообщения.
+Producer (поставщик) ‒ программа, отправляющая сообщения. В схемах он будет представлен кругом с буквой «P»:
+ Queue (очередь) ‒ имя «почтового ящика». Она существует внутри RabbitMQ. Хотя сообщения проходят через RabbitMQ и приложения, хранятся они только в очередях. 
+ Очередь не имеет ограничений на количество сообщений, она может принять сколь угодно большое их количество ‒ можно считать ее бесконечным буфером. 
+ Любое количество поставщиков может отправлять сообщения в одну очередь, также любое количество подписчиков может получать сообщения из одной очереди. 
+ Consumer (подписчик) ‒ программа, принимающая сообщения. Обычно подписчик находится в состоянии ожидания сообщений. 
+ ПРИМЕР:
+ Exchange (точка обмена)
+ routing_key - Имя очереди должно быть определено в параметре routing_key
+# USERS
+rabbitmq-plugins enable rabbitmq_management
+# ADMIN
+#Add a new/fresh user, say user test and password test:
+rabbitmqctl add_user test test
+#Give administrative access to the new user:
+rabbitmqctl set_user_tags test administrator
+#Set permission to newly created user:
+rabbitmqctl set_permissions -p / test ".*" ".*" ".*"
+
+# READ ONLY USER
+rabbitmqctl add_user elastic elastic
+# permissions on Configure/Write/Read
+rabbitmqctl set_permissions  -p / elastic "" "" ".*"
+rabbitmqctl set_user_tags elastic monitoring
+
+
+
+go to web console 
+create new queue elastic_queue
+
+
+
+
+
+
+
+
+
+
+wget http://localhost:15672/cli/rabbitmqadmin
+Make a virtual host and Set Permissions
+rabbitmqctl add_vhost Some_Virtual_Host
+rabbitmqctl set_permissions -p Some_Virtual_Host elastic ".*" ".*" ".*"
+
+#Exchange - обменник, здесь сообщения сортируются и отправляются в нужные очереди
+#Make an Exchange
+./rabbitmqadmin declare exchange --vhost=Some_Virtual_Host name=some_exchange type=direct
+Make a Queue
+.rabbitmqadmin declare queue --vhost=Some_Virtual_Host name=some_outgoing_queue durable=true
+QUEUE
+# list
+sudo rabbitmqctl list_queues
+```
+
+
+```
 # RABBIT=>LOGSTASH=ELASTIC
 on rabbit server
 rabbitmqctl list_users
