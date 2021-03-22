@@ -5,7 +5,7 @@
  - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
 # Configure Master-Slave replication
-## Centos 8 Stream
+### Install - Centos 8 Stream
 ```
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 # enable repo
@@ -33,7 +33,7 @@ mysql_secure_installation
 mysql -u root -p
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
 ```
-# Backup 
+## Backup 
 ### FULL
 ```
 xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
@@ -43,9 +43,9 @@ xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 
 
 
-# Replication
-## Master/Slave
-### Plan
+## Replication
+### Master/Slave
+#### Plan
 ```
 # create user for replication
 CREATE USER 'repl_user'@'%' IDENTIFIED BY 'Ax1!SD@dd3s';
@@ -57,13 +57,13 @@ xtrabackup --backup --user=root --password=pass --target-dir=/data/bkp/
 ####### подготовка для развертывания
 xtrabackup --user=root --password=pass --prepare --target-dir=/data/bkp/
 ```
-### copy on servers (master/slave)
+#### copy on servers (master/slave)
 ```
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql04:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql03:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@rv-site-sql02:/data/bkp/
 ```
-### on master (if multi-master/transfer master)
+#### on master (if multi-master/transfer master)
  1. install percona xtrabackup 8
  2. restore from backup dir
 ```
@@ -89,7 +89,7 @@ mysql -u root -p'PASS'
 SHOW MASTER STATUS\G
 mysql> SHOW MASTER STATUS\G
 ```
-### on slave
+#### on slave
  1. install percona xtrabackup 8
  2. restore from backup dir
 ```
@@ -119,5 +119,5 @@ SQL YES
 SQL YES
 ```
 
-# ERROR
+### ERROR
 ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
