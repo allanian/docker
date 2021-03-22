@@ -1,4 +1,11 @@
 # Optimization ELK
+# COMPRESS INDEX
+Menu => Index management => Select index => click in menu Close index => click in menu Edit index settings
+"codec": "best_compression",
+Save
+Open index
+при изменении кодека для индекса только новые сегменты (после новой индексации, изменений в существующих документах или слияния сегментов) будут использовать новый кодек.
+
 # FORCE MERGE
 Menu => Index management => Select index => Click Force merge
 Работает по аналогии дефрагментации
