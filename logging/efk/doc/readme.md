@@ -13,9 +13,9 @@ Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Cre
 | Delete phase | Activate delete phase |
 **Timing for delete phase** – 30 – days from index creation
 after all, click **Save**
-**OR create it from console**  go to Menu => Dev tools
 
-### policy - for 30 days delete 
+#### ** Policy CLI**
+go to Menu => Dev tools
 ```
 PUT _ilm/policy/policy-object-vers-test
 {
@@ -59,9 +59,8 @@ Click Next
 }
 }
 ```
-Click Next
-Save
-**CLI**
+Click Next =>Save
+#### ** Template CLI**
 ```
 PUT _template/template-object-vers-test
 {
