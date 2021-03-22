@@ -46,6 +46,7 @@ Name – rotation-template-ObjectVers
 |--|--|
 |Name| template-object-vers-test |
 | Index patterns | object_versions_test_log-* |
+|--|--|
 Click Next
 **Index settings**
 ```
