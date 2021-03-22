@@ -29,10 +29,11 @@ NEED MORE THEN ONE NODE!
 ```
 #### status RED
 После рестарта статус RED
+```
 curl 'logstash:logstash@localhost:9200/_cluster/health?pretty' -H 'Content-Type: application/json'
-http://rv-elk.rendez-vous.ru:9200/_cluster/health?pretty
+http://elk.company.ru:9200/_cluster/health?pretty
 {
-  "cluster_name" : "searchguard_demo",
+  "cluster_name" : "test",
   "status" : "yellow",
   "timed_out" : false,
   "number_of_nodes" : 1,
@@ -49,11 +50,12 @@ http://rv-elk.rendez-vous.ru:9200/_cluster/health?pretty
   "active_shards_percent_as_number" : 50.46357615894039
 }
 
-Unassigned – должна быть переведена в активные (хотя бы половина).
+unassigned_shards – должна быть переведена в активные (хотя бы половина).
 Тут можно поглядеть статус
-http://rv-elk.rendez-vous.ru:9200/_cluster/allocation/explain?pretty
-curl 'elastic:QWE123qwe@localhost:9200/_cluster/allocation/explain?pretty' -H 'Content-Type: application/json'
+http://elk.company.ru:9200/_cluster/allocation/explain?pretty
 
+curl 'logstash:logstash@localhost:9200/_cluster/allocation/explain?pretty' -H 'Content-Type: application/json'
+```
 
 # Optimization ELK
 # COMPRESS INDEX
