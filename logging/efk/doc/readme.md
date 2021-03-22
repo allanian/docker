@@ -87,5 +87,6 @@ PUT object_versions_test_log-*/_settings
 object_versions_test_log-*/_ - index pattern name
 ```
 ## 4. CHECK policy
-GET docker.*/_ilm/explain
-GET k8s.dev*/_ilm/explain
+```
+GET object_versions_test_log-*.*/_ilm/explain
+```
