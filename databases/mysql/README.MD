@@ -4,6 +4,13 @@
  - [Backup](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
  - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
+# MYSQL QUERY
+|Phase|Option|
+|--|--|
+|set global max_connections = 2000;|policy-object-vers-test|
+|show variables like 'binlog_format';| disable |
+
+.
 # Master-Slave replication
 ## Install - Centos 8 Stream
 ```
