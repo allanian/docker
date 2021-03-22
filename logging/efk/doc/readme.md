@@ -58,21 +58,21 @@ curl 'logstash:logstash@localhost:9200/_cluster/allocation/explain?pretty' -H 'C
 ```
 
 # Optimization ELK
-# COMPRESS INDEX
+## COMPRESS INDEX
 Menu => Index management => Select index => click in menu Close index => click in menu Edit index settings
 "codec": "best_compression",
 Save
 Open index
 при изменении кодека для индекса только новые сегменты (после новой индексации, изменений в существующих документах или слияния сегментов) будут использовать новый кодек.
 
-# FORCE MERGE
+## FORCE MERGE
 Menu => Index management => Select index => Click Force merge
 Работает по аналогии дефрагментации
 Освобождает удаленные блоки, и уменьшит размер индекса
 
-# LIFEPOLICY
+## LIFEPOLICY
 
-## 1. Policy
+### 1. Policy
 Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Create policy
 **Dev policy**
 |Phase|Option|
@@ -108,7 +108,7 @@ PUT _ilm/policy/policy-object-vers-test
   }
 }
 ```
-## 2.  Template
+### 2.  Template
 
 Menu => Stack Management => Index management => Index templates => Create template
 Name – rotation-template-ObjectVers
@@ -149,7 +149,7 @@ PUT _template/template-object-vers-test             – имя шаблона
 "index.lifecycle.name": "policy-object-vers-test"   – имя политики
 "index_patterns": ["object_versions_test_log-*"],   - index pattern name
 ```
-## 3. Применение шаблона ко всем существующим индексам
+### 3. Применение шаблона ко всем существующим индексам
 ```
 PUT object_versions_test_log-*/_settings
 {
@@ -158,7 +158,7 @@ PUT object_versions_test_log-*/_settings
 
 object_versions_test_log-*/_ - index pattern name
 ```
-## 4. CHECK policy
+### 4. CHECK policy
 ```
 GET object_versions_test_log-*.*/_ilm/explain
 ```
