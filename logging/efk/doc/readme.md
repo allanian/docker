@@ -1,4 +1,5 @@
 
+https://github.com/allanian/docker/blob/master/logging/efk/doc/readme.md#optimization-elk
 
 # TROUBLES, PROBLEMS IN ELASTICSEARCH
 
