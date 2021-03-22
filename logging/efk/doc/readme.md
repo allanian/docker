@@ -1,3 +1,8 @@
+# Optimization ELK
+# FORCE MERGE
+Menu => Index management => Select index => Click Force merge
+Работает по аналогии дефрагментации
+Освобождает удаленные блоки, и уменьшит размер индекса
 
 # LIFEPOLICY
 
