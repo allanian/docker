@@ -10,6 +10,33 @@
 |set global max_connections = 2000;|policy-object-vers-test|
 |show variables like 'binlog_format';| disable |
 
+```
+# check current
+http://blog.itpub.net/29096438/viewspace-2665869/
+
+show global variables like '%group_commit%'
+show variables like 'binlog_group_commit_sync_delay';
+
+# change - указывает сколько максимально транзакций ждут отложенной отправки
+set global binlog_group_commit_sync_no_delay_count=20;
+# указывает сколько в Миллисекундах binlog ждать до синхронизации с диском (0 выключает).  Если время указанного выше параметра не истекло, но количество транзакций увеличилось, он будет напрямую синхронизирован с диском. Если он  binlog_group_commit_sync_delay не включен, этот параметр не будет включен.
+set global binlog_group_commit_sync_delay=10;
+
+# on slave enable this - паралельные потоки
+slave-parallel-type=LOGICAL_CLOCK
+slave-parallel-workers=20
+# последовательное применение транзакций
+slave_preserve_commit_order=ON
+# check working
+mysql
+SELECT performance_schema.events_transactions_summary_by_thread_by_event_name.THREAD_ID AS THREAD_ID
+, performance_schema.events_transactions_summary_by_thread_by_event_name.COUNT_STAR AS COUNT_STAR 
+FROM performance_schema.events_transactions_summary_by_thread_by_event_name 
+WHERE performance_schema.events_transactions_summary_by_thread_by_event_name.THREAD_ID IN 
+     (SELECT performance_schema.replication_applier_status_by_worker.THREAD_ID 
+      FROM performance_schema.replication_applier_status_by_worker);
+	
+```
 .
 # Master-Slave replication
 ## Install - Centos 8 Stream
