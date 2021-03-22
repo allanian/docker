@@ -1,4 +1,22 @@
 ```
+# RABBIT=>LOGSTASH=ELASTIC
+on rabbit server
+rabbitmqctl list_users
+rabbitmqctl list_vhosts
+
+# create user
+rabbitmqctl add_user elastic2 elastic2
+# permissions on Configure & READ ( ".*" "" ".*" // Configure/Write/Read)
+rabbitmqctl set_permissions  -p / elastic2 ".*" "" ".*"
+rabbitmqctl set_user_tags elastic2 monitoring
+
+
+# delete user
+rabbitmqctl delete_user elastic
+```
+
+
+```
 FAQ
 система отправляет сообщения в exchange,
 потом сообщение копируется во все очереди, которые привязаны к этому EXCHANGE
