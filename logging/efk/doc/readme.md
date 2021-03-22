@@ -32,6 +32,15 @@ curl 'elastic:QWE123qwe@localhost:9200/_cluster/allocation/explain?pretty' -H 'C
 "explanation" : "a copy of this shard is already allocated to this node [[docker.site-back.rv-site-back01-2021.02.12][0], node[KUnFTdNnRF2F3WZqp-zonA], [P], s[STARTED], a[id=sIP9jCFSTa6ltlqRWHrRkQ]]"
 NEED MORE THEN ONE NODE!
 ```
+#### The length of [Object_Xml] field of doc of  index has exceeded [1000000]
+```
+PUT /object_versions_log-*/_settings
+{
+    "index" : {
+        "highlight.max_analyzed_offset" : 6000000
+    }
+}
+```
 #### status RED
 После рестарта статус RED
 ```
