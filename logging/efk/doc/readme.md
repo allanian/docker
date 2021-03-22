@@ -3,6 +3,10 @@ https://github.com/allanian/docker/blob/master/logging/efk/doc/readme.md#optimiz
 
 # TROUBLES, PROBLEMS IN ELASTICSEARCH
 
+#### No cached mapping for this field. Refresh field list from Management => Index Patterns page
+идем в management=>index pattern
+находим наш индекс паттерн и нажимаешь refresh field list сверху справа
+
 #### max virtual memory areas vm.max_map_count [65530] is too low, increase to at least
 Решение
 sudo sysctl -w vm.max_map_count=262144
