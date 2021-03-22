@@ -77,14 +77,15 @@ PUT _template/template-object-vers-test             – имя шаблона
 "index.lifecycle.name": "policy-object-vers-test"   – имя политики
 "index_patterns": ["object_versions_test_log-*"],   - index pattern name
 ```
-## 3. **Применение шаблона ко всем существующим индексам**
+## 3. Применение шаблона ко всем существующим индексам
+```
 PUT object_versions_test_log-*/_settings
 {
   "index.lifecycle.name": "rotation-policy-dev" 
 }
 
 object_versions_test_log-*/_ - index pattern name
-
+```
 ## 4. CHECK policy
 GET docker.*/_ilm/explain
 GET k8s.dev*/_ilm/explain
