@@ -7,8 +7,8 @@ services:
     environment:
       cluster.name: "elk"
       node.name: es01
-      bootstrap.memory_lock: "true" # disable swapping
-      ES_JAVA_OPTS: "-Xms4g -Xmx4g" # 50% of ram
+      ELASTIC_PASSWORD: QWE123qwe
+      ES_JAVA_OPTS: "-Xms8g -Xmx8g" # 50% of ram
       # security
       ELASTIC_PASSWORD: "QWE123qwe"
     ulimits:
