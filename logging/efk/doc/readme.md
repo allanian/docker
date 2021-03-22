@@ -1,0 +1,90 @@
+
+# LIFEPOLICY
+
+## 1. Policy
+Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Create policy
+**Dev policy**
+|Phase|Option|
+|--|--|
+|Name|policy-object-vers-test|
+| Hot phase    | disable |
+| Warm phase   | disable |
+| Cold phase   | disable |
+| Delete phase | Activate delete phase |
+**Timing for delete phase** – 30 – days from index creation
+after all, click **Save**
+**OR create it from console**  go to Menu => Dev tools
+
+### policy - for 30 days delete 
+```
+PUT _ilm/policy/policy-object-vers-test
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {}
+      }
+    }
+  }
+}
+```
+## 2.  Template
+
+Menu => Stack Management => Index management => Index templates => Create template
+Name – rotation-template-ObjectVers
+**Dev policy**
+|Phase|Option|
+|--|--|
+|Name| template-object-vers-test |
+| Index patterns | object_versions_test_log-*|
+Click Next
+**Index settings**
+```
+{
+"index": {
+"lifecycle": {
+"name": "policy-object-vers-test"
+},
+"number_of_shards": "1",
+"number_of_replicas": "1"
+}
+}
+```
+Click Next
+Save
+**CLI**
+```
+PUT _template/template-object-vers-test
+{
+  "index_patterns": ["object_versions_test_log-*"],                 
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "index.lifecycle.name": "policy-object-vers-test"    
+  }
+}
+
+PUT _template/template-object-vers-test             – имя шаблона
+"index.lifecycle.name": "policy-object-vers-test"   – имя политики
+"index_patterns": ["object_versions_test_log-*"],   - index pattern name
+```
+**Применение шаблона ко всем существующим индексам**
+PUT object_versions_test_log-*/_settings
+{
+  "index.lifecycle.name": "rotation-policy-dev" 
+}
+
+object_versions_test_log-*/_ - index pattern name
+
+## 4. CHECK policy
+GET docker.*/_ilm/explain
+GET k8s.dev*/_ilm/explain
