@@ -82,7 +82,7 @@ PUT _template/template-object-vers-test             – имя шаблона
 ```
 PUT object_versions_test_log-*/_settings
 {
-  "index.lifecycle.name": "rotation-policy-dev" 
+  "index.lifecycle.name": "policy-object-vers-test" 
 }
 
 object_versions_test_log-*/_ - index pattern name
