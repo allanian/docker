@@ -4,8 +4,8 @@
  - [Backup](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
  - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
-# Configure Master-Slave replication
-### Install - Centos 8 Stream
+# Master-Slave replication
+## Install - Centos 8 Stream
 ```
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 # enable repo
