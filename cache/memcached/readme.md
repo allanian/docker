@@ -17,4 +17,19 @@ OPTIONS="-v -t 4"
 
 sudo systemctl enable memcached --now
 sudo systemctl status memcached
+
+# how check from app
+<?php
+$memcached = new Memcached();
+$memcached->addServer('10.10.10.5', 11211);
+
+$name = 'testkey';
+$ttl = 10;
+$data = "It works! )";
+
+$memcached->set($name, $data, $ttl);
+print_r(PHP_EOL . $memcached->get($name) . PHP_EOL);
+
+# run it
+php test.php
 ```
