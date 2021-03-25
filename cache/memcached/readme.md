@@ -33,3 +33,34 @@ print_r(PHP_EOL . $memcached->get($name) . PHP_EOL);
 # run it
 php test.php
 ```
+
+
+```
+; insert data in 1 thread to memcached
+$memcached = new Memcached();
+$memcached->addServer('NEED_TO_CHANGE', 11211);
+
+$constantString = ' Just string to make value bigger!'
+$constantString .= $constantString;
+$constantString .= $constantString;
+$constantString .= $constantString;
+$constantString .= $constantString;
+$constantString .= $constantString;
+
+$ttl = 7200;
+
+for ($i = 0; $i < 10000000; $i ++) {
+    
+    $uniqueString = time() . rand(0, 1000000000);
+    $uniqueHash = md5($uniqueString);
+    
+    $memcached->set($uniqueHash, $uniqueString . $constantString , $ttl);
+    $res = $memcached->get($uniqueHash);
+    
+    if ($i % 1000 == 0) {
+        echo ($i * 1000) . ' values added! Last result is ' . $res. PHP_EOL;
+    }
+}
+
+
+```
