@@ -64,3 +64,8 @@ for ($i = 0; $i < 10000000; $i ++) {
 
 
 ```
+
+```
+# benchmark tools
+https://github.com/memcached/mc-crusher
+```
