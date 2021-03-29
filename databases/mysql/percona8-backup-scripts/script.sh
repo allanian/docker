@@ -37,6 +37,8 @@ full_backup() {
         echo START BACKUP
         xtrabackup --backup --user=root --password=Wah0baiL --history --compress --slave-info --parallel=4 --compress-threads=4 --target-dir=$BACKUP_DIR/FULL
         echo `date '+%Y-%m-%d %H:%M:%S:%s'`": Backup Done!" >> $BACKUP_DIR/xtrabackup.log
+        # delete dir, older 30 days
+        find "$BACKUP_STORE_DIR" -maxdepth 1 -type d -ctime +30 | xargs rm -rf;
 }
 
 incremental_backup()
