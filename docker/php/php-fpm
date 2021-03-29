@@ -1,24 +1,44 @@
-FROM composer:2.0 as composer
-FROM php:7.4-fpm-alpine
+FROM php:7.4.16-fpm-alpine3.13
+# support tools
+RUN apk add --no-cache --update openssh openssh-server-pam make autoconf git nano wget bash sphinx supervisor rsync &&\
+    rm -rf /var/cache/apk/* &&\
+    pear config-set php_ini $PHP_INI_DIR/php.ini &&\
+    pecl config-set php_ini $PHP_INI_DIR/php.ini &&\
+    ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N '' &&\
+    ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' &&\
+    ssh-keygen -t ed25519 -f  /etc/ssh/ssh_host_ed25519_key -N '' &&\
+    mkdir -p /var/data /tmp/xdebug/profiler /tmp/xdebug/profiler /var/run/sphinx /run/php-fpm /var/log/sphinx &&\
+    chmod 777 -R /var/data /tmp/xdebug/profiler /tmp/* &&\
+    # YII 1.1.23
+    mkdir -p /usr/share/php/ && wget https://github.com/yiisoft/yii/releases/download/1.1.23/yii-1.1.23.445827.tar.gz -O - | tar -xz -C /usr/share/php/ && mv /usr/share/php/yii* /usr/share/php/yii1
+
+# php ext
+COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions geoip mcrypt igbinary memcached gd gettext zip soap pdo pdo_mysql xdebug
+
+# copy configs
+COPY dev/php-fpm/php_config/php.ini /usr/local/etc/php/php.ini
+COPY dev/php-fpm/files/supervisord.conf /etc/supervisord.conf
+COPY dev/php-fpm/files/servises.ini /etc/supervisord.d/servises.ini
+COPY dev/php-fpm/files/create_user.sh /usr/local/bin/create_user.sh
+COPY dev/php-fpm/files/sshd_config /etc/ssh/sshd_config
+COPY dev/php-fpm/files/sphinx.conf /etc/sphinx/sphinx.conf
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# copy php configs
+COPY dev/php-fpm/php_config/php-fpm.conf /etc/php-fpm.conf
+COPY dev/php-fpm/php_config/www.conf /etc/php-fpm.d/www.conf
+COPY dev/php-fpm/php_config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+# create motd
+RUN echo 'Software version: ' > /etc/motd &&\
+    php -v | head -n 1 >> /etc/motd &&\
+    composer --version >> /etc/motd &&\
+    searchd -h | head -n 1 >> /etc/motd &&\
+    addgroup -g 99 -S apache &&\
+    adduser -u 99 -D -S -G apache apache &&\
+    php -m 
     
-RUN docker-php-ext-install pdo_mysql
-RUN pecl install apcu
-RUN apt-get update && \
-    apt-get install -y \
-    libzip-dev
-RUN docker-php-ext-install zip
-RUN docker-php-ext-enable apcu
-
-WORKDIR /usr/src/app
-COPY --chown=1000:1000 apps/my-symfony-app /usr/src/app
-RUN PATH=$PATH:/usr/src/app/vendor/bin:bin
-RUN composer install --no-scripts --prefer-dist \
-    && rm -rf "$(composer config cache-dir)" "$(composer config data-dir)"
-
-COPY ./$APP_PATH/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY ./$APP_PATH/php.ini /usr/local/etc/php/conf.d/40-custom.ini
-COPY ./app ./app
-
-# php start app
-WORKDIR /var/www/app
-RUN composer install --no-interaction && php init --env=Production --overwrite=All --interactive=0
+EXPOSE 22 9000
+#ENTRYPOINT ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
