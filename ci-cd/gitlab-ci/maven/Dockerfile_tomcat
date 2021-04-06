@@ -1,0 +1,14 @@
+FROM maven:3.8.1-openjdk-17-slim AS builder
+WORKDIR /opt/app
+# Download all required dependencies into one layer
+COPY pom.xml .
+RUN mvn -B dependency:resolve dependency:resolve-plugins
+# Build application
+ADD . /opt/app
+RUN mvn package -Dmaven.test.skip=true && ls -la /opt/app/target/
+
+FROM tomcat:jdk8-openjdk-slim
+WORKDIR /opt/app
+COPY --from=builder /opt/app/target/*.war  /usr/local/tomcat/webapps
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
