@@ -20,6 +20,7 @@
 |
 ----------------------------------------------------------------------------------------------------------------
 ```
+
 *Data volume*: это физический носитель для хранения файлов, аналогичный физическим дискам. Значение по умолчанию - 32 ГБ, которое можно изменить до 64 или 128 ГБ. 
 *Максимальный размер каждого файла не превышает размера одного тома.*
 ####PS: Volume - физический диск. Каждый volume может содержать 32 гигибайта (32 ГБ или 8x2 ^ 32 байта), (содержимое выравнивается по 8 байт).
@@ -28,6 +29,9 @@
 Фактические данные хранятся в *stored in volumes on storage nodes*. Один *volume server can have multiple volumes* и может поддерживать доступ для чтения и записи с базовой аутентификацией. One volume server* corresponds to *multiple volumes*.
 The actual file metadata is stored in each volume on volume servers.
 *Master server*: Управляет metadata information (data volume metadata). Все тома управляются главным сервером. Главный сервер содержит идентификатор тома для сопоставления сервера тома. Это довольно статичная информация, и ее легко кэшировать.
+
+##Does it support large files, e.g., 500M ~ 10G?
+Large file will be automatically split into chunks, in weed filer, weed mount, etc.
 
 #### How to access the server dashboard?
 SeaweedFS has web dashboards for its different services:
