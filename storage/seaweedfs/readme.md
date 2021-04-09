@@ -27,6 +27,11 @@
 The actual file metadata is stored in each volume on volume servers.
 *Master server*: Управляет metadata information (data volume metadata). Все тома управляются главным сервером. Главный сервер содержит идентификатор тома для сопоставления сервера тома. Это довольно статичная информация, и ее легко кэшировать.
 
+#### How to access the server dashboard?
+SeaweedFS has web dashboards for its different services:
+
+Master server dashboards can be accessed on http://hostname:port in a web browser.For example: http://localhost:9333.
+Volume server dashboards can be accessed on http://hostname:port/ui/index.html.For example: http://localhost:8080/ui/index.html
 Архитектура:
 Данные храняться в VOLUME в серверах хранения. Один VOLUME SERVER может иметь несколько VOLUMES.
 Все тома управляются MAIN MASTER SERVER. MAIN MASTER SERVER содержит идентификатор тома для сопоставления сервера тома. Это довольно статичная информация, и ее легко кэшировать.
