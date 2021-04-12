@@ -1,6 +1,54 @@
 # Benchmark
 ```
+# 1 million 1KB file
 weed benchmark -master=localhost:9333 -c=10 -n=100000
+```
+#### WRITE
+Concurrency Level:      10
+Time taken for tests:   214.393 seconds
+Complete requests:      1000000
+Failed requests:        0
+Total transferred:      1055459467 bytes
+Requests per second:    4664.33 [#/sec]
+Transfer rate:          4807.63 [Kbytes/sec]
+
+Connection Times (ms)
+              min      avg        max      std
+Total:        0.3      2.1       55.9      1.7
+
+Percentage of the requests served within a certain time (ms)
+   50%      1.7 ms
+   66%      2.0 ms
+   75%      2.2 ms
+   80%      2.4 ms
+   90%      3.2 ms
+   95%      4.6 ms
+   98%      7.1 ms
+   99%      9.5 ms
+  100%     55.9 ms
+##### READ
+Concurrency Level:      10
+Time taken for tests:   60.251 seconds
+Complete requests:      1000000
+Failed requests:        0
+Total transferred:      1055416279 bytes
+Requests per second:    16597.35 [#/sec]
+Transfer rate:          17106.55 [Kbytes/sec]
+
+Connection Times (ms)
+              min      avg        max      std
+Total:        0.1      0.5       22.6      0.4
+
+Percentage of the requests served within a certain time (ms)
+   50%      0.5 ms
+   75%      0.6 ms
+   90%      0.8 ms
+   95%      0.9 ms
+   98%      1.2 ms
+   99%      1.6 ms
+  100%     22.6 ms
+
+```
 ```
 # SCHEMA
 ```
