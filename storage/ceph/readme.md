@@ -1,4 +1,11 @@
-DEL NODE
+# Ceph
+## Users
+radosgw-admin user list
+radosgw-admin user create --uid=test1 --display-name="Test1" --email=test1@test.ru
+
+
+
+## DEL NODE
 # out node
 ceph osd out 7
 ceph -w
