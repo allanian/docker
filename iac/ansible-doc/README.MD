@@ -1,3 +1,23 @@
+## Parrallel
+ansible.cfg
+[defaults]
+host_key_checking = False
+roles_path = ../roles
+# forks - 50 threads
+forks = 50
+
+---
+- name: Playbook
+  hosts: front_serverdb
+  gather_facts: false
+  # strategy free, dont wait all, just go to the next task
+  strategy: free
+#  ignore_unreachable: true
+  vars:
+    file_update: "FRONT20210412.cf"
+  roles:
+  - front_update
+
 ## Conditionals IF/ELSE
 #### check var=value
 ```
