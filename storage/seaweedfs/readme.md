@@ -2,6 +2,9 @@
 ```
 # 1 million 1mb file
 weed benchmark -master=localhost:9333 -c=10 -n=100000 -replication=001 -size=1048576
+# delete
+curl "http://localhost:9333/col/delete?collection=benchmark&pretty=y"
+
 ```
 #### WRITE
 Concurrency Level:      10
