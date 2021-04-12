@@ -2,7 +2,19 @@ https://github.com/allanian/docker/blob/master/logging/efk/doc/readme.md#trouble
 https://github.com/allanian/docker/blob/master/logging/efk/doc/readme.md#optimization-elk
 
 # TROUBLES, PROBLEMS IN ELASTICSEARCH
+#### EXCLUDE MULTIPLE on vizualization
+10.10.0.20|10.10.0.85
 
+#### как сменить INDEX PATTERN у Visualization
+```
+создаем новую Visualization такого же типа, как и существующая
+В URL копируем ID of Visualization
+Переходим в существующую-старую Visualization и копируем весь URL
+Заменяем в полном URL, ID of Visualization на ID of Visualization новой Visualization, которую мы создали.
+https://efk.company.ru/app/visualize#/edit/08d543f0-8d4b-11eb-a99a-8db819cf22bf?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15h,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(annotations:!((color:%23F00,fields:'',icon:fa-tag,id:'5835c840-6490-11eb-889b-bb63fc856413',ignore_global_filters:1,ignore_panel_filters:1,index_pattern:'*',query_string:(language:kuery,query:''),template:'')),axis_formatter:number,axis_position:left,axis_scale:normal,background_color:'rgba(255,255,255,1)',background_color_rules:!((id:'9b52b890-6490-11eb-889b-bb63fc856413')),bar_color_rules:!((id:'9c3eed50-6490-11eb-889b-bb63fc856413')),default_index_pattern:'td.rv-frt*',default_timefield:'@timestamp',filter:(language:kuery,query:'status_code%20%3E%3D%20500'),gauge_color_rules:!((id:'9d8fd750-6490-11eb-889b-bb63fc856413')),gauge_inner_width:10,gauge_style:half,gauge_width:10,id:'61ca57f0-469d-11e7-af02-69e470af7417',index_pattern:'td.rv-frt*',interval:'',isModelInvalid:!f,series:!((axis_position:right,chart_type:line,color:'rgba(185,46,18,1)',fill:0.5,formatter:number,id:'61ca57f1-469d-11e7-af02-69e470af7417',label:'',line_width:1,metrics:!((id:'61ca57f2-469d-11e7-af02-69e470af7417',type:count)),point_size:1,separate_axis:0,split_color_mode:kibana,split_mode:everything,stacked:none,type:timeseries)),show_grid:1,show_legend:1,time_field:'@timestamp',tooltip_mode:show_all,type:timeseries),title:'%5BRV-FRONT%5D%20Code%205XX%20',type:metrics))
+08d543f0-8d4b-11eb-a99a-8db819cf22bf
+Переходим по этому URL и сохраняем с новым именем.
+```
 #### No cached mapping for this field. Refresh field list from Management => Index Patterns page
 идем в management=>index pattern
 находим наш индекс паттерн и нажимаешь refresh field list сверху справа
