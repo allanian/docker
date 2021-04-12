@@ -95,12 +95,32 @@ kubectl get sc
 
 
 
-# BACKUP
+# BACKUP DB
 heketi-cli db dump > /opt/backup/heketi-db-dump-$(date -I).json
 
 
 
+## проблема, на одном из примапленных волумов в k8s заканчивается место, надо найти на каком
+```
+заходим на сервер с gluster, смотрим какие заняты df -h, копируем путь /var/lib/heketi/mounts/vg_489ed203fa6785c4446a1883a19cbe7e/brick_ae9b57fd1b8a5e2851e49d5dc21d01cc
+heketi-cli volume list
 
+cat /etc/heketi/heketi.json
+get port
+get user
+get secret
+ищем название волума и расширяем в pvc конфиге
+heketi-cli topology info | grep -n50 vg_aff10ce5e7aacb6a8cb90da018a6ea91/brick_f85145fbb99718096a0b5ff6bc904d35
+
+
+# docker
+Your kernel does not support cgroup blkio weight_device
+
+#  "hosts": ["unix:///var/run/docker.sock"],
+   "hosts": ["tcp://127.0.0.1:2376"],
+
+heketi-cli -server 'http://10.3.3.208:9888' -user admin -secret ivs4weORN7ERNeKVO cluster list
+```
 
 
 
