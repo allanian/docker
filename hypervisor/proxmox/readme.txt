@@ -1,3 +1,20 @@
+# Export VM from PROXMOX to ESXI (VMWare)
+```
+1) В proxmox находим VM, выполняем shutdown.
+2) в HARDWARE выбираем диск.
+3) жмем MOVE DISK и выбираем формат VMDK и путь куда сохранить
+4) готово
+либо выполняем следующую команду для экспорта: 
+/usr/bin/qemu-img convert -p -n -f raw -O vmdk /dev/pve/vm-116-disk-1 zeroinit:/var/lib/vz/images/116/vm-116-disk-0.vmdk'
+116 - это ID, для примера
+vm-116-disk-0.vmdk - disk ID
+либо так:
+qemu-img convert -f raw /dev/pve/vm-116-disk-1 -O vmdk asipaul.vmdk
+-f raw - type of input
+-O vmdk - output
+```
+
+```
 copy *ova to proxmox server
 # Extract the contents of the OVA file. The content that we need here is the .ovf file.
 tar xvf Bitrix.ova
@@ -47,4 +64,4 @@ Gitlab_Runner-disk2.vmdk
 
 # windows proxmox 
 use network INTEL
-
+```
