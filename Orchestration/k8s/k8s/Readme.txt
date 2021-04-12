@@ -1,3 +1,32 @@
+# k8s
+# all namespaces
+kubectl get ns
+# more info about namespace
+kubectl describe ns dsa
+kubectl delete ns dsa
+kubectl delete statefulsets dsatest
+# show services
+kubectl get services
+
+# get all statefulsets in namespace DSA
+kubectl -n dsa get statefulsets
+kubectl -n dsa describe statefulsets
+
+# delete statefulsets in namespace DSA
+kubectl -n dsa delete statefulsets dsatest
+
+
+###################
+STATEFULSET
+
+
+
+###################
+DEPLOYMENT
+#
+kubectl -n dsa get deployments
+
+
 statefulset
 демплоймент запускает сразу все поды и контейнеры
 деплоймент не дает разграничить, волум для всего, будет один волум для всех
