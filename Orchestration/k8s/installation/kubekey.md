@@ -192,6 +192,26 @@ helm repo update
 helm install ingress-nginx ingress-nginx/ingress-nginx
 # check
 POD_NAME=$(kubectl get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].metadata.name}')  kubectl exec -it $POD_NAME -- /nginx-ingress-controller --version
+
+
+k8s INGRESS
+fix - DNS ADDRESS IN ACTIVE DIRECTORY
+# how check
+kubectl -n ingress-nginx get pod -o wide
+
+# solution
+go to deployment and edit ingress-nginx-controller
+      *hostNetwork: true*
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+Then just create Folder in DNS Active directory with name k8s-test and put couple of records like this
+ingress - type A - 10.3.3.1
+ingress - type A - 10.3.3.2
+FQDN go like this ingress.k8s-test.company_domain.ru
+and then just create DNS records with name like this:
+service_name - type CNAME - host ingress.k8s-test.company_domain.ru
 ```
 
 # Gitlab integration
