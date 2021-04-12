@@ -102,6 +102,7 @@ Large file will be automatically split into chunks, in weed filer, weed mount, e
 SeaweedFS has web dashboards for its different services:
 MASTER: http://localhost:9333
 Volume: http://localhost:8080/ui/index.html
+Filer: http://localhost:8888/
 ```
 
 
