@@ -96,6 +96,7 @@ The actual file metadata is stored in each volume on volume servers.
 #### Does it support large files, e.g., 500M ~ 10G?
 ```
 Large file will be automatically split into chunks, in weed filer, weed mount, etc.
+Например, файл размеров в 100гб, будет поделен на 4 чанка (3х30gb, 1x10gb)
 ```
 #### How to access the server dashboard?
 ```
