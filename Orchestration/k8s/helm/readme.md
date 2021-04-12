@@ -1,4 +1,18 @@
-# Create first app
+# HELM
+# helm install
+helm install dsatest --dry-run --debug dsatest/
+helm install --create-namespace --namespace dsa --namespace dsa --debug dsatest dsatest/
+helm install dsatest dsatest/
+
+# helm upgrade
+helm upgrade dsatest dsatest --debug
+
+
+
+# helm uninstall
+helm uninstall dsatest -n dsa
+#### Create first app
+```
 helm create test
 cd test
 
@@ -28,4 +42,4 @@ helm uninstall dsatest
 helm upgrade dsatest dsatest/ --set user=AnotherOneUser
 # package
 helm  package dsatest/
-
+```
