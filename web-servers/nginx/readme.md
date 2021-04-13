@@ -2,8 +2,8 @@ proxy from reversy proxy nginx to nginx in nomad proxy
 
 # SSL
 ```
-ssl_certificate /etc/ssl/rv-ssl/rendez-vous.cer;
-ssl_certificate_key /etc/ssl/rv-ssl/rendez-vous.key;
+ssl_certificate /etc/ssl/rv-ssl/company.cer;
+ssl_certificate_key /etc/ssl/rv-ssl/company.key;
 ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
 #ssl_protocols TLSv1.1 TLSv1.2;
 #ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;
