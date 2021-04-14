@@ -1,4 +1,37 @@
-# AWX LDAP, Active Directory
+# AWX
+## AWX k8s operator
+```
+https://github.com/ansible/awx-operator/blob/devel/README.md
+kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
+kubectl get pods
+# Once the Operator is running, you can now deploy AWX by creating a simple YAML file:
+cat myawx.yml
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+spec:
+  tower_ingress_type: Ingress
+  tower_hostname: awx1.company.ru
+  tower_admin_user: admin
+  tower_admin_email: admin@example.com
+
+kubectl apply -f myawx.yml
+kubectl logs -f awx-operator-f768499d-qbqcg
+kubectl get pods
+
+# ingress
+export EDITOR=nano
+kubectl get ingress awx-ingress
+kubectl edit ingress awx-ingress
+#change host: awx.example.com to your url
+
+kubectl get secret awx-admin-password -o jsonpath='{.data.password}' | base64 --decode
+4Csv6rYGd29k8MhdvHzPimRw7YcbO6GT
+```
+
+## AWX LDAP, Active Directory
 ```
 LDAP Server URI:
 ldap://<server.fqdn>:389
