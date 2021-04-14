@@ -1,5 +1,13 @@
 proxy from reversy proxy nginx to nginx in nomad proxy
 
+# Redirect all incoming http requests to the same site and URI on https, using nginx
+```
+server {
+  listen 80;
+
+  return 301 https://$host$request_uri;
+}****
+```
 # SSL
 ```
 ssl_certificate /etc/ssl/rv-ssl/company.cer;
