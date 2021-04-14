@@ -28,11 +28,15 @@ add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; prelo
 # CSP -	problem!
 #add_header Content-Security-Policy "default-src 'self'; font-src *;img-src * data:; script-src *; style-src *";
 
-#  X-Frame-Options
+#  X-Frame-Options SAMEORIGIN - allow site use iframe
 add_header X-Frame-Options "SAMEORIGIN";
-# X-Content-Type-Options
+# X-Content-Type-Options - guard for XSS-attacks
 add_header X-Content-Type-Options nosniff;
-# Referrer-Policy (origin or strict-origin)
+# Referrer-Policy (origin or strict-origin) - when user click on button in your site , what send him to another site, its also give him 
+## no-referrer: never send the Referer header
+## same-origin: send referrer, but only on requests to the same origin
+## strict-origin: send referrer to all origins, but only the URL sans path (e.g. https://example.com/)
+## strict-origin-when-cross-origin: send full referrer on same origin, URL sans path on foreign origin
 add_header Referrer-Policy "strict-origin";
 # Permissions-Policy
 add_header Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()";
