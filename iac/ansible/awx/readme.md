@@ -3,10 +3,19 @@
 ## Credentials
 ```
 Add new type
+# REPO AUTH
 name - gitlab
 Credential Type - Source Control
 Username - ci_bot
 Password - token
+# SSH AUTH
+name - ssh_ansible
+Credential Type - machine
+Username - ansible
+SSH Private Key - paste key
+Privilege Escalation Method - sudo
+# SSH Windows
+
 ```
 ## Project
 ```
@@ -17,7 +26,24 @@ Source Control Branch/Tag/Commit - master
 Source Control Credential - gitlab
 Options - Update Revision on Launch - check
 ```
-
+## Inventory
+```
+name - Linux Servers
+Save
+Go to Sources TAB
+Name - Linux Servers
+Source - Sources from project
+Project - select project
+Inventory file - inventory
+Update on launch
+```
+## Templates
+```
+Name - Linux Servers Update
+Job Type - run
+Playbook - update.yml
+Credentials - ssh_linux
+```
 #################################### INSTALL
 ## AWX k8s operator
 ```
