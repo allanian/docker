@@ -14,7 +14,8 @@ ssl_session_timeout 1h;
 ssl_prefer_server_ciphers on;
 ssl_session_tickets on;
 ssl_dhparam /etc/pki/tls/dh.pem;
-add_header Strict-Transport-Security "max-age=63072000" always;
+# Only connect to this site via HTTPS for the two years (recommended)
+#add_header Strict-Transport-Security "max-age=63072000" always;
 proxy_ssl_verify        on;
 proxy_ssl_session_reuse off;
 ssl_verify_client off;
@@ -22,7 +23,7 @@ proxy_ssl_server_name on;
 ssl_buffer_size 14k;
 ssl_trusted_certificate /etc/pki/tls/certs/ca-bundle.crt;
 
-#HSTS
+#HSTS # Only connect to this site and subdomains via HTTPS for the next two years and also include in the preload list
 add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload';
 
 # CSP -	problem!
