@@ -1,4 +1,24 @@
 # AWX
+# USING
+## Credentials
+```
+Add new type
+name - gitlab
+Credential Type - Source Control
+Username - ci_bot
+Password - token
+```
+## Project
+```
+# path to repo
+Name - 1C
+Source Control Credential Type - Git
+Source Control Branch/Tag/Commit - master
+Source Control Credential - gitlab
+Options - Update Revision on Launch - check
+```
+
+#################################### INSTALL
 ## AWX k8s operator
 ```
 https://github.com/ansible/awx-operator/blob/devel/README.md
