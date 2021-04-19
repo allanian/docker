@@ -104,31 +104,36 @@ Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Cre
 |Phase|Option|
 |--|--|
 |Name|policy-object-vers-test|
-| Hot phase    | disable |
+| Hot phase    | Required - включить Delete Phase если нужно |
 | Warm phase   | disable |
 | Cold phase   | disable |
-| Delete phase | Activate delete phase |
-**Timing for delete phase** – 30 – days from index creation
+| Delete phase | set 30days from index creation |
 after all, click **Save**
 
 #### ** Policy CLI**
 go to Menu => Dev tools
 ```
-PUT _ilm/policy/policy-object-vers-test
+PUT _ilm/policy/<policyName>
 {
   "policy": {
     "phases": {
       "hot": {
-        "min_age": "0ms",
         "actions": {
+          "rollover": {
+            "max_age": "14d",
+            "max_size": "50gb"
+          },
           "set_priority": {
             "priority": 100
           }
-        }
+        },
+        "min_age": "0ms"
       },
       "delete": {
-        "min_age": "30d",
-        "actions": {}
+        "min_age": "15d",
+        "actions": {
+          "delete": {}
+        }
       }
     }
   }
@@ -141,17 +146,19 @@ Name – rotation-template-ObjectVers
 **Dev policy**
 |Phase|Option|
 |--|--|
-|Name| template-object-vers-test |
-| Index patterns | object_versions_test_log-* |
+| Name| rotation-template-dev |
+| Index patterns | docker-* |
+| Create data stream| enable |
+#### Click Next
 
-
+**Component templates**
 #### Click Next
 **Index settings**
 ```
 {
 "index": {
 "lifecycle": {
-"name": "policy-object-vers-test"
+"name": "rotation-policy-dev"
 },
 "number_of_shards": "1",
 "number_of_replicas": "1"
@@ -161,30 +168,58 @@ Name – rotation-template-ObjectVers
 Click Next =>Save
 #### ** Template CLI**
 ```
-PUT _template/template-object-vers-test
+PUT _index_template/rotation-template-dev
 {
-  "index_patterns": ["object_versions_test_log-*"],                 
-  "settings": {
-    "number_of_shards": 1,
-    "number_of_replicas": 1,
-    "index.lifecycle.name": "policy-object-vers-test"    
-  }
+  "template": {
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "rotation-policy-dev"
+        },
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "dynamic": true,
+      "numeric_detection": false,
+      "date_detection": true,
+      "dynamic_date_formats": [
+        "strict_date_optional_time",
+        "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
+      ],
+      "_source": {
+        "enabled": true,
+        "includes": [],
+        "excludes": []
+      },
+      "_routing": {
+        "required": false
+      },
+      "dynamic_templates": []
+    }
+  },
+  "index_patterns": [
+    "docker*",
+    "demodev*"
+  ],
+  "data_stream": {}
 }
 
-PUT _template/template-object-vers-test             – имя шаблона
-"index.lifecycle.name": "policy-object-vers-test"   – имя политики
-"index_patterns": ["object_versions_test_log-*"],   - index pattern name
+PUT _template/rotation-template-dev            – имя шаблона
+"index.lifecycle.name": "rotation-policy-dev"   – имя политики
+"index_patterns": ["docker*"],   - index pattern name
 ```
 ### 3. Применение шаблона ко всем существующим индексам
 ```
-PUT object_versions_test_log-*/_settings
+PUT td*/_settings
 {
-  "index.lifecycle.name": "policy-object-vers-test" 
+  "index.lifecycle.name": "rotation-policy-prod" 
 }
 
-object_versions_test_log-*/_ - index pattern name
+td*/_ - index pattern name
 ```
 ### 4. CHECK policy
 ```
-GET object_versions_test_log-*.*/_ilm/explain
+GET td*/_ilm/explain
 ```
