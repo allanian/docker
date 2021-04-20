@@ -104,10 +104,10 @@ Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Cre
 |Phase|Option|
 |--|--|
 |Name|policy-object-vers-test|
-| Hot phase    | Required - включить Delete Phase если нужно |
-| Warm phase   | disable |
-| Cold phase   | disable |
-| Delete phase | set 30days from index creation |
+| Hot phase    | Required - Advanced => Use recommended defaults => включить Delete Phase если нужно |
+| Warm phase   | Enable => Shrink index [1] => Force merge [1] |
+| Cold phase   | Enable |
+| Delete phase | set 365days from index creation |
 after all, click **Save**
 
 #### ** Policy CLI**
@@ -120,7 +120,7 @@ PUT _ilm/policy/<policyName>
       "hot": {
         "actions": {
           "rollover": {
-            "max_age": "14d",
+            "max_age": "30d",
             "max_size": "50gb"
           },
           "set_priority": {
@@ -129,8 +129,31 @@ PUT _ilm/policy/<policyName>
         },
         "min_age": "0ms"
       },
+      "warm": {
+        "min_age": "30d",
+        "actions": {
+          "set_priority": {
+            "priority": 50
+          },
+          "shrink": {
+            "number_of_shards": 1
+          },
+          "forcemerge": {
+            "max_num_segments": 1,
+            "index_codec": "best_compression"
+          }
+        }
+      },
+      "cold": {
+        "min_age": "60d",
+        "actions": {
+          "set_priority": {
+            "priority": 0
+          }
+        }
+      },
       "delete": {
-        "min_age": "15d",
+        "min_age": "365d",
         "actions": {
           "delete": {}
         }
