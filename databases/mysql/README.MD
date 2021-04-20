@@ -35,7 +35,26 @@ FROM performance_schema.events_transactions_summary_by_thread_by_event_name
 WHERE performance_schema.events_transactions_summary_by_thread_by_event_name.THREAD_ID IN 
      (SELECT performance_schema.replication_applier_status_by_worker.THREAD_ID 
       FROM performance_schema.replication_applier_status_by_worker);
-	
+
+Implement google BBR on binlog servers (blackhole engines)
+Kernel version 4.19.12
+nano /etc/sysctl.conf
+net.core.default_qdisc = fq
+net.ipv4.tcp_congestion_control = bbr
+sysctl -p
+For parallel slave replication
+Upgrade master and slaves  to 5.7.22 or higher
+Change the following parameters on the master/slave
+slave_parallel_type=LOGICAL_CLOCK
+binlog_format=’ROW’
+transaction_write_set_extraction=’XXHASH64′
+Slave_parallel_workers=8/16
+binlog_transaction_dependency_tracking = WRITESET
+Configure network recover parameters:
+slave_net_timeout=60
+MASTER_CONNECT_RETRY=60
+
+
 ```
 .
 # Master-Slave replication
