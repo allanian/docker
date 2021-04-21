@@ -100,20 +100,19 @@ Menu => Index management => Select index => Click Force merge
 
 ### 1. Policy
 Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Create policy
-**Dev policy**
 |Phase|Option|
 |--|--|
-|Name|policy-object-vers-test|
+|Name|lifecycle-policy|
 | Hot phase    | Required - Advanced => Use recommended defaults => включить Delete Phase если нужно |
-| Warm phase   | Enable => Shrink index [1] => Force merge [1] |
-| Cold phase   | Enable |
-| Delete phase | set 365days from index creation |
+| Warm phase   | Enable 30d => Shrink index [1] => Force merge [1] |
+| Cold phase   | Enable 60d |
+| Delete phase | Enable 180d from index creation |
 after all, click **Save**
 
 #### ** Policy CLI**
 go to Menu => Dev tools
 ```
-PUT _ilm/policy/<policyName>
+PUT _ilm/policy/lifecycle-policy
 {
   "policy": {
     "phases": {
@@ -139,8 +138,7 @@ PUT _ilm/policy/<policyName>
             "number_of_shards": 1
           },
           "forcemerge": {
-            "max_num_segments": 1,
-            "index_codec": "best_compression"
+            "max_num_segments": 1
           }
         }
       },
@@ -153,7 +151,7 @@ PUT _ilm/policy/<policyName>
         }
       },
       "delete": {
-        "min_age": "365d",
+        "min_age": "180d",
         "actions": {
           "delete": {}
         }
@@ -162,87 +160,79 @@ PUT _ilm/policy/<policyName>
   }
 }
 ```
-### 2.  Template
-
-Menu => Stack Management => Index management => Index templates => Create template
-Name – rotation-template-ObjectVers
-**Dev policy**
-|Phase|Option|
-|--|--|
-| Name| rotation-template-dev |
-| Index patterns | docker-* |
-| Create data stream| enable |
-#### Click Next
-
-**Component templates**
-#### Click Next
-**Index settings**
+### 2.  Index Component Template
+Menu => Stack Management => Index management => Index comonent templates => Create template
 ```
+Name| lifecycle-component-teplate
+# index settings
 {
-"index": {
-"lifecycle": {
-"name": "rotation-policy-dev"
-},
-"number_of_shards": "1",
-"number_of_replicas": "1"
+  "lifecycle": {
+    "name": "lifecycle-policy"
+  },
+  "number_of_shards": "1",
+  "number_of_replicas": "1"
 }
-}
-```
-Click Next =>Save
-#### ** Template CLI**
-```
-PUT _index_template/rotation-template-dev
+
+#### api
+
+PUT _component_template/lifecycle-component-teplate
 {
   "template": {
     "settings": {
-      "index": {
-        "lifecycle": {
-          "name": "rotation-policy-dev"
-        },
-        "number_of_shards": "1",
-        "number_of_replicas": "1"
-      }
-    },
-    "mappings": {
-      "dynamic": true,
-      "numeric_detection": false,
-      "date_detection": true,
-      "dynamic_date_formats": [
-        "strict_date_optional_time",
-        "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
-      ],
-      "_source": {
-        "enabled": true,
-        "includes": [],
-        "excludes": []
+      "lifecycle": {
+        "name": "lifecycle-policy"
       },
-      "_routing": {
-        "required": false
-      },
-      "dynamic_templates": []
+      "number_of_shards": "1",
+      "number_of_replicas": "1"
     }
-  },
+  }
+}
+```
+### 3. Index template
+Menu => Stack Management => Index management => Index template => Create template
+```
+Name lifecycle-index-template
+Index patterns - docker* td*
+Component templates  lifecycle-component-teplate
+# api
+PUT _index_template/lifecycle-index-template
+{
+  "priority": 100,
   "index_patterns": [
     "docker*",
+    "td*",
+    "k8s*",
     "demodev*"
   ],
-  "data_stream": {}
+  "composed_of": [
+    "lifecycle-component-teplate"
+  ]
 }
+
+```
+### 4. Применение шаблона ко всем существующим индексам
+```
+PUT td*/_settings
+{
+  "index.lifecycle.name": "lifecycle-policy" 
+}
+
+td*/_ - index pattern name
+```
+### 5. CHECK policy
+```
+GET td*/_ilm/explain
+```
+
+
+
+
+
+
+
 
 PUT _template/rotation-template-dev            – имя шаблона
 "index.lifecycle.name": "rotation-policy-dev"   – имя политики
 "index_patterns": ["docker*"],   - index pattern name
 ```
-### 3. Применение шаблона ко всем существующим индексам
-```
-PUT td*/_settings
-{
-  "index.lifecycle.name": "rotation-policy-prod" 
-}
 
-td*/_ - index pattern name
-```
-### 4. CHECK policy
-```
-GET td*/_ilm/explain
-```
