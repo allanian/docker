@@ -14,6 +14,13 @@
 ### 2. Slow query analyzator for percona
 ```
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+# enable percona repos
+percona-release setup ps80 
+# also enable AppSteam repo for rhel8
+# install tools
+yum install percona-toolkit
+# run check
+pt-query-digest /var/log/mysql/mysql-slow.log
 ```
 ### 3. OPTIMIZATION
 ```
