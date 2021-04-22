@@ -4,12 +4,18 @@
  - [Backup](https://github.com/allanian/docker/tree/master/databases/mysql#BACKUP)
  - [Replication](https://github.com/allanian/docker/tree/master/databases/mysql#Replication)
 
-# MYSQL QUERY Optimization
+# MYSQL Optimization
+### 1. Example of query
 |Query|Desc|
 |--|--|
 |set global max_connections = 2000;|set global param|
 |show variables like 'binlog_format';| select param |
 
+### 2. Slow query analyzator for percona
+```
+sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+```
+### 3. OPTIMIZATION
 ```
 # OPTIMIZATION
 # check current
