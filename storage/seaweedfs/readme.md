@@ -96,6 +96,11 @@ The actual file metadata is stored in each volume on volume servers.
 Это снижает давление параллелизма со стороны *central master* и распределяет метаданные файлов на *volume server*, обеспечивая более быстрый доступ к файлам (O (1), обычно только одна операция чтения с диска). В метаданных каждого файла накладные расходы на дисковое хранилище составляют всего 40 байтов.
 ```
 ## Q.A
+#### REPLICATION BUCKET 
+```
+s3.bucket.create -name clickhouse-backup -replication 000
+```
+#### Если диски больших размеров, например 10тб, имеет смысл увеличить размер волума
 #### Does it support large files, e.g., 500M ~ 10G?
 ```
 Large file will be automatically split into chunks, in weed filer, weed mount, etc.
@@ -109,7 +114,10 @@ Volume: http://localhost:8080/ui/index.html
 Filer: http://localhost:8888/
 ```
 
-
+#### How plan MAX VOLUMES for volume
+```
+each volume limit 32gb, so if you have disk with 300gb, you should use max=10volumes
+```
 #### Storage Size
 ```
 In the current implementation, each volume can hold 32 gibibytes (32GiB or 8x2^32 bytes). This is because we align content to 8 bytes. We can easily increase this to 64GiB, or 128GiB, or more, by changing 2 lines of code, at the cost of some wasted padding space due to alignment.

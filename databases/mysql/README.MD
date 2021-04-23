@@ -11,6 +11,26 @@
 |set global max_connections = 2000;|set global param|
 |show variables like 'binlog_format';| select param |
 
+### 2. Config optimization
+```
+#### pt-variable-advisor from percona
+sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+# enable percona repos
+percona-release setup ps80 
+# also enable AppSteam repo for rhel8
+# install tools
+yum install percona-toolkit
+# run check
+pt-variable-advisor u=root,p=password
+
+#### mysqltuner
+mysqltuner --user root --pass password
+
+```
+### 2. index duplications
+```
+pt-duplicate-key-checker u=root,p=Wah0baiL
+```
 ### 2. Slow query analyzator for percona
 ```
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
