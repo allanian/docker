@@ -11,8 +11,22 @@ VOLUME
 /data/brick1/MYVOLUME
 
 # HEKETI
-## INSTALLATION - all in ansible gluster role
+```
+Heketi - это инструмент для автоматического создания volume в GLUSTERFS.
+```
+## Условия
+```
+Работающий кластер GLUSTERFS! и работающий кластер K8s!
+#ansible-playbook -i inventory/heketi_gluster_inventory -u ansible playbooks/gluster-server.yml
+```
 
+
+
+
+## INSTALLATION - all in ansible gluster role
+```
+ansible-playbook -i inventory/heketi_gluster_inventory -u ansible playbooks/heketi.yml
+```
 ## ADD new brick
 in vmware, just add new disk, it's all, heketi do all job!
 
