@@ -669,22 +669,20 @@ aws iam create-role \
 6. Attach your new IAM policy to NodeInstanceRole:
 aws iam attach-role-policy \
 --policy-arn arn:aws:iam::111122223333:policy/AmazonEKS_EBS_CSI_Driver_Policy \
---role-name eksctl-eks-nodegroup-xxxxxx-NodeInstanceRole-xxxxxxxxxx
+--role-name AmazonEKS_EBS_CSI_DriverRole 
 Note: Replace the policy Amazon Resource Name (ARN) with the ARN of the policy created in the preceding step 2. Replace the role name with NodeInstanceRole.
 # aws iam list-policies --query 'Policies[?PolicyName==`AmazonEKS_EBS_CSI_Driver_Policy`].Arn' --output text
 
 7. To deploy the Amazon EBS CSI driver, run one of the following commands based on your AWS Region:
-All Regions other than China Regions:
 kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
 8. Annotate the ebs-csi-controller-sa Kubernetes service account with the ARN of the IAM role that you created earlier:
-
 kubectl annotate serviceaccount ebs-csi-controller-sa \
   -n kube-system \
   eks.amazonaws.com/role-arn=arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/AmazonEKS_EBS_CSI_DriverRole
 Note: Replace YOUR_AWS_ACCOUNT_ID with your account ID.
-
-9.    Delete the driver pods:
-
+note: get account id
+aws sts get-caller-identity --query 'Account' --output text
+9.    Delete the driver pods, the auto redeployed with ID:
 kubectl delete pods \
   -n kube-system \
   -l=app=ebs-csi-controller
