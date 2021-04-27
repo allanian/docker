@@ -17,16 +17,14 @@ Heketi - это инструмент для автоматического со�
 ## Условия
 ```
 Работающий кластер GLUSTERFS! и работающий кластер K8s!
-#ansible-playbook -i inventory/heketi_gluster_inventory -u ansible playbooks/gluster-server.yml
+#ansible-playbook -i inventory/heketi -u ansible playbooks/heketi.yml
 ```
 
 
 
 
-## INSTALLATION - all in ansible gluster role
-```
-ansible-playbook -i inventory/heketi_gluster_inventory -u ansible playbooks/heketi.yml
-```
+
+# Q/A
 ## ADD new brick
 in vmware, just add new disk, it's all, heketi do all job!
 
