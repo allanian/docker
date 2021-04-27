@@ -630,7 +630,30 @@ then copy ARN
 
 # EBS
 ```
+# WITH HELM
+# install
+helm upgrade --install aws-ebs-csi-driver     --namespace kube-system     --set enableVolumeScheduling=true     --set enableVolumeResizing=true     --set enableVolumeSnapshot=true     aws-ebs-csi-driver/aws-ebs-csi-driver
+# check
+kubectl get pod -n kube-system -l "app.kubernetes.io/name=aws-ebs-csi-driver,app.kubernetes.io/instance=aws-ebs-csi-driver"
+
+
+
+
+
+
+
+
+
+
+# DONT NEED
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-persistent-storage/
+
+
+
+
+
+
+
 1. Download an example IAM policy with permissions that enable your worker nodes to create and modify Amazon EBS volumes:
 curl -o example-iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-ebs-csi-driver/v0.9.0/docs/example-iam-policy.json
 2. Create an IAM policy called Amazon_EBS_CSI_Driver:
