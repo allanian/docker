@@ -641,7 +641,7 @@ kubectl apply -f secret.yaml
 
 
 ```
-export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver" cluster_name="api-dev" region="us-west-2"
+export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver" cluster_name="api-dev" region="us-east-2"
 1. Create an IAM policy that allows the CSI driver's service account to make calls to AWS APIs on your behalf.:
 ```
 curl -o example-iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-ebs-csi-driver/v0.9.0/docs/example-iam-policy.json
