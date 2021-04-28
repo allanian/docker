@@ -115,7 +115,7 @@ eksctl get iamserviceaccount --region=$region --cluster=$cluster_name --namespac
   
 **uninstall**
 ```
-helm delete aws-load-balancer-controller
+helm delete aws-load-balancer-controller -n kube-system
 ```
 **To check the status of the  **alb-ingress-controller**  deployment, run the following command:**
 ```
