@@ -188,6 +188,7 @@ use namespace: only default !
 
 ```
 # Verify Deployment by checking logs, List pods (external-dns pod should be in running state) 
+```
 kubectl apply -f external_dns.yml
 kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
 #kubectl logs -n kube-system -f $(kubectl get po -n kube-system | egrep -o 'external-dns[A-Za-z0-9-]+')
