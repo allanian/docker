@@ -494,6 +494,9 @@ First create fargrate profile
       namespace: kubernetes-dashboard
     EOF
 #### verify
+    # change ClusterIP to type: NodePort
+    export EDITOR=nano
+    kubectl edit svc -n kubernetes-dashboard
     kubectl -n kubernetes-dashboard get pods
     kubectl get deployment metrics-server -n kube-system
     yum install jq -y
