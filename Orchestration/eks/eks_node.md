@@ -309,7 +309,7 @@ nano external_dns.yml
 ```
 **if you create CLUSTER IN REGION, where you already have FARGATE, please change name external-dns to external-dns1**
 **ALSO CHANGE --txt-owner-id=QA**
-```
+
 ---
 apiVersion: v1
 kind: ServiceAccount
