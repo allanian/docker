@@ -521,7 +521,8 @@ can be enabled on cluster gui page - configuration / logging
 ## 4. ExternalDNS checks
 externaldns logs (check this actions with dns route53)
 ```
-kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
+#kubectl logs -f $(kubectl get po | egrep -o 'external-dns[A-Za-z0-9-]+') 
+kubectl logs -n kube-system -f $(kubectl get po -n kube-system | egrep -o 'external-dns[A-Za-z0-9-]+')
 kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+') 
 ```
 ### externaldns
