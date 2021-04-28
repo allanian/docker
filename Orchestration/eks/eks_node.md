@@ -315,15 +315,19 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-dns
+  namespace: kube-system
+  # If you're using Amazon EKS with IAM Roles for Service Accounts, specify the following annotation.
+  # Otherwise, you may safely omit it.
   annotations:
     # paster Role ARN
     #eks.amazonaws.com/role-arn: arn:aws:iam::**AWS-ACCOUNT-ID**:role/**IAM-SERVICE-ROLE-NAME**
     eks.amazonaws.com/role-arn: arn:aws:iam::180789647333:role/eksctl-eksdemo1-addon-iamserviceaccount-defa-Role1-1O3H7ZLUED5H4
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: external-dns
+  namespace: kube-system
 rules:
 - apiGroups: [""]
   resources: ["services","endpoints","pods"]
@@ -335,10 +339,11 @@ rules:
   resources: ["nodes"]
   verbs: ["list","watch"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: external-dns-viewer
+  namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -346,12 +351,13 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: external-dns
-  namespace: default
+  namespace: kube-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-dns
+  namespace: kube-system
 spec:
   strategy:
     type: Recreate
@@ -370,19 +376,18 @@ spec:
       serviceAccountName: external-dns
       containers:
       - name: external-dns
-        image: k8s.gcr.io/external-dns/external-dns:v0.7.3
+        image: k8s.gcr.io/external-dns/external-dns:v0.7.6
         args:
         - --source=service
         - --source=ingress
 #        - --domain-filter=external-dns-test.my-org.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
         - --provider=aws
-#        - --policy=upsert-only # comment for allow deleting any records ExternalDNS, uncomment to enable full synchronization
+#        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
         - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
         - --registry=txt
-        - --txt-owner-id=QA
+        - --txt-owner-id=shakti
       securityContext:
         fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
-```
 
 ```
 # Verify Deployment by checking logs 
