@@ -212,7 +212,7 @@ echoserver.josh-test-dns.com. 60 IN     A       18.221.65.39
 echoserver.josh-test-dns.com. 60 IN     A       52.15.186.25
 
 curl echoserver.company.com
-
+```
 # ================================================================
 # EXAMPLES:
 # ================================================================
