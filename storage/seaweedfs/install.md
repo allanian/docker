@@ -45,6 +45,18 @@ OPTS="-peers 10.3.3.1:9333,10.3.3.2:9333,10.3.3.3:9333 -ip 10.3.3.1:9333 -port 9
 Активируем и запускаем master-серверы:
 systemctl enable --now seaweedfs@master
 Можно заходить на каждый master-сервер по порту 9333 (например http://10.3.3.1:9333 )
+
+# generate scripts
+# MASTER
+weed scaffold -config=master
+# cluster status - master
+curl "http://localhost:9333/cluster/status?pretty=y"
+# dir status
+curl "http://localhost:9333/dir/status?pretty=y"
+# status
+curl "http://localhost:9991/status?pretty=y"
+# volume
+curl  -H "Accept: application/json" "http://localhost:8888/?pretty=y" 
 ```
 
 ## Volume
@@ -134,3 +146,5 @@ s3cmd
 # проверить подключение
 echo -e "defaultuser\n23213123123123wqerwr235235\n\n10.3.3.1:8333\n10.3.3.1:8333\n\n/bin/gpg\nfalse\n\n\ny" |   s3cmd --configure
 ```
+
+

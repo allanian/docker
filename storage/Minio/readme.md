@@ -63,7 +63,7 @@ EOF
 ```
 cat > /etc/default/minio << EOF
 MINIO_OPTS="--certs-dir /etc/ssl/rv-ssl --address :9000"
-MINIO_VOLUMES="https://minio{1...4}.company.ru/data/data{1...1}"
+MINIO_VOLUMES="https://minio{1...2}.rendez-vous.ru/data/data{1...2}"
 MINIO_ROOT_USER="miniorv"
 MINIO_ROOT_PASSWORD="SKFzHq5iDoQgW1gyNHYFmnNMYSvY9ZFMpH"
 EOF
@@ -153,6 +153,7 @@ mc admin user remove s3 CFTC8ZKWDJCVJID2IJZ0
 mc admin policy set s3 writeonly user=yTzw7dbcgpXC9tPGPJmcr
 # info 
 mc admin user info s3 CFTC8ZKWDJCVJID2IJZ0
+
 #### GROUP
 #добавить группу
 mc admin group add TARGET GROUPNAME MEMBERS
@@ -167,8 +168,9 @@ mc admin policy set s3 writeonly group=onec
 # list all users in group
 mc admin user list s3
 
-#перезагрузка кластера
+# перезагрузка кластера
 mc admin service restart minio 
+
 # SYSTEM INFO
 minio-mc admin config get s3 region
 minio-mc stat s3
