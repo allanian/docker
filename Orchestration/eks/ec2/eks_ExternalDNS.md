@@ -1,7 +1,6 @@
 
 ## ExternalDNS
 #### Used for Updating Route53 RecordSets from Kubernetes
-
  - [x] 1. create iam policy, copy ID
  - [x] 2. create iam role and attach policy ID
  - [x] 3. create service account in k8s and attach role ID 
@@ -98,7 +97,7 @@ https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.m
 -   Change-2: Line 55, 56: Commented them (If you're using kiam or kube2iam.....annotations:)
 -   Change-3: comment line with: --domain-filter=external-dns-test.my-org.com
 -   Change-4: comment line with: --policy=upsert-only
-```
+
 **config**
 !! verify, rbac enabled or no
 - first we create policy
@@ -107,10 +106,6 @@ https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.m
 ```
 kubectl api-versions | grep rbac.authorization.k8s.io
 nano external_dns.yml
-```
-**if you create CLUSTER IN REGION, where you already have FARGATE, please change name external-dns to external-dns1**
-**ALSO CHANGE --txt-owner-id=QA**
-
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -189,7 +184,7 @@ spec:
 # error
 failed to sync cache: timed out waiting for the condition
 solution:
-use namespace: default !
+use namespace: only default !
 
 ```
 # Verify Deployment by checking logs, List pods (external-dns pod should be in running state) 
