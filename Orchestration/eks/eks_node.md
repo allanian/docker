@@ -7,9 +7,6 @@
  - [AWS ALB deployment](https://github.com/allanian/docker/tree/master/Orchestration/eks#step-06-install-aws-load-balancer-controller)
  - 
 # Step-01: install eksctl
-https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
-Create an Amazon EKS cluster, service account policy, and RBAC policies
-# Step-01: install eksctl
 ```
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 mv /tmp/eksctl /usr/bin
@@ -17,28 +14,26 @@ eksctl version
 ```
 # Step-02: Create Cluster
 ```
-terraform
-# region example
---region us-west-1 - California
---region us-west-2 - Oregon
+edit terraform.tfvars
+terraform init
+terraform apply
 ```
 #### Get List of clusters
 ```
-eksctl --region us-west-1 get clusters 
+export region=us-east-2 cluster_name=api-dev
+eksctl --region us-east-2 get clusters 
 ```
 #### KubeConfig
 ```
-aws eks --region us-west-1 update-kubeconfig --name qafgcluster
-cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/qa.yml
-export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/qa.yml
+aws eks --region $region update-kubeconfig --name $cluster_name
+cp /root/.kube/configs/kubeconfig.yml /opt/.kube/configs/test.yml
+export KUBECONFIG=$KUBECONFIG:/opt/.kube/configs/test.yml
 kubectl get svc
 ```
 #### delete cluster
 ```
-terraform
+terraform destroy
 ```
-### Create a Fargate pod execution role (Don't need, if create cluster with option - --fargate)
-
 #  Step-03: Create & Associate IAM OIDC Provider for our EKS Cluster
 ### Step-02.1: Create an IAM policy for the service account 
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
