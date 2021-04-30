@@ -4,17 +4,11 @@
 ```
 # https://aws.amazon.com/premiumsupport/knowledge-center/eks-persistent-storage/
 
-
-#curl https://raw.githubusercontent.com/kubernetes-sigs/aws-ebs-csi-driver/master/deploy/kubernetes/secret.yaml > secret.yaml
-## Edit the secret with user credentials
-#kubectl apply -f secret.yaml
-
-
-
 ```
 
 1. Create an IAM policy that allows the CSI driver's service account to make calls to AWS APIs on your behalf.:
 ```
+export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver" cluster_name="api-dev" region="us-east-2"
 curl -o example-iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-ebs-csi-driver/v0.9.0/docs/example-iam-policy.json
 # Create an IAM policy called Amazon_EBS_CSI_Driver:
 aws iam create-policy \
