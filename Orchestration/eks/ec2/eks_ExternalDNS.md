@@ -1,5 +1,43 @@
 
 ## ExternalDNS
+### INSTALLATION with helm
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# AWS, ACCESSKEY & SECRETKEY
+# go here and create ACCESS KEY
+https://console.aws.amazon.com/iam/home?#/security_credentials
+##
+aws.credentials.accessKey	When using the AWS provider, set aws_access_key_id in the AWS credentials (optional)	""
+aws.credentials.secretKey	When using the AWS provider, set aws_secret_access_key in the AWS credentials (optional)	""
+
+# install
+helm upgrade --install apidns -f values.yaml bitnami/external-dns --version 4.12.2
+
+# CHECk
+kubectl --namespace=default get pods -l "app.kubernetes.io/name=external-dns,app.kubernetes.io/instance=apidns"
+kubectl --namespace=default logs -f external-dns-6fd975bfcd-ss6fd
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# OLD
 #### Used for Updating Route53 RecordSets from Kubernetes
  - [x] 1. create iam policy, copy ID
  - [x] 2. create iam role and attach policy ID
