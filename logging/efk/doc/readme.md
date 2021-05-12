@@ -161,9 +161,9 @@ PUT _ilm/policy/lifecycle-policy
 }
 ```
 ### 2.  Index Component Template
-Menu => Stack Management => Index management => Index comonent templates => Create template
+Menu => Stack Management => Index management => Component templates => Create template
 ```
-Name| lifecycle-component-teplate
+Name| lifecycle-component-template
 # index settings
 {
   "lifecycle": {
