@@ -160,55 +160,59 @@ PUT _ilm/policy/lifecycle-policy
   }
 }
 ```
-### 2.  Index Component Template
-Menu => Stack Management => Index management => Component templates => Create template
-```
-Name| lifecycle-component-template
-# index settings
-{
-  "lifecycle": {
-    "name": "lifecycle-policy"
-  },
-  "number_of_shards": "1",
-  "number_of_replicas": "1"
-}
-
-#### api
-
-PUT _component_template/lifecycle-component-teplate
-{
-  "template": {
-    "settings": {
-      "lifecycle": {
-        "name": "lifecycle-policy"
-      },
-      "number_of_shards": "1",
-      "number_of_replicas": "1"
-    }
-  }
-}
-```
-### 3. Index template
+### 2. Index template
 Menu => Stack Management => Index management => Index template => Create template
 ```
 Name lifecycle-index-template
 Index patterns - docker* td*
-Component templates  lifecycle-component-teplate
-# api
-PUT _index_template/lifecycle-index-template
+```
+# ** CLI **
+```
+PUT _index_template/rv-index-template
 {
-  "priority": 100,
+  "priority": 200,
+  "template": {
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "rv-lifecycle-policy",
+          "rollover_alias": "timeseries"
+        },
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "_routing": {
+        "required": false
+      },
+      "numeric_detection": false,
+      "dynamic_date_formats": [
+        "strict_date_optional_time",
+        "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
+      ],
+      "dynamic": true,
+      "_source": {
+        "excludes": [],
+        "includes": [],
+        "enabled": true
+      },
+      "dynamic_templates": [],
+      "date_detection": true
+    },
+    "aliases": {
+      "rv_alias": {}
+    }
+  },
   "index_patterns": [
+    "demodev*",
     "docker*",
-    "td*",
     "k8s*",
-    "demodev*"
+    "network*",
+    "td*"
   ],
-  "composed_of": [
-    "lifecycle-component-teplate"
-  ]
+  "composed_of": []
 }
-
 ```
 ### 4. Применение шаблона ко всем существующим индексам
 ```
