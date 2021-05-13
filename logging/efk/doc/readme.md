@@ -112,7 +112,7 @@ after all, click **Save**
 #### ** Policy CLI**
 go to Menu => Dev tools
 ```
-PUT _ilm/policy/lifecycle-policy
+PUT _ilm/policy/rv-lifecycle-policy
 {
   "policy": {
     "phases": {
@@ -213,6 +213,7 @@ PUT _index_template/rv-index-template
   ],
   "composed_of": []
 }
+
 ```
 ### 4. Применение шаблона ко всем существующим индексам
 ```
