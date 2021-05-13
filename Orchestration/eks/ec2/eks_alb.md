@@ -89,6 +89,7 @@ helm delete aws-load-balancer-controller -n kube-system
 **To check the status of the  **alb-ingress-controller**  deployment, run the following command:**
 ```
 kubectl -n kube-system get pod
+kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o 'aws-load-balancer-controller[a-zA-Z0-9-]+') ****
 ```
 #### EXAMPLE for check AWX-LB-controller
 nano 2048.yml
