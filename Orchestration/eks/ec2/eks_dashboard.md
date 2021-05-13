@@ -61,6 +61,10 @@ cd dashboard
 helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
 # qa
 helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
+
+# token TTL
+kubectl edit deployment kubernetes-dashboard -n kubernetes-dashboard
+- '--token-ttl=0'
 ```
 
 #### verify
@@ -73,8 +77,4 @@ kubectl get deployment metrics-server -n kube-system
 yum install jq -y
 aws eks get-token --cluster-name $cluster_name | jq -r '.status.token'
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
-# token TTL
-kubectl -n kubernetes-dashboard edit deployment
-- '--token-ttl=0'
-
 ```
