@@ -7,6 +7,22 @@ edit values.yaml
 helm upgrade --install couchbase --values values_dev.yaml couchbase/couchbase-operator
 # qa
 helm upgrade --install couchbase --values values_qa.yaml couchbase/couchbase-operator
+
+
+
+== Couchbase-operator deployed.
+   # Check the couchbase-operator logs
+   kubectl logs -f deployment/couchbase-couchbase-operator  --namespace default
+
+
+== Admission-controller deployed.
+   # Check the admission-controller logs
+   kubectl logs -f deployment/couchbase-couchbase-admission-controller --namespace default
+
+== Manage this chart
+   # Show this status again
+   helm status couchbase
+
 ```
 # uninstall
 ```
