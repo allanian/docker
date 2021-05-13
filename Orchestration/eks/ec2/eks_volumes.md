@@ -8,7 +8,8 @@
 
 1. Create an IAM policy that allows the CSI driver's service account to make calls to AWS APIs on your behalf.:
 ```
-export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver" cluster_name="api-dev" region="us-east-2"
+export env=qa
+export EBS_CSI_POLICY_NAME="Amazon_EBS_CSI_Driver" cluster_name="api-$env" region="us-east-2" iamserviceaccount="ebs-csi-controller-irsa-$env"
 curl -o example-iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-ebs-csi-driver/v0.9.0/docs/example-iam-policy.json
 # Create an IAM policy called Amazon_EBS_CSI_Driver:
 aws iam create-policy \
@@ -20,7 +21,7 @@ aws iam create-policy \
 export EBS_CSI_POLICY_ARN=$(aws --region $region iam list-policies --query 'Policies[?PolicyName==`'$EBS_CSI_POLICY_NAME'`].Arn' --output text)
 echo $EBS_CSI_POLICY_ARN
 
-Мы попросим eksctlсоздать роль IAM, содержащую только что созданную политику IAM, и связать ее с вызываемой учетной записью службы Kubernetes, ebs-csi-controller-irsaкоторая будет использоваться драйвером CSI:
+Мы попросим eksctl создать роль IAM, содержащую только что созданную политику IAM, и связать ее с вызываемой учетной записью службы Kubernetes, ebs-csi-controller-irsaкоторая будет использоваться драйвером CSI:
 # Create an IAM OIDC provider for your cluster
 eksctl utils associate-iam-oidc-provider \
   --region=$region \
@@ -31,12 +32,11 @@ eksctl utils associate-iam-oidc-provider \
 eksctl create iamserviceaccount \
   --region=$region \
   --cluster $cluster_name \
-  --name ebs-csi-controller-irsa \
+  --name $iamserviceaccount \
   --namespace kube-system \
   --attach-policy-arn $EBS_CSI_POLICY_ARN \
   --override-existing-serviceaccounts \
   --approve
-
 # Развертывание драйвера Amazon EBS CSI
 # ===========================================================
 # Install, with HELM
@@ -44,31 +44,36 @@ eksctl create iamserviceaccount \
 # add the aws-ebs-csi-driver as a helm repo
 helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-driver
 # search for the driver
-helm search  repo aws-ebs-csi-driver
+helm search repo aws-ebs-csi-driver
 
-# dont need, go to the next step
-#helm upgrade --install aws-ebs-csi-driver \
-#  --version=0.10.2 \
-#  --namespace kube-system \
-#  --set serviceAccount.controller.create=false \
-#  --set serviceAccount.snapshot.create=false \
-#  --set enableVolumeScheduling=true \
-#  --set enableVolumeResizing=true \
-#  --set enableVolumeSnapshot=true \
-#  --set serviceAccount.snapshot.name=ebs-csi-controller-irsa \
-#  --set serviceAccount.controller.name=ebs-csi-controller-irsa \
-#  aws-ebs-csi-driver/aws-ebs-csi-driver
-# NOTE: NEED TO CREATE STORAGE CLASS or use with values.yaml
-# OR WITH VALUES.yaml with defined storage class
-helm upgrade --install aws-ebs-csi-driver \
-  --version=0.10.2 \
-  --namespace kube-system \
-  -f values.yaml \
-  aws-ebs-csi-driver/aws-ebs-csi-driver
-
+# uninstall 
+helm delete aws-ebs-csi-driver --namespace kube-system
+# install (VALUES.yaml with predefined storage class)
+helm upgrade --install aws-ebs-csi-driver --version=0.10.2 --namespace kube-system -f values_$env.yaml   aws-ebs-csi-driver/aws-ebs-csi-driver
+# CHECK
 kubectl -n kube-system rollout status deployment ebs-csi-controller
 # check
 kubectl get pod -n kube-system -l "app.kubernetes.io/name=aws-ebs-csi-driver,app.kubernetes.io/instance=aws-ebs-csi-driver"
+
+
+
+
+
+# dont need, go to the next step
+helm upgrade --install aws-ebs-csi-driver \
+  --version=0.10.2 \
+  --namespace kube-system \
+  --set serviceAccount.controller.create=false \
+  --set serviceAccount.snapshot.create=false \
+  --set enableVolumeScheduling=true \
+  --set enableVolumeResizing=true \
+  --set enableVolumeSnapshot=true \
+  --set serviceAccount.snapshot.name=ebs-csi-controller-irsa \
+  --set serviceAccount.controller.name=ebs-csi-controller-irsa \
+  aws-ebs-csi-driver/aws-ebs-csi-driver
+# NOTE: NEED TO CREATE STORAGE CLASS or use with values.yaml
+
+
 
 
 
