@@ -3,7 +3,10 @@
 helm repo add couchbase https://couchbase-partners.github.io/helm-charts/
 helm repo update
 edit values.yaml
-helm upgrade --install couchbase --values values.yaml couchbase/couchbase-operator
+# dev
+helm upgrade --install couchbase --values values_dev.yaml couchbase/couchbase-operator
+# qa
+helm upgrade --install couchbase --values values_qa.yaml couchbase/couchbase-operator
 ```
 # uninstall
 ```
