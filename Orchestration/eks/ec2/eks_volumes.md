@@ -46,17 +46,18 @@ helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-d
 # search for the driver
 helm search  repo aws-ebs-csi-driver
 
-helm upgrade --install aws-ebs-csi-driver \
-  --version=0.10.2 \
-  --namespace kube-system \
-  --set serviceAccount.controller.create=false \
-  --set serviceAccount.snapshot.create=false \
-  --set enableVolumeScheduling=true \
-  --set enableVolumeResizing=true \
-  --set enableVolumeSnapshot=true \
-  --set serviceAccount.snapshot.name=ebs-csi-controller-irsa \
-  --set serviceAccount.controller.name=ebs-csi-controller-irsa \
-  aws-ebs-csi-driver/aws-ebs-csi-driver
+# dont need, go to the next step
+#helm upgrade --install aws-ebs-csi-driver \
+#  --version=0.10.2 \
+#  --namespace kube-system \
+#  --set serviceAccount.controller.create=false \
+#  --set serviceAccount.snapshot.create=false \
+#  --set enableVolumeScheduling=true \
+#  --set enableVolumeResizing=true \
+#  --set enableVolumeSnapshot=true \
+#  --set serviceAccount.snapshot.name=ebs-csi-controller-irsa \
+#  --set serviceAccount.controller.name=ebs-csi-controller-irsa \
+#  aws-ebs-csi-driver/aws-ebs-csi-driver
 # NOTE: NEED TO CREATE STORAGE CLASS or use with values.yaml
 # OR WITH VALUES.yaml with defined storage class
 helm upgrade --install aws-ebs-csi-driver \
@@ -68,6 +69,10 @@ helm upgrade --install aws-ebs-csi-driver \
 kubectl -n kube-system rollout status deployment ebs-csi-controller
 # check
 kubectl get pod -n kube-system -l "app.kubernetes.io/name=aws-ebs-csi-driver,app.kubernetes.io/instance=aws-ebs-csi-driver"
+
+
+
+
 
 # dont need if used values.yaml with storage class
 Dynamic Volume Provisioning allows storage volumes to be created on-demand. StorageClass should be pre-created to define which provisioner should be used and what parameters should be passed when dynamic provisioning is invoked.
