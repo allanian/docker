@@ -54,6 +54,15 @@ subjects:
   namespace: kubernetes-dashboard
 EOF
 ```
+# INGRESS HELM
+```
+cd dashboard
+# dev
+helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
+# qa
+helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
+```
+
 #### verify
 ```
 # change ClusterIP to type: NodePort
