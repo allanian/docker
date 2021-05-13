@@ -3,7 +3,7 @@
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
 #### verify
 ```
-export KUBECONFIG=/opt/.kube/configs/test.yml
+export KUBECONFIG=/opt/.kube/configs/dev.yml
 export region=us-east-2 cluster_name=api-dev
 aws eks describe-cluster --region $region --name $cluster_name --query "cluster.identity.oidc.issuer" --output text
 ```
@@ -41,6 +41,10 @@ aws iam create-policy \
 aws iam list-policies --query 'Policies[?PolicyName==`AWSLoadBalancerControllerIAMPolicy`].Arn' --output text
 
 ## Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
+###
+```
+eksctl delete iamserviceaccount --cluster=api-dev --region=us-east-2 --namespace=kube-system --name=aws-load-balancer-controller
+```
 eksctl create iamserviceaccount \
   --cluster=$cluster_name \
   --region=$region \
