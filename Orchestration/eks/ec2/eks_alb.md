@@ -68,7 +68,7 @@ eksctl get iamserviceaccount --region=$region --cluster=$cluster_name --namespac
     # Install the AWS Load Balancer controller, if using iamserviceaccount
     export vpc=$(aws eks describe-cluster --region $region --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
     helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
-    --set clusterName=$cluter_name \
+    --set clusterName=$cluster_name \
     --set serviceAccount.create=false \
     --set serviceAccount.name=aws-load-balancer-controller \
     --set vpcId=$vpc \
