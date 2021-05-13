@@ -117,33 +117,29 @@ PUT _ilm/policy/rv-lifecycle-policy
   "policy": {
     "phases": {
       "hot": {
+        "min_age": "0ms",
         "actions": {
-          "rollover": {
-            "max_age": "30d",
-            "max_size": "50gb"
-          },
           "set_priority": {
             "priority": 100
           }
-        },
-        "min_age": "0ms"
+        }
       },
       "warm": {
         "min_age": "30d",
         "actions": {
-          "set_priority": {
-            "priority": 50
-          },
           "shrink": {
             "number_of_shards": 1
           },
           "forcemerge": {
             "max_num_segments": 1
+          },
+          "set_priority": {
+            "priority": 50
           }
         }
       },
       "cold": {
-        "min_age": "60d",
+        "min_age": "40d",
         "actions": {
           "set_priority": {
             "priority": 0
@@ -151,9 +147,11 @@ PUT _ilm/policy/rv-lifecycle-policy
         }
       },
       "delete": {
-        "min_age": "180d",
+        "min_age": "50d",
         "actions": {
-          "delete": {}
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
         }
       }
     }
