@@ -41,10 +41,9 @@ aws iam create-policy \
 aws iam list-policies --query 'Policies[?PolicyName==`AWSLoadBalancerControllerIAMPolicy`].Arn' --output text
 
 ## Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
-###
-```
+### for delete iamserviceaccount
 eksctl delete iamserviceaccount --cluster=api-dev --region=us-east-2 --namespace=kube-system --name=aws-load-balancer-controller
-```
+
 eksctl create iamserviceaccount \
   --cluster=$cluster_name \
   --region=$region \
