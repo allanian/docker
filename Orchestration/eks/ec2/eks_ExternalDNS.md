@@ -31,15 +31,6 @@ kubectl logs -f $(kubectl get po | egrep -o 'apidns-external-dns[A-Za-z0-9-]+')
 
 
 
-
-
-
-
-
-
-
-
-
 # OLD
 #### Used for Updating Route53 RecordSets from Kubernetes
  - [x] 1. create iam policy, copy ID
