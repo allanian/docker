@@ -66,13 +66,14 @@ helm upgrade --install -f ./dashboard/values_$env.yaml -n kubernetes-dashboard d
 # token TTL
 kubectl edit deployment kubernetes-dashboard -n kubernetes-dashboard
 - '--token-ttl=0'
+
+# change ClusterIP to type: NodePort
+export EDITOR=nano
+kubectl edit svc -n kubernetes-dashboard
 ```
 
 #### verify
 ```
-# change ClusterIP to type: NodePort
-export EDITOR=nano
-kubectl edit svc -n kubernetes-dashboard
 kubectl -n kubernetes-dashboard get pods
 kubectl get deployment metrics-server -n kube-system
 yum install jq -y
