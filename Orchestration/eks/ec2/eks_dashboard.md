@@ -2,11 +2,11 @@
 # k8s dashboard
 ```
 # for delete
-    kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
-    kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
+kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
+kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
 # for install
-    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
 ```
 #### Создаем ServiceAccount для кластера:
 ```
@@ -56,11 +56,12 @@ EOF
 ```
 # INGRESS HELM
 ```
+# change dev to your_env in values.yaml
 cd dashboard
-# dev
-helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
-# qa
-helm upgrade --install -f ./dashboard/values_qa.yaml -n kubernetes-dashboard dashboard dashboard/
+export env=dev
+cp values.yaml values_dev.yaml
+nano values_dev.yaml
+helm upgrade --install -f ./dashboard/values_$env.yaml -n kubernetes-dashboard dashboard dashboard/
 
 # token TTL
 kubectl edit deployment kubernetes-dashboard -n kubernetes-dashboard
