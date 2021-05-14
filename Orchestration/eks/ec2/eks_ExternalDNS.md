@@ -12,11 +12,11 @@ https://console.aws.amazon.com/iam/home?#/security_credentials
 aws.credentials.accessKey	When using the AWS provider, set aws_access_key_id in the AWS credentials (optional)	""
 aws.credentials.secretKey	When using the AWS provider, set aws_secret_access_key in the AWS credentials (optional)	""
 
-# install
-# dev
-helm upgrade --install apidns -f values_dev.yaml bitnami/external-dns --version 4.12.2
-# qa - change txt-owner
-helm upgrade --install apidns -f values_qa.yaml bitnami/external-dns --version 4.12.2
+# install (in values.yml change txt-owner)
+export env=dev
+cp values_qa.yaml values_prod.yaml
+nano values_prod.yaml
+helm upgrade --install apidns -f values_$env.yaml bitnami/external-dns --version 4.12.2
 
 # CHECk
 kubectl --namespace=default get pods -l "app.kubernetes.io/name=external-dns,app.kubernetes.io/instance=apidns"
