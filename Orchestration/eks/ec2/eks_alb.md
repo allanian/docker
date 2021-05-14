@@ -1,10 +1,10 @@
-#  Step-03: Create & Associate IAM OIDC Provider for our EKS Cluster
-### Step-02.1: Create an IAM policy for the service account 
+# STEP 1: Create & Associate IAM OIDC Provider for our EKS Cluster
+### Step 1.1: Create an IAM policy for the service account 
 **Note:** The ALB Ingress Controller requires several API calls to provision the ALB components for the ingress resource type. 
 #### verify
 ```
-export KUBECONFIG=/opt/.kube/configs/dev.yml
-export region=us-east-2 cluster_name=api-dev
+export env=prod
+export region=us-east-2 cluster_name=api-$env KUBECONFIG=/opt/.kube/configs/$env.yml
 aws eks describe-cluster --region $region --name $cluster_name --query "cluster.identity.oidc.issuer" --output text
 ```
 Пример вывода:
@@ -37,12 +37,9 @@ aws iam create-policy \
 ```
 # STEP 05:  Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
 ```
-# how get arn of policy
-aws iam list-policies --query 'Policies[?PolicyName==`AWSLoadBalancerControllerIAMPolicy`].Arn' --output text
-
 ## Create a IAM role and ServiceAccount for the Load Balancer controller, use the ARN from the step above
 ### for delete iamserviceaccount
-eksctl delete iamserviceaccount --cluster=$cluster_name --region=$region --namespace=kube-system --name=aws-load-balancer-controller
+eksctl delete iamserviceaccount --cluster=$cluster_name --region=$region --namespace=kube-system --name=aws-load-balancer-controller-$env
 
 export ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`AWSLoadBalancerControllerIAMPolicy`].Arn' --output text)
 echo $ARN
@@ -50,7 +47,7 @@ eksctl create iamserviceaccount \
   --cluster=$cluster_name \
   --region=$region \
   --namespace=kube-system \
-  --name=aws-load-balancer-controller \
+  --name=aws-load-balancer-controller-$env \
   --attach-policy-arn=$ARN \
   --override-existing-serviceaccounts \
   --approve
@@ -59,28 +56,24 @@ eksctl create iamserviceaccount \
 ```
 eksctl get iamserviceaccount --region=$region --cluster=$cluster_name --namespace kube-system
 ```
-**Note:** The role name begins with **eksctl-your-cluster-name-addon-iamserviceaccount-**.
-
 # Step-06: Install aws-load-balancer-controller
+#Add the EKS repository to Helm:
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+#Install the TargetGroupBinding CRDs:
+kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
 
-    #Add the EKS repository to Helm:
-    helm repo add eks https://aws.github.io/eks-charts
-    # update repo
-    helm repo update
-    #Install the TargetGroupBinding CRDs:
-    kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
-    
-    # Install the AWS Load Balancer controller, if using iamserviceaccount
-    export vpc=$(aws eks describe-cluster --region $region --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
-    helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
-    --set clusterName=$cluster_name \
-    --set serviceAccount.create=false \
-    --set serviceAccount.name=aws-load-balancer-controller \
-    --set vpcId=$vpc \
-    --set region=$region
-    
-    # Additional options
-    https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
+# Install the AWS Load Balancer controller, if using iamserviceaccount
+export vpc=$(aws eks describe-cluster --region $region --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
+helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system \
+--set clusterName=$cluster_name \
+--set serviceAccount.create=false \
+--set serviceAccount.name=aws-load-balancer-controller-$env \
+--set vpcId=$vpc \
+--set region=$region
+
+# Additional options
+https://github.com/aws/eks-charts/tree/master/stable/aws-load-balancer-controller
   
 **uninstall**
 ```
