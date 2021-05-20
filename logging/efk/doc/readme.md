@@ -98,6 +98,8 @@ Menu => Index management => Select index => Click Force merge
 
 ## LIFEPOLICY
 
+
+# WITHOUT DATASTREAM
 ### 1. Policy
 Go to ElasticSearch => Stack Management => Data => Index lifecycle policy => Create policy
 
