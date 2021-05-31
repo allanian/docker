@@ -15,7 +15,7 @@ go to federation and add LDAP
 | UUID LDAP attribute | objectGUID |
 | User Object Classes | person, organizationalPerson, user |
 | Connection URL | ldap://server.company.ru:389 |
-| Users DN | CN=Users,DC=company,DC=ru |
+| Users DN | CN=Users,DC=company,DC=ru | path to user folder |
 | Search Scope | Subtree | search in folder recursive |
 | Bind Type | simple | |
 | Bind DN | CN=keycloak,CN=Users,DC=company,DC=ru | |
