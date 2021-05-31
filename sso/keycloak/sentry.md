@@ -2,9 +2,6 @@
 ```
 Need Platinum License
 ```
-
-```
-
 # SENTRY
 
 # Create a client
@@ -50,4 +47,4 @@ add auth => saml2
 For Attribute Mappings, use user_email for both "IdP User ID" and "User Email" required fields.
 
 http://10.3.3.226:8080/auth/realms/company/protocol/saml/descriptor
-```
+
