@@ -8,10 +8,10 @@ go to federation and add LDAP
 | Option | Value | description |
 | ------ | ------ | ------ |
 | Console Display Name | company.ru |
-| Edit Mode | READ_ONLY |
-| Vendor | Active Directory |
+| Edit Mode | READ_ONLY | only read users from AD |
+| Vendor | Active Directory | vendor |
 | Username LDAP Attribute | sAMAccountName |
-| RDN LDAP Attribute | CN |
+| RDN LDAP Attribute | cn,sAMAccountName,mail | атрибуты по которым будем искать юзеров |
 | UUID LDAP attribute | objectGUID |
 | User Object Classes | person, organizationalPerson, user |
 | Connection URL | ldap://server.company.ru:389 |
