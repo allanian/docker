@@ -133,10 +133,10 @@ systemctl restart docker
 # K8s dashboard
 ```
 kubectl create ns kubernetes-dashboard
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 kubectl -n keycloak-gatekeeper create secret tls tls-cert --key ./1.key --cert ./1.cer
 ```
 nano values.yaml
->>>
 ```
 image:
   repository: kubernetesui/dashboard
@@ -413,7 +413,6 @@ podSecurityPolicy:
   # Specifies whether a pod security policy should be created
   enabled: false
 ```
->>>
 ```
 helm upgrade --install kubernetes-dashboard -n kubernetes-dashboard -f dashb.yml kubernetes-dashboard/kubernetes-dashboard
 ```
