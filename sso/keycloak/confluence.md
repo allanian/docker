@@ -14,7 +14,7 @@ https://keycloak.company.ru/auth/realms/company/protocol/saml
 
 ## Confluence configuration
 go to that page https://confluence.company.ru/plugins/servlet/authentication-config
-Confluence => Configuration => SSO 2.0 => Saml single sign-on
+###### Confluence => Configuration => SSO 2.0 => Saml single sign-on
 ```
 
 Authentication method - Saml single sign-on
