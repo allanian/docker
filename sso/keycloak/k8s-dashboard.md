@@ -14,7 +14,7 @@ kubernetes-reader/kubernetes-admin
 | ------ | ------ | ------ |
 | Name| groups |
 | Mapper type | group-ldap-mapper |
-| LDAP group DN | CN=kubernetes-admin,OU=Служебные учетные записи,OU=RU_Moscow,OU=.RV Users,OU=..RENDEZVOUS,DC=rendez-vous,DC=ru |
+| LDAP group DN | OU=Users,DC=company,DC=ru |
 | Group Name LDAP Attribute | cn |
 | Group Object Classes | group |
 | Preserve Group Inheritance | ON |
@@ -47,10 +47,10 @@ Configure the client
 | Service Accounts Enabled| ON |
 | OAuth 2.0 Device Authorization Grant Enabled | OFF |
 | Authorization Enabled | ON |
-| Root URL | https://k8st.rendez-vous.ru/ | address dashboard k8s |
-| Valid Redirect URIs | https://k8st.rendez-vous.ru/oauth/callback/* |
-| Admin URL | https://k8st.rendez-vous.ru/ |
-| Web Origins | https://k8st.rendez-vous.ru/ |
+| Root URL | https://k8s.company.ru/ | address dashboard k8s |
+| Valid Redirect URIs | https://k8s.company.ru/oauth/callback/* |
+| Admin URL | https://k8s.company.ru/ |
+| Web Origins | https://k8s.company.ru/ |
 Leave the rest as they are.
 
 ### 1.2. Создадим scope для групп:  
@@ -110,7 +110,7 @@ client=>mappers=>create
 nano /etc/kubernetes/manifests/kube-apiserver.yaml
     - --advertise-address=10.3.3.215
     # paste it
-    - --oidc-issuer-url=https://keycloak.rendez-vous.ru/auth/realms/rendez-vous
+    - --oidc-issuer-url=https://keycloak.company.ru/auth/realms/company
     - --oidc-client-id=kubernetes
     - --oidc-username-claim=email
     - --oidc-groups-claim=groups
@@ -119,7 +119,7 @@ nano /etc/kubernetes/manifests/kube-apiserver.yaml
 kubectl edit -n kube-system configmaps kubeadm-config
 ```
       extraArgs:
-        oidc-issuer-url=https://keycloak.rendez-vous.ru/auth/realms/rendez-vous
+        oidc-issuer-url=https://keycloak.company.ru/auth/realms/company
         oidc-client-id=kubernetes
         oidc-username-claim=email
         oidc-groups-claim=groups
@@ -488,21 +488,21 @@ ingress:
     kubernetes.io/ingress.class: nginx
   path: /
   hosts:
-    - k8st.rendez-vous.ru
+    - k8s.company.ru
   tls:
    - secretName: tls-cert
      hosts:
-       - k8st.rendez-vous.ru
+       - k8st.company.ru
 
 # Говорим где мы будем авторизовываться у OIDC провайдера
-discoveryURL: "https://keycloak.rendez-vous.ru/auth/realms/rendez-vous"
+discoveryURL: "https://keycloak.company.ru/auth/realms/company"
 # Имя клиента которого мы создали в Keycloak
 ClientID: "kubernetes"
 # Secret который я просил записать
 ClientSecret: "d0b41895-c42d-4e2c-95da-08d88a2d50fa"
 # Куда перенаправить в случае успешной авторизации. Формат <SCHEMA>://<SERVICE_NAME>.><NAMESAPCE>.<CLUSTER_NAME>
 #upstreamURL: "http://kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local"
-upstreamURL: "https://dash-k8s.rendez-vous.ru"
+upstreamURL: "https://dash-k8s.company.ru"
 #"http://kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local"
 # Пропускаем проверку сертификата, если у нас самоподписанный
 skipOpenidProviderTlsVerify: true
