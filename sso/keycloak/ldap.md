@@ -20,7 +20,9 @@ go to federation and add LDAP
 | Bind Type | simple | |
 | Bind DN | CN=keycloak,CN=Users,DC=company,DC=ru | |
 | Bind Credential | QWE123qwe |
-
+| Sync Settings |
+| Periodic Full Sync | ON |
+| Periodic Changed Users Sync | ON |
 # check here (see realm in URL)
 http://keycloak.company.ru/auth/realms/company/account/#/
 
