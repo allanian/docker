@@ -286,7 +286,7 @@ ingress:
   ## Must be provided if Ingress is enabled
   ##
   hosts:
-    - dash-test.rendez-vous.ru
+    - dash-k8s.company.ru
 
 
   ## Kubernetes Dashboard Ingress TLS configuration
@@ -295,7 +295,7 @@ ingress:
   tls:
     - secretName: tls-cert
       hosts:
-        - dash-test.rendez-vous.ru
+        - dash-k8s.company.ru
 
 settings: {}
   ## Cluster name that appears in the browser window title if it is set
@@ -502,15 +502,16 @@ ClientID: "kubernetes"
 ClientSecret: "d0b41895-c42d-4e2c-95da-08d88a2d50fa"
 # Куда перенаправить в случае успешной авторизации. Формат <SCHEMA>://<SERVICE_NAME>.><NAMESAPCE>.<CLUSTER_NAME>
 #upstreamURL: "http://kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local"
-upstreamURL: "https://dash-test.rendez-vous.ru"
+upstreamURL: "https://dash-k8s.rendez-vous.ru"
 #"http://kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local"
 # Пропускаем проверку сертификата, если у нас самоподписанный
 skipOpenidProviderTlsVerify: true
-# Настройка прав доступа, пускаем на все path если мы в группе kubernetes-dashboard
+# Настройка прав доступа, пускаем на все path если мы в группе kubernetes-dashboard and kubernetes-reader
 rules:
   - "uri=/*|groups=kubernetes-admin,kubernetes-reader"
 
 ```
 ```
+helm repo add gabibbo97 https://gabibbo97.github.io/charts/
 helm upgrade --install -f gate.yml -n kubernetes-dashboard keycloak-gatekeeper gabibbo97/keycloak-gatekeeper
 ```
