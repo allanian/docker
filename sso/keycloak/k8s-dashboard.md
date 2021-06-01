@@ -1,12 +1,15 @@
 # K8s SSO with Keycloak
 ## 1. Keycloak 
-### 1.0. Config LDAP and create groups in AD
-в домене создаем 2 группы
+### 0.0. DEPENDENCIES
+### 0.0.1 Create a realm
+- Create realm company
+### 0.0.2. Configure LDAP from ldap.md
+### 0.0.3. Create groups in AD
 ```
 kubernetes-reader/kubernetes-admin
 ```
+### 0.0.4 Mapper ldap groups
 **User federation --> ldap --> Mappers --> Create**
-
 | Option | Value | Description |
 | ------ | ------ | ------ |
 | Name| groups |
@@ -23,11 +26,6 @@ kubernetes-reader/kubernetes-admin
 | User Groups Retrieve Strategy | GET_GROUPS_FROM_USER_MEMBEROF_ATTRIBUTE |
 
 ### 1.1. Create a client
-!!! Dont forget
--   You are in the realm  `hello`
--   You have the user  `foo`
--   You belong to the group  `admin`
-
 Click Keycloak=>Clients=>Create
 | Option | Value |
 | ------ | ------ |
@@ -110,6 +108,7 @@ client=>mappers=>create
 ```
 nano /etc/kubernetes/manifests/kube-apiserver.yaml
     - --advertise-address=10.3.3.215
+    # paste it
     - --oidc-issuer-url=https://keycloak.rendez-vous.ru/auth/realms/rendez-vous
     - --oidc-client-id=kubernetes
     - --oidc-username-claim=email
