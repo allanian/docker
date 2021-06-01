@@ -1,13 +1,11 @@
 # K8s SSO with Keycloak
 ## 1. Keycloak 
 ### 1.0. LDAP
-Далее надо замапить наши группы  .
 в домене создаем 2 группы
-kubernetes-reader
-CN=kubernetes-reader,OU=Служебные учетные записи,OU=RU_Moscow,OU=.RV Users,OU=..RENDEZVOUS,DC=rendez-vous,DC=ru
-kubernetes-admin
-CN=kubernetes-admin,OU=Служебные учетные записи,OU=RU_Moscow,OU=.RV Users,OU=..RENDEZVOUS,DC=rendez-vous,DC=ru
-**User federation --> ldap_localhost --> Mappers --> Create**
+```
+kubernetes-reader/kubernetes-admin
+```
+**User federation --> ldap --> Mappers --> Create**
 
 | Option | Value | Description |
 | ------ | ------ | ------ |
