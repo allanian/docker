@@ -1,6 +1,6 @@
 # K8s SSO with Keycloak
 ## 1. Keycloak 
-### 1.0. LDAP
+### 1.0. Config LDAP and create groups in AD
 в домене создаем 2 группы
 ```
 kubernetes-reader/kubernetes-admin
