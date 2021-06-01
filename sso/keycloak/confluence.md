@@ -34,6 +34,7 @@ Login mode:
 Use SAML as secondary authentication
 
 ## Keycloak client
+### create client
 | Option | Value |
 | ------ | ------ |
 | Client ID | https://confluence.company.ru (value from Audience URL (Entity ID) confluence) |
