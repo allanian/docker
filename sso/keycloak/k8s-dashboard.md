@@ -81,11 +81,12 @@ Leave the rest as they are.
 **Clients**  -->  **kubernetes**
 | Option | Value | Description|
 | ------ | ------ | ------ |
-| **Authorization Enabled**| ON|  |
+| **Authorization Enabled**| ON |
+```
 Нажимем  **save**  и на этом настройка клиента завершена, теперь на вкладке
 **Clients**  -->  **kubernetes**  -->  **Credentials**
 вы сможете получить  **Secret**  который мы будем использовать в дальнейшем.
-
+```
 ### 1.5. Configure the client mappers - MAYBE DONT NEED
 client=>mappers=>create
 #### group
