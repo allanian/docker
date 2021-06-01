@@ -23,7 +23,7 @@ Identity provider single sign-on URL. - https://keycloak.company.ru/auth/realms/
 X.509 Certificate - paste cert
 Username mapping - ${NameID}
 ```
-copy info from urls for sentry
+copy info from urls for keycloak
 ```
 Give these URLs to your identity provider
 https://confluence.company.ru/plugins/servlet/samlconsumer
