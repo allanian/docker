@@ -42,6 +42,11 @@ overload:
   job_name: test
   job_dsc: test description
 ```
+# Token for Web reports
+```
+nano token.txt
+paste token from https://overload.yandex.net/ in profile
+```
 # Run
 ```
 docker run  \
