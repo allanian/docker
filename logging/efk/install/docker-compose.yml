@@ -21,27 +21,56 @@ services:
     ports:
       - 9200:9200
     volumes:
-      - "/data/efk_storage/es1/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml" 
       - efk_data1:/usr/share/elasticsearch/data
       - /etc/localtime:/etc/localtime:ro
-      - /data/efk_storage/certs:/usr/share/elasticsearch/config/certificates
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./certs:/usr/share/elasticsearch/config/certificates
     expose:
       - 9200
     networks:
       - efk_stack
 
+  logstash:
+    image: logstash:7.12.1
+    container_name: logstash
+    restart: always
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5044:5044
+      - 9600:9600
+    volumes:
+      - ./config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./certs:/etc/logstash/config/certs
+    networks:
+      - efk_stack
+      
+  fluentbit:
+    image: fluent/fluent-bit:latest
+    container_name: fluentbit
+    volumes:
+      - ./config/fluentbit:/fluent-bit/etc
+    depends_on:
+      - elasticsearch
+    ports:
+      - 24224:24224
+      - 5140:5140/udp
+      - 2020:2020
+    networks:
+      - efk_stack
+
   fluentd:
-    image: dockerregistry.company-vous.ru/devops/log-tools/efk/fluent:latest
+    image: dockerregistry.company.ru/devops/log-tools/efk/fluent:latest
     container_name: fluentd
     restart: always
     ports:
-      - 24224:24224
+      - 24225:24224
       - 24224:24224/udp
     user: root
     volumes:
-      - /data/efk_storage/fluent/fluent.conf:/fluentd/etc/fluent.conf
+      - ./config/fluent/fluent.conf:/fluentd/etc/fluent.conf
       - /etc/localtime:/etc/localtime:ro
-      - /data/efk_storage/certs:/certs
+      - ./certs:/certs
     networks:
       - efk_stack
         
@@ -54,9 +83,9 @@ services:
     depends_on:
       - elasticsearch
     volumes:
-      - "/data/efk_storage/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
+      - "./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - /etc/localtime:/etc/localtime:ro
-      - /data/efk_storage/certs:/usr/share/elasticsearch/config/certificates
+      - ./certs:/usr/share/elasticsearch/config/certificates
     expose:
       - 5601
     networks:
@@ -66,6 +95,8 @@ services:
     image: nginx:latest
     container_name: nginx
     restart: always
+    depends_on:
+      - kibana
     volumes:
       - /data/efk_storage/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - /data/efk_storage/nginx/htpasswd.efk:/etc/nginx/htpasswd.efk
