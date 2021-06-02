@@ -1,11 +1,3 @@
-docker run  \
---entrypoint /bin/bash    \
--v $(pwd):/var/loadtest   \
--v $HOME/.ssh:/root/.ssh  \
--it direvius/yandex-tank
-
-yandex-tank -c load.yaml
-
 PHANTOM:
 phantom:
   address: 192.168.1.164:8080
@@ -186,3 +178,14 @@ docker run  \
 -v $(pwd):/var/loadtest   \
   -v $HOME/.ssh:/root/.ssh  \
   -it direvius/yandex-tank
+
+
+
+docker run  \
+--entrypoint /bin/bash    \
+-v $(pwd):/var/loadtest   \
+-v $HOME/.ssh:/root/.ssh  \
+-it direvius/yandex-tank
+
+yandex-tank -c load.yaml
+
