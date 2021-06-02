@@ -1,32 +1,40 @@
+# PERFOMANCE TOOL
 phantom:
-    address: login.company.com
-    ssl: true
-    uris: # don't use it with ammofile
+  address: test.company.ru:443 # [Target's address]:[target's port]
+  ssl: true
+  uris: # !!! don't use it with ammofile
     - "/"
-    - /oxauth/login.htm
-    load_profile:
-      load_type: rps
-      schedule: line(1000, 100000, 30s)
-  #  ammofile: ammo.txt
-  #  ammo_type: uripost
-  
-  # stop if timeout more then 5%
+    - "/catalog/"
+  load_profile:
+    load_type: rps # schedule load by defining requests per second
+    schedule: line(10, 100, 10s) # starting from 1rps growing linearly to 10rps during 10 minutes
+    #schedule: line(1000, 10000, 10s)
+  writelog: all
+  header_http: "1.1"
+  headers:
+    - "[Host: www.target.example.com]"
+    - "[Connection: close]"
+  instances: 20000 # Thread limits
+
+# stop if timeout more then 5%
+autostop:
   autostop:
-    autostop:
-      - time(50, 30s)
-      - net(110, 5%, 10s)
-  
-  # connect with ssh key to server and get system info
-  telegraf:
-    enabled: true
-    config: monitoring.xml
-    kill_old: false
-    package: yandextank.plugins.Telegraf
-    ssh_timeout: 30s
-  
-  # send screen to site
-  overload:
-    enabled: true
-    token_file: token.txt
-    job_name: test
-    job_dsc: test description
+    - time(5s,10s) # (1s,10s) stop, if avg time of response in 10 sec, more then 1s
+    #- http(5xx,100%,1s)
+    - net(110, 5%, 10s) # stop if timeout more then 5%
+console:
+  enabled: true # enable console output
+
+# MONITOR SYSTEM STATS (dont forget to copy ssh-key from server with yandex tank to the server with service)
+telegraf:
+  enabled: false
+  config: monitoring.xml
+  kill_old: false
+  package: yandextank.plugins.Telegraf
+  ssh_timeout: 30s
+
+# WEB REPORTS
+overload:
+  token_file: token.txt
+  job_name: test
+  job_dsc: test description
