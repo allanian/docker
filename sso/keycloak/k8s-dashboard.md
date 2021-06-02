@@ -132,6 +132,10 @@ systemctl restart docker
 
 # K8s dashboard
 ```
+# for delete
+kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
+kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
+# for install
 kubectl create ns kubernetes-dashboard
 helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 kubectl -n keycloak-gatekeeper create secret tls tls-cert --key ./1.key --cert ./1.cer
@@ -292,10 +296,10 @@ ingress:
   ## Kubernetes Dashboard Ingress TLS configuration
   ## Secrets must be manually created in the namespace
   ##
-  tls:
-    - secretName: tls-cert
-      hosts:
-        - dash-k8s.company.ru
+#  tls:
+#    - secretName: tls-cert
+#      hosts:
+#        - dash-test.company.ru
 
 settings: {}
   ## Cluster name that appears in the browser window title if it is set
@@ -323,7 +327,7 @@ pinnedCRDs: []
 ## Container to scrape, store, and retrieve a window of time from the Metrics Server.
 ## refs: https://github.com/kubernetes-sigs/dashboard-metrics-scraper
 metricsScraper:
-  enabled: false
+  enabled: true
   image:
     repository: kubernetesui/metrics-scraper
     tag: v1.0.6
@@ -345,7 +349,7 @@ metricsScraper:
 ##  - https://hub.helm.sh/charts/stable/metrics-server
 ##  - https://github.com/kubernetes-sigs/metrics-server
 metrics-server:
-  enabled: false
+  enabled: true
   ## Example for additional args
   # args:
   #  - --kubelet-preferred-address-types=InternalIP
@@ -412,6 +416,7 @@ networkPolicy:
 podSecurityPolicy:
   # Specifies whether a pod security policy should be created
   enabled: false
+
 ```
 ```
 helm upgrade --install kubernetes-dashboard -n kubernetes-dashboard -f dashb.yml kubernetes-dashboard/kubernetes-dashboard
