@@ -43,3 +43,16 @@ helm upgrade dsatest dsatest/ --set user=AnotherOneUser
 # package
 helm  package dsatest/
 ```
+
+
+# PASTE multiple ENVs
+```
+# deployment
+          env:
+            {{- range $key, $value :=  .Values.deployment.backend.container.php.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+```
+
+
