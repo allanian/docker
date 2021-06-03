@@ -350,10 +350,10 @@ metricsScraper:
 ##  - https://github.com/kubernetes-sigs/metrics-server
 metrics-server:
   enabled: true
-  ## Example for additional args
-  # args:
-  #  - --kubelet-preferred-address-types=InternalIP
-  #  - --kubelet-insecure-tls
+  args:
+  - --kubelet-preferred-address-types=InternalIP
+  - --kubelet-insecure-tls
+
 
 rbac:
   # Specifies whether namespaced RBAC resources (Role, Rolebinding) should be created
