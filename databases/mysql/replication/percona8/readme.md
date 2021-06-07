@@ -1,8 +1,6 @@
 # REPLICATION
+## MASTER
 ```
-##########################
-# ON MASTER
-##########################
 # install mysql, if need
 # смотрим авто-пароль
 grep -i password /var/log/mysqld.log
@@ -18,7 +16,6 @@ GRANT replication slave ON *.* TO 'repl_user'@'%';
 FLUSH PRIVILEGES;
 # check server-id
 SELECT @@server_id;
-```
 # полный бэкап
 xtrabackup --backup --user=root --password=password --target-dir=/data/bkp/
 # подготовка для развертывания
@@ -28,9 +25,7 @@ xtrabackup --defaults-file="/etc/my.cnf.d/mysqld.conf" --move-back --target-dir=
 rsync -avpPO -e ssh /data/bkp/ test@sql02:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@sql03:/data/bkp/
 
-##########################
-# ON SLAVE's
-##########################
+## SLAVE
 # install percona xtrabackup 8
 systemctl stop mysql
 # clear old data_dir
