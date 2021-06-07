@@ -9,13 +9,14 @@ show global variables like 'slow%log%';
 # Install Percona Tuner
 sudo yum install percona-toolkit –y
 # Report the slowest queries from mysql-slow.log:
+```
 pt-query-digest /var/log/mysql-slow.log --log_slow_verbosity=full > slowlog.txt
 Calls - количество раз вызова этого скрипта
 Все запросы отсортированы по общему времени выполнения time. Оптимизировать запросы нужно в таком же порядке — это даст наибольший эффект. 
 Кроме этого обратите внимание на колонку R/Call — там указано среднее время выполнения одного запроса. 
 В примере у второго запроса это время больше 9 секунд, следует выяснить причины.
 После этого в отчете можно увидеть детальный профиль каждого запроса:
-
+```
 # Profile
 ```
 # Rank Query ID                      Response time    Calls R/Call  V/M   
