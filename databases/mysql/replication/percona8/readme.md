@@ -3,6 +3,23 @@
 ##########################
 # ON MASTER
 ##########################
+# install mysql, if need
+```
+# смотрим авто-пароль
+grep -i password /var/log/mysqld.log
+mysql -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
+Exit;
+mysql -u root -p'password'
+SHOW MASTER STATUS\G
+On master, create user
+# create user - replica
+CREATE USER 'repl_user'@'%' IDENTIFIED BY 'password';
+GRANT replication slave ON *.* TO 'repl_user'@'%';
+FLUSH PRIVILEGES;
+# check server-id
+SELECT @@server_id;
+```
 # полный бэкап
 xtrabackup --backup --user=root --password=password --target-dir=/data/bkp/
 # подготовка для развертывания
