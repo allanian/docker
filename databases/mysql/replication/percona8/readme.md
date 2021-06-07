@@ -24,7 +24,7 @@ xtrabackup --defaults-file="/etc/my.cnf.d/mysqld.conf" --move-back --target-dir=
 # copy on slave server
 rsync -avpPO -e ssh /data/bkp/ test@sql02:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@sql03:/data/bkp/
-
+```
 ## SLAVE
 # install percona xtrabackup 8
 systemctl stop mysql
