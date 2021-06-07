@@ -1,4 +1,14 @@
 # ERRORs
+## RESET MASTER and all replication
+```
+On master exec this:
+STOP SLAVE;
+RESET SLAVE ALL;
+STOP MASTER;
+RESET MASTER;
+
+```
+
 ## SLAVE ON MASTER FIX
 ```
 Go to mysql on master
