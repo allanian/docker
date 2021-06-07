@@ -1,8 +1,7 @@
-
-
-
-### mount in /etc/fstab with UID
+# 1. Mount disk in /etc/fstab with UID
 ```
+/dev/mapper/eui.01000000010000005cd2e4bc8d045351p1          /data                   xfs     defaults        0 0
+
 Запись точки подключения в /etc/fstab
 синтаксис одной строчки fstab:
 устройство  точка_монтирования файловая_система опции резерв{0,1} проверка{0,1,2}
@@ -54,7 +53,7 @@ UUID="e0bf8406-5e74-45c0-90b3-9d1f5ccf3eb3" /data xfs rw,attr2,noatime 0 0
 # verify with that
 findmnt --verify --verbose
 ```
-### CPU TUNE
+# 2. CPU TUNE
 ```
 yum install tuned
 systemctl start tuned && systemctl enable tuned
@@ -100,15 +99,6 @@ vm.dirty_ratio = 10
 Значения записываются sysctl.conf
 
 ```
-### CONFIG TUNE
-```
-wget https://github.com/Releem/mysqlconfigurer/archive/refs/tags/0.5.0.tar.gz
-tar -xvf 0.5.0.tar.gz
-cd mysqlconfigurer-0.5.0/
-```
+# 3.  CONFIG TUNE
 
 
-
-
-
-```
