@@ -99,6 +99,3 @@ vm.dirty_ratio = 10
 Значения записываются sysctl.conf
 
 ```
-# 3.  CONFIG TUNE
-
-
