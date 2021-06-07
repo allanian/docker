@@ -1,10 +1,9 @@
-# FULL BACKUP
+# REPLICATION
 ```
 ##########################
 # ON MASTER
 ##########################
 # install mysql, if need
-```
 # смотрим авто-пароль
 grep -i password /var/log/mysqld.log
 mysql -u root -p
