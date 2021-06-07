@@ -26,6 +26,7 @@ rsync -avpPO -e ssh /data/bkp/ test@sql02:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@sql03:/data/bkp/
 ```
 ## SLAVE
+```
 # install percona xtrabackup 8
 systemctl stop mysql
 # clear old data_dir
