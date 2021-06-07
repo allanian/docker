@@ -1,17 +1,25 @@
+# ERRORs
+## SLAVE ON MASTER FIX
+```
+Go to mysql on master
+#For MySQL 5.5 and 5.6, run STOP SLAVE and then RESET SLAVE ALL.
+STOP SLAVE;
+RESET SLAVE ALL;
+
 ```
 
-ЕСЛИ вылетит эта ошибка
-ERROR 1872 (HY000): Slave failed to initialize relay log info structure from the repository
+## 1.1. ERROR 1872 (HY000): Slave failed to initialize relay log info structure from the repository
+```
 STOP SLAVE;
 RESET SLAVE;
 CHANGE MASTER TO MASTER_HOST = 'rv-site-sql01', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'Ax1!SD@dd3s', MASTER_LOG_FILE = 'mysql-bin.013851', MASTER_LOG_POS = 765893607;
 START SLAVE;
 SHOW SLAVE STATUS \G
+```
 
-
-# решение
-Could not execute Update_rows event on table rendez_vous.user_bin; Can't find record in 'user_bin', Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event's master log mysql-bin.013851, end_log_pos 2774
+## 1.2. Could not execute Update_rows event on table company.user_bin; Can't find record in 'user_bin', Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event's master log mysql-bin.013851, end_log_pos 2774
 mysql-bin.013851
+```
 идем на мастер в папку с бин.логами и ищем лог с именем mysql-bin.013851 - он поврежден
 решение это сменить позицию на +1 на слейве 2774+1=2775
 CHANGE MASTER TO MASTER_HOST = 'rv-site-sql01', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'Ax1!SD@dd3s', MASTER_LOG_FILE = 'mysql-bin.013851', MASTER_LOG_POS = 2775;
