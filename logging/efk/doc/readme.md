@@ -203,13 +203,14 @@ PUT nginx-000001
 
 ### 5. Delete indexes
 # delete data in index
+```
 POST nginx-000001/_delete_by_query
 {
   "query": {
     "match_all": {}
   }
 }
-
+```
 # delete index
 DELETE /nginx
 DELETE /nginx-000001
