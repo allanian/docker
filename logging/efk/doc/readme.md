@@ -212,10 +212,11 @@ POST nginx-000001/_delete_by_query
 }
 ```
 # delete index
+```
 DELETE /nginx
 DELETE /nginx-000001
 DELETE /nginx-000001/_alias/nginx
-
+```
 
 # OTHER
 ### 4. Применение шаблона ко всем существующим индексам
