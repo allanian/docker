@@ -188,6 +188,7 @@ PUT _index_template/nginx
 ```
 
 ### 3. create new index nginx-000001 with alias nginx for index pattern alias - nginx
+```
 PUT nginx-000001
 {
   "aliases": {
@@ -196,7 +197,7 @@ PUT nginx-000001
     }
   }
 }
-
+```
 ### 4. create index pattern NGINX on alias nginx
 
 
