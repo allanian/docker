@@ -1,0 +1,17 @@
+FROM alpine:3.14.0
+LABEL maintainer="Narilien"
+RUN apk --update --no-cache add \
+    python3 py3-pip py3-cryptography openssl curl ca-certificates sshpass openssh-client rsync git sudo &&\
+    apk --update --no-cache add --virtual build-dependencies \
+    python3-dev libffi-dev openssl-dev build-base &&\
+    pip3 install --upgrade pip cffi &&\
+    pip3 install --upgrade ansible ansible-lint pywinrm && \
+    apk del build-dependencies && \
+    rm -rf /var/cache/apk/*
+
+RUN mkdir /ansible && \
+    mkdir -p /etc/ansible && \
+    echo 'localhost' > /etc/ansible/hosts
+
+WORKDIR /ansible
+CMD [ "ansible-playbook", "--version" ]
