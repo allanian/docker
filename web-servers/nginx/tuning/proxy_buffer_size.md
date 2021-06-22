@@ -12,3 +12,18 @@ default - 4096
 So aligning 9000 to 4k chunks, we get 12k:
 proxy_buffer_size 12k;
 ```
+
+```
+#Disable Transparent HugePages in CentOS 8
+cat /sys/kernel/mm/transparent_hugepage/enabled
+[always] madvise never
+ 
+sudo echo never > /sys/kernel/mm/transparent_hugepage/enabled
+sudo echo never > /sys/kernel/mm/transparent_hugepage/defrag
+Add this command to /etc/rc.local to persis the configuration across reboots!
+ 
+# reboot
+# check thp
+cat /sys/kernel/mm/transparent_hugepage/enabled
+always madvise [never]
+```
