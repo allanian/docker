@@ -26,10 +26,27 @@ networks:
 login to web app
 http://10.3.3.211:5000/
 
-# LDAP
+# LDAP Configuration Settings
 ```
-LDAP - ip
-port - 389
+Go to User Management / Ldap Configuration
+Add Teams:
+Users: read
+Admins: write
+
+Map LDAP GROUP
+TEAM - admins
+LDAP Group - Domain Admin
+
+
+
+Go to User Management / Ldap Settings / LDAP Configuration Settings
+LDAP/LDAPS URI - ldap://rv-dc01.company.ru:389
+Login DN - CN=clustercontrol,CN=Users,DC=rendez-vous,DC=ru
+Login DN Password - QWE123qwe
+User Base DN - dc=company,dc=ru   OU=ФОД_Отдел информационных технологий,OU=Департамент финансово-операционный,OU=..RENDEZVOUS,DC=rendez-vous,DC=ru
+Group Base DN - dc=company,dc=ru
+
+
 base dn - dc=company,dc=ru
 login dn=cn=user,dc=company,dc=ru
 password
@@ -38,4 +55,16 @@ password
 Team - Company
 LDAP GROUP NAME - CN=Domain Admin,CN=Users - path without DC!
 Role - super admin
+
+
+
+
+######## IMPORT CLUSTER
+### Create user in mysql DB
+CREATE USER 'clustercontrol'@'%' IDENTIFIED WITH mysql_native_password BY 'QWE123qwe';
+GRANT ALL ON *.* TO 'clustercontrol'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+
+
 ```
