@@ -54,8 +54,8 @@ START SLAVE;
 SHOW SLAVE STATUS \G
 
 Ошибок быть не должно и статус должен быть YES.
-SQL YES
-SQL YES
+Slave_IO_Running: Yes
+Slave_SQL_Running: Yes
 
 
 # on master don’t forget to create user
