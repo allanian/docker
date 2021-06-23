@@ -20,7 +20,7 @@ SELECT @@server_id;
 xtrabackup --backup --user=root --password=password --target-dir=/data/bkp/
 # подготовка для развертывания
 xtrabackup --user=root --password=password --prepare --target-dir=/data/bkp/
-xtrabackup --defaults-file="/etc/my.cnf.d/mysqld.conf" --move-back --target-dir=/data/bkp			 
+xtrabackup --defaults-file="/etc/my.cnf" --move-back --target-dir=/data/bkp			 
 # copy on slave server
 rsync -avpPO -e ssh /data/bkp/ test@sql02:/data/bkp/
 rsync -avpPO -e ssh /data/bkp/ test@sql03:/data/bkp/
