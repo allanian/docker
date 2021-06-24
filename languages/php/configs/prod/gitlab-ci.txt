@@ -1,0 +1,10 @@
+back:
+  extends: .deploy-back-prod
+  variables:
+    IMAGE: php-back
+    PHP_PM_MODE: static
+    PHP_MAX_CHILDREN: 8000
+    PHP_START_SERVERS: 2000
+    PHP_MIN_SPARE_SERVERS: 2000
+    PHP_MAX_SPARE_SERVERS: 4000
+  when: manual

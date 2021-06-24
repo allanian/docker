@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  php-prod:
+    container_name: php-prod
+    image: $IMAGE
+    environment:
+      TZ: Europe/Moscow
+      MEMCACHED1: $MEMCACHED1
+      MEMCACHED2: $MEMCACHED2
+      PHP_PM_MODE: $PHP_PM_MODE
+      PHP_MAX_CHILDREN: $PHP_MAX_CHILDREN
+      PHP_START_SERVERS: $PHP_START_SERVERS
+      PHP_MIN_SPARE_SERVERS: $PHP_MIN_SPARE_SERVERS
+      PHP_MAX_SPARE_SERVERS: $PHP_MAX_SPARE_SERVERS
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - /var/run/php-fpm:/var/run/php-fpm
+      - /etc/passwd:/etc/passwd:ro
+    cap_add:
+     - SYS_PTRACE
+     - SYS_NICE
+    logging:
+      options:
+        tag: rv-site_backend.$HOSTNAME
