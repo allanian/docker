@@ -1,9 +1,0 @@
----
-- name: config sftp
-  include: config.yml
-
-- name: users and group
-  include: users.yml
-
-- name: logging
-  include: logging.yml

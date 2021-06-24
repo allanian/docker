@@ -1,5 +1,0 @@
----
-- name: Static IP and DNS
-  include_tasks: netplan.yml
-  when: netplan_enabled == true and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-

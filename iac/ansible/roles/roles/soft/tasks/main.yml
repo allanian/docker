@@ -1,4 +1,0 @@
----
-- name: install
-  include: install.yml
-#  when: ansible_selinux.status == 'enabled'

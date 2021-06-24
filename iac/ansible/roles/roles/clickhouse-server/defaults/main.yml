@@ -1,5 +1,0 @@
-clickhouse_packages:
-  - "clickhouse-client-19.3.6-1.el7.x86_64.rpm"
-  - "clickhouse-common-static-19.3.6-1.el7.x86_64.rpm"
-  - "clickhouse-server-19.3.6-1.el7.x86_64.rpm"
-  - "clickhouse-server-common-19.3.6-1.el7.x86_64.rpm"

@@ -1,6 +1,0 @@
----
-- name: Add conf supervisor-worker-predprod
-  copy: 
-    src: "supervisor-worker-predprod.ini"
-    dest: "/etc/supervisord.d/"
-  register: supervisor_worker_pred_prod

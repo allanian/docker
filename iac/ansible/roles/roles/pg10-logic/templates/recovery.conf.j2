@@ -1,4 +1,0 @@
-standby_mode = 'on'
-primary_conninfo = 'host={{ master_ip }} port=5432 user={{ replic_user_name }} password={{ replic_user_pass }}'
-trigger_file = '{{ PGDATA10 }}/promote_to_master'
-restore_command = 'cp {{ archive_dir }}/%f "%p"'

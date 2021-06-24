@@ -1,6 +1,0 @@
----
-- name: Add repo
-  include: add-repo.yml
-
-- name: Install
-  include: install.yml

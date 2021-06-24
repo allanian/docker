@@ -1,6 +1,0 @@
----
-- name: restart smb
-  service: 
-    name: "smb"
-    state: "restarted"
-

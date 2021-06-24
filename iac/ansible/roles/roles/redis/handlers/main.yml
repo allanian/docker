@@ -1,6 +1,0 @@
----
-- name: restart redis
-  service:
-    name={{ redis_daemon }}
-    state=restarted
-    enabled=yes

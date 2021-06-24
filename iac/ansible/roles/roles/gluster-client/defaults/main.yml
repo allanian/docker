@@ -1,4 +1,0 @@
----
-dir_for_gluster_client: "/usr/share/tko_files_client"
-name_gluster_vlm: "gluster_vlm"
-glusterfs_src_client: "{{ groups['gluster-server'][0] + ':/' + name_gluster_vlm}}" #172.17.47.157:/gluster_vlm

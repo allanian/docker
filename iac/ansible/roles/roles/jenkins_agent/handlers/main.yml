@@ -1,7 +1,0 @@
----
-- name: restart postgresql
-  systemd:
-    state: "restarted"
-    name: "jenkins_slave"
-    daemon_reload: yes
-    enabled: yes

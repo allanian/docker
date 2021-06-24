@@ -1,6 +1,0 @@
-gradle_version: "4.10"
-gradle_package_name: "gradle-{{ gradle_version }}"
-gradle_zipfile: "{{ gradle_package_name }}-all.zip"
-gradle_install_dir: "/usr/share"
-gradle_home_dir:  "{{ gradle_install_dir }}/gradle"
-gradle_url: "https://services.gradle.org/distributions/{{gradle_zipfile}}"
