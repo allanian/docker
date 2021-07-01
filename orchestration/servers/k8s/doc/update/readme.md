@@ -1,4 +1,5 @@
 # update all 
+```
 sudo yum install kubeadm --disableexcludes=kubernetes
 kubeadm version
 
@@ -92,7 +93,7 @@ kubectl -n kube-system get cm kubeadm-config -o yaml
 export EDITOR=nano
 kubectl -n kube-system edit cm kubeadm-config -o yaml
 
-
+```
 
 
 
