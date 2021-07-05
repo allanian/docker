@@ -118,11 +118,18 @@ nano /etc/kubernetes/manifests/kube-apiserver.yaml
 Обновляем kubeadm конфиг в кластере:
 kubectl edit -n kube-system configmaps kubeadm-config
 ```
+apiVersion: v1
+data:
+  ClusterConfiguration: |
+    apiServer:
       extraArgs:
-        oidc-issuer-url=https://keycloak.company.ru/auth/realms/company
-        oidc-client-id=kubernetes
-        oidc-username-claim=email
-        oidc-groups-claim=groups
+        oidc-issuer-url: https://keycloak.company.ru/auth/realms/company
+        oidc-client-id: kubernetes
+        oidc-username-claim: email
+        oidc-groups-claim: groups
+        authorization-mode: Node,RBAC
+      timeoutForControlPlane: 4m0s
+
 ```
 systemctl restart docker
 ```
