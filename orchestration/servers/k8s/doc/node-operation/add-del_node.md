@@ -26,7 +26,11 @@ kubeadm join 10.3.3.58:6443 --token qwewqewqeqeqe --discovery-token-ca-cert-hash
 # on master node you can check it with:
 kubectl get nodes
 
+# label - node as worker
+kubectl label nodes node55 clickhouse=true
+kubectl label node node55 node-role.kubernetes.io/worker= --overwrite
 ```
+
 # DELETE NODE
 ```
 # Mark node "foo" as unschedulable.
