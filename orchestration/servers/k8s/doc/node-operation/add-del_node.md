@@ -1,4 +1,13 @@
+# ADD NEW NODE
 ```
+export version="1.20.7"
+curl -LO https://storage.googleapis.com/kubernetes-release/release/${version}/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+ln -s /usr/local/bin/kubectl /usr/bin
+kubectl version --client
+
+
 
 # DELETE NODE
 # Mark node "foo" as unschedulable.
