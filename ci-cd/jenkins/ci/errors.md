@@ -1,0 +1,9 @@
+# ERROR selenium & chromedriver
+```
+Starting ChromeDriver 75.0.3770.8 (681f24ea911fe754973dda2fdc6d2a2e159dd300-refs/branch-heads/3770@{#40}) on port 8099
+Only local connections are allowed.
+Решение
+Build Environment
+Start Xvfb before the build, and shut it down after.
+xvfb
+```
