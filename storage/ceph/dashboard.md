@@ -11,3 +11,16 @@ ceph dashboard set-ssl-certificate-key -i rendez-vous.key
 ceph mgr module disable dashboard
 ceph mgr module enable dashboard
 ```
+
+# Grafana Ceph ssl
+```
+
+CEPH  Grafana SSL
+go to grafana server
+cd /etc/grafana/
+cat grafana.ini
+check cert path
+update it
+restart grafana-service
+
+```
