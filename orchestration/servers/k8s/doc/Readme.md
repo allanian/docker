@@ -2,7 +2,14 @@
 ```
 kubectl port-forward wordpress-tlr8l 8080:80 --address 0.0.0.0
 ```
-
+# TAINT
+```
+we have node with name - powerbi-clickhouse.rendez-vous.ru
+# TAINT ON HER
+kubectl taint node powerbi-clickhouse.rendez-vous.ru node-role/clickhouse="":NoExecute
+# list taint
+kubectl describe node | egrep -i taint
+```
 ## label
 ```
 # show labels
