@@ -1,3 +1,19 @@
+## label
+```
+# show labels
+kubectl get nodes --show-labels
+
+# add label from node
+kubectl label node <node name> node-role.kubernetes.io/<role name>=<key - (any name)>
+kubectl label nodes <node name> clickhouse=true
+kubectl label node <node name> node-role.kubernetes.io/worker= --overwrite
+
+# delete label from node
+kubectl label node <node name> node-role.kubernetes.io/<role name>-
+kubectl label node <nodename> <labelname>-
+```
+## affinity
+```
 affinity - описывает различные способы запускает
 node-affinity:
 - запускает на нодах где есть метка - МЕТКА-ИМЯ
@@ -11,3 +27,4 @@ initcontainers:
 
 можно использовать ДНС имя для обращения к кластеру БД
 clusterIP: none
+```
