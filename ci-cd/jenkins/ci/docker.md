@@ -20,3 +20,26 @@ Docker build
 		}
 
 ```
+##
+```
+DOCKER AGENT
+pipeline {
+	agent {
+		label 'docker' 
+//		label 'Jenkins-slave-CI-PRO'
+	}
+	stages {
+        stage('build project in docker') {
+            agent {
+				docker {
+				    label 'Jenkins-slave-CI-PRO'
+			//      label 'ZHS-NLB5P_slave'
+					image 'registry.docker.company.org:5001/zhs/zhs-backend/composer_php72_npm:latest'
+					registryCredentialsId 'token'
+					registryUrl 'https://registry.docker.company.org:5001/'
+					args '-u root:root'
+			//		args '-v /tmp/zhs:/data/jenkins/slave/workspace/'
+				}
+			}
+
+```
