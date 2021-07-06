@@ -1,4 +1,59 @@
 # Ceph
+```
+# CEPH HEALTH STATUS ERROR IN GRAFANA
+[root@ceph01 ~]# ceph health detail
+HEALTH_ERR 1 full osd(s); 10 pool(s) full
+OSD_FULL 1 full osd(s)
+    osd.2 is full
+
+
+
+ceph osd df
+Общую заполненность кластера / пула можно проверить с помощью
+
+ceph df
+Обратите особое внимание на самые полные OSD, а не на процент использования необработанного пространства, как сообщает . Достаточно заполнить только одно выпадающее OSD, чтобы запись в его пул закончилась неудачей.\
+
+Ceph требуется свободное дисковое пространство для перемещения блоков хранения, называемых pg s, между разными дисками. Поскольку это свободное пространство настолько критично для базовой функциональности, Ceph войдет в него, HEALTH_WARNкогда любое OSD достигнет near_fullсоотношения (обычно 85% заполнено), и остановит операции записи в кластере, войдя в HEALTH_ERRсостояние, как только OSD достигнет full_ratio.
+
+Однако, если ваш кластер не идеально сбалансирован для всех OSD, вероятно, будет гораздо больше доступной емкости, поскольку OSD обычно используются неравномерно. Чтобы проверить общее использование и доступную мощность, вы можете запустить ceph osd df.
+
+
+ceph osd reweight-by-utilization
+Это можно сделать вручную, перенастроив OSD, или вы можете сделать так, чтобы Ceph произвел оптимальную перебалансировку, запустив команду ceph osd reweight-by-utilization. 
+Как только перебалансировка завершена (т. Е. У вас нет потерянных объектов ceph status), 
+вы можете снова проверить вариацию (используя ceph osd df) и при необходимости запустить другую перебалансировку.
+
+
+ceph osd df
+смотрим на столбик 
+ REWEIGHT
+ 
+это вес
+если его уменьшить, будет ребалансировка
+
+
+list pools
+ceph osd lspools
+
+
+# REDUCE POOL REPLICAS
+default 3, minimum 2, so we set minimum and current to 2
+ceph osd pool set data_hdd size 2
+
+```
+## status
+ceph -s
+ceph health detail
+Команды диагностики:
+ceph status
+ceph osd status
+ceph osd df
+ceph osd utilization
+ceph osd pool stats
+ceph osd tree
+ceph pg stat
+
 ## Users
 radosgw-admin user list
 radosgw-admin user create --uid=test1 --display-name="Test1" --email=test1@test.ru
