@@ -10,6 +10,31 @@ yandex-tank -c load.yaml
 ```
 
 
+## Optimizations for server with tank
+```
+# TANK
+
+ulimit -n 30000
+nano /etc/sysctl.conf
+net.ipv4.tcp_max_tw_buckets = 65536
+# removed from Linux 4.12
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_tw_reuse = 0
+net.ipv4.tcp_max_syn_backlog = 131072
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.tcp_synack_retries = 3
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 8
+net.ipv4.tcp_rmem = 16384 174760 349520
+net.ipv4.tcp_wmem = 16384 131072 262144
+net.ipv4.tcp_mem = 262144 524288 1048576
+net.ipv4.tcp_max_orphans = 65536
+net.ipv4.tcp_fin_timeout = 10
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_syncookies = 0
+net.netfilter.nf_conntrack_max = 1048576
+
+```
 ## Main config of tank
 ### cat load.yml
 ```
