@@ -85,3 +85,59 @@ GRANT ALL PRIVILEGES ON *.* TO 'cmon'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 ```
+# CLI
+```
+s9s user --create \
+    --group=admins \
+    --generate-key \
+    --controller=https://127.0.0.1:9501 \
+    --new-password="QWE123qwe" \
+    --email-address="46653@rendez-vous.ru" \
+    admin
+	
+clustercontrol
+# list of users
+s9s user --list --long
+# change password
+s9s user --change-password --new-password=QWE123qwe admin
+
+# ERRORS:
+#User dba is suspended for previous authentication failures.
+mv ~/.s9s/s9s.conf ~/.s9s/s9s.conf.bak
+mv /etc/s9s.conf /etc/s9s.conf.bak
+ 
+# create user dba in group admins
+s9s user --create --generate-key --controller="https://localhost:9501" --group=admins dba
+# unlock the suspended user - admin
+s9s user --cmon-user=dba --enable admin
+
+
+
+yum -y install mysql-server mysql php php-mysql php-gd mod_ssl php-curl php-ldap php-xml wget python3
+ln -s /usr/bin/python3 /usr/bin/python
+systemctl stop nginx
+wget https://severalnines.com/downloads/cmon/install-cc
+chmod 755 install-cc
+
+
+
+sudo S9S_CMON_PASSWORD=QWE123qwe S9S_ROOT_PASSWORD=QWE123qwe S9S_DB_PORT=3306 HOST=10.3.3.211  ./install-cc
+
+
+mysql password - QWE123qwe
+CMON user password - QWE123qwe!
+mysql_hostname=127.0.0.1
+mysql_port=3306
+mysql_password='QWE123qwe!'
+cmon_user=cmon
+cmon_db=cmon
+
+
+yum install nginx php-fpm -y 
+systemctl stop httpd
+systemctl disable httpd
+
+# uninstall
+./install-cc --uninstall
+
+```
