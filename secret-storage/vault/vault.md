@@ -47,6 +47,7 @@ vault secrets enable -path=iam_secret kv
 ```
 
 # create policy
+```
 nano /tmp/iam-policy
 path "iam_secret/*" {
   capabilities = ["create", "read", "list", "update"]
@@ -57,3 +58,4 @@ vault policy read iam
 
 #Create users
 vault kv put auth/userpass/users/sahil policies=default,iam password=#fsdE123qwe
+```
