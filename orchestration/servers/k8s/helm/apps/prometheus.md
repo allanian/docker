@@ -1,3 +1,19 @@
+
+# Using
+```
+kubectl port-forward -n monitoring pod/prometheus-prometheus-kube-prometheus-prometheus-0 9090:9090 --address 0.0.0.0
+
+#### ERROR
+0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate
+kubectl taint nodes node1 node-role.kubernetes.io/master-
+
+You can add Prometheus annotations to the metrics service using controller.metrics.service.annotations. 
+Alternatively, if you use the Prometheus Operator, you can enable ServiceMonitor creation using controller.metrics.serviceMonitor.enabled.
+
+kubectl annotate pods nginx-ingress-controller-pod prometheus.io/scrape=true -n ingress-nginx --overwrite
+kubectl annotate pods nginx-ingress-controller-pod prometheus.io/port=10254  -n ingress-nginx --overwrite
+```
+# Install
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
