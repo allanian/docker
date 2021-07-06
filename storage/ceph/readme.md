@@ -1,8 +1,6 @@
 # Ceph
-```
-
-```
 ## status
+```
 ceph -s
 ceph health detail
 Команды диагностики:
@@ -13,14 +11,33 @@ ceph osd utilization
 ceph osd pool stats
 ceph osd tree
 ceph pg stat
+```
 
 ## Users
+```
+# list
 radosgw-admin user list
+# add new
 radosgw-admin user create --uid=test1 --display-name="Test1" --email=test1@test.ru
+radosgw-admin user info --uid=clickhouse_backup
+# create administrator user
+ceph dashboard ac-user-create adminusr password administrator
+ceph dashboard ac-user-show
+
+```
+
+## LIFE CYCLE
+```
+radosgw-admin  lc list                    list all bucket lifecycle progress
+radosgw-admin  lc get                     get a lifecycle bucket configuration
+radosgw-admin  lc process                 manually process lifecycle
+radosgw-admin  lc reshard fix             fix LC for a resharded bucket
+```
 
 
-
-## DEL NODE
+## NODE Operations
+### DELETE node
+```
 # out node
 ceph osd out 7
 ceph -w
@@ -28,8 +45,9 @@ ceph osd stop 7
 
 #ceph auth del osd.7
 #ceph osd rm 7
+```
 
-
+```
 # list osd on node ceph07
 ceph osd crush ls ceph07
 
@@ -45,19 +63,9 @@ ceph osd pool get data_hdd pg_num
 ceph osd pool get data_hdd pgp_num
 
 
-
-
-
-
-
-
 ceph osd pool get data_hdd size
 size: 2
 сколько может не работать
-
-
-
-
 
 # ERROR
 5 osds down
