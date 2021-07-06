@@ -34,7 +34,7 @@ Description=jenkins_slave
 [Service]
 PIDFile=/data/jenkins/slave/slave.pid
 User=jenkins
-ExecStart=/bin/java -jar /data/jenkins/slave/agent.jar -jnlpUrl https://jenkins.altarix.ru/computer/ZHS-NLB5P_slave/slave-agent.jnlp -secret 63d0f7ad4ec43c4de2d04c61e4c75a20cc374c6b4b021ef778b1950e46f76cab -workDir /data/jenkins/slave
+ExecStart=/bin/java -jar /data/jenkins/slave/agent.jar -jnlpUrl https://jenkins.company.ru/computer/ZHS-NLB5P_slave/slave-agent.jnlp -secret 63d0f7ad4ec43c4de2d04c61e4c75a20cc374c6b4b021ef778b1950e46f76cab -workDir /data/jenkins/slave
 [Install]
 WantedBy=multi-user.target
 [Install]
