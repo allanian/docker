@@ -51,7 +51,7 @@ systemctl daemon-reload
 systemctl enable jenkins_slave.service
 systemctl start jenkins_slave.service
 systemctl status jenkins_slave.service
-https://jenkins.altarix.ru/computer/new
+https://jenkins.company.ru/computer/new
 тут можно глянуть статус
 https://jenkins.company.ru/computer/ZHS-NLB5P_slave/
 
