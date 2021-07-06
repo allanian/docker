@@ -10,3 +10,13 @@ psql -U postgres
 # VACUUM FULL блокирует таблицы в db, пока операция не закончиться.
 VACUUM FULL; 
 ```
+
+
+# sentry upgrade
+```
+git fetch --all
+git tag
+git checkout 21.1.0
+
+./install.sh
+```
