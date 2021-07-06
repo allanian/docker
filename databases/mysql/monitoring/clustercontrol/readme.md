@@ -68,3 +68,20 @@ FLUSH PRIVILEGES;
 
 
 ```
+# SQL USER
+```
+CREATE USER 'clustercontrol'@'%' IDENTIFIED WITH mysql_native_password BY 'QWE123qwe';
+GRANT ALL ON *.* TO 'clustercontrol'@'%' WITH GRANT OPTION;
+CREATE USER 'clustercontrol'@'10.3.3.211' IDENTIFIED WITH mysql_native_password BY 'QWE123qwe!';
+GRANT ALL ON *.* TO 'clustercontrol'@'10.3.3.211' WITH GRANT OPTION;
+CREATE USER 'clustercontrol'@'10.3.3.231' IDENTIFIED WITH mysql_native_password BY 'QWE123qwe!';
+GRANT ALL ON *.* TO 'clustercontrol'@'10.3.3.231' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+DROP USER IF EXISTS clustercontrol;
+SELECT User FROM mysql.user where user='clustercontrol';
+
+CREATE USER 'cmon'@'%' IDENTIFIED WITH mysql_native_password BY 'QWE123qwe!';
+GRANT ALL PRIVILEGES ON *.* TO 'cmon'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+```
