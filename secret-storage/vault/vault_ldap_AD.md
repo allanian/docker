@@ -1,4 +1,5 @@
 # policy
+```
 nano it.hcl
 path "secret/data/IT" {
 capabilities = ["create", "read", "update", "delete", "list"] }
@@ -27,3 +28,4 @@ vault login -method=ldap username='46653'
 
 # Confirm your AD user has the permissions set in the IT Vault policy:
 vault token capabilities secret/data/IT
+```
