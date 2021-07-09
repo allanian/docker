@@ -1,0 +1,109 @@
+global:
+  name: consul
+  datacenter: dc1
+  tls:
+    enabled: true
+    enableAutoEncrypt: true
+    verify: false
+    httpsOnly: false
+    serverAdditionalDNSSANs: ["'*.consul.svc.cluster.local'"]
+  acls:
+    manageSystemACLs: true
+#    bootstrapToken:
+#      secretName: consul-acl-bootstrap-token
+#      secretKey: token
+    # PRIMARY DATACENTER ONLY
+    createReplicationToken: true
+    # SECONDARY DATACENTER ONLY
+  federation:
+    enabled: true
+    createFederationSecret: true
+  gossipEncryption:
+    secretName: consul-gossip-encryption-key
+    secretKey: key
+
+server:
+  replicas: 1
+  storage: 5Gi
+  storageClass: "ebs-sc"
+  connect: true
+  # Server service properties.
+  service:
+    annotations: null
+
+connectInject:
+  enabled: true
+controller:
+  enabled: false
+  replicas: 1
+
+externalServers:
+  enabled: false
+
+ui:
+  service:
+    enabled: true
+    nodePort:
+      # HTTP node port
+      http: null
+      # HTTPS node port
+      https: null
+    annotations: null
+  ingress:
+    enabled: true
+    pathType: Prefix
+    hosts:
+      - host: consul-dc1.company.com
+        paths:
+          - "/*"
+    annotations: |
+      'alb.ingress.kubernetes.io/backend-protocol': HTTPS
+      'alb.ingress.kubernetes.io/certificate-arn': arn.............................
+      'alb.ingress.kubernetes.io/healthcheck-protocol': HTTPS
+      'alb.ingress.kubernetes.io/listen-ports': '[{"HTTPS":443}]'
+      'alb.ingress.kubernetes.io/scheme': internet-facing
+      'alb.ingress.kubernetes.io/target-type': instance
+      'kubernetes.io/ingress.class': alb
+
+
+# Mesh Gateways enable Consul Connect to work across Consul datacenters.
+meshGateway:
+  enabled: true
+  replicas: 1
+# Service STATIC
+  wanAddress:
+    source: "Service"
+    port: 443
+    static: "consulserv-dc1.company.com"
+
+  service:
+    enabled: true
+    type: LoadBalancer
+    port: 443
+    annotations: |
+      'external-dns.alpha.kubernetes.io/hostname': consulserv-dc1.company.com
+
+#Use Ingress gateways to enable services outside the mesh (i.e., no sidecar) to connect to services in the mesh.
+ingressGateways:
+  enabled: true
+  defaults:
+    replicas: 1
+    service:
+      type: LoadBalancer
+      ports:
+        - port: 80
+        - port: 443
+        - port: 8080
+          nodePort: null
+        - port: 8443
+          nodePort: null
+  gateways:
+    - name: ingress-gateway
+      service:
+        type: LoadBalancer
+
+#Use terminating gatways to enable services in the mesh to communicate with services outside the mesh that do not have their own sidecar.
+terminatingGateways:
+  enabled: true
+  gateways:
+    - name: terminating-gateway
